@@ -1,0 +1,17 @@
+type: marketplace
+title: Programming Fundamentals II
+language: English
+summary: |
+  This course introduces intermediate Java programming concepts through six structured modules: Java basics, object-oriented design, inheritance, event-driven programming, exception handling, and collections. Each topic is supported by explanatory slides, hands-on examples, guided code walkthroughs, and targeted assignments.
+vendor:
+  name: Juan Carlos Alfaro Jiménez
+programming_language: Java
+content:
+  - Exceptions
+environment_settings:
+  jvm_language_level: JDK_1_8
+additional_files:
+  - name: build.gradle
+  - name: settings.gradle
+  - name: README.md
+yaml_version: 2

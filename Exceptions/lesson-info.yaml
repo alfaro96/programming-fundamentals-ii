@@ -1,0 +1,7 @@
+content:
+  - Divide by zero with try and catch
+  - Closing resources with finally
+  - File output with throws
+  - Manually throwing an exception with throw
+  - Exception propagation across multiple methods
+  - Handling custom exceptions in a priority list
