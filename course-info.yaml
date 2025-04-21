@@ -14,4 +14,5 @@ additional_files:
   - name: build.gradle
   - name: settings.gradle
   - name: README.md
+  - name: LICENSE
 yaml_version: 2
