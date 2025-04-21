@@ -1,0 +1,21 @@
+# Compiled class files
+*.class
+
+# IDE files
+.idea/
+*.iml
+out/
+
+# Gradle build cache
+.gradle/
+
+# Logs and temporary files
+*.log
+*.tmp
+
+# Mac system files
+.DS_Store
+
+# Ignore Java backup files
+*~
+*.bak
