@@ -28,8 +28,8 @@ The `Main` class shows how these exceptions are thrown and caught during usage.
 ## View the files
 
 - [Main.java](file://Exceptions/Handling%20custom%20exceptions%20in%20a%20priority%20list/src/Main.java)
-- [PriorityList.java](file://Exceptions/Handling%20custom%20exceptions%20in%20a%20priority%20list/src/PriorityList.java)
-- [Record.java](file://Exceptions/Handling%20custom%20exceptions%20in%20a%20priority%20list/src/Record.java)
-- [ListFullException.java](file://Exceptions/Handling%20custom%20exceptions%20in%20a%20priority%20list/src/ListFullException.java)
-- [EmptyListException.java](file://Exceptions/Handling%20custom%20exceptions%20in%20a%20priority%20list/src/EmptyListException.java)
-- [ElementNotFoundException.java](file://Exceptions/Handling%20custom%20exceptions%20in%20a%20priority%20list/src/ElementNotFoundException.java)
+- [PriorityList.java](file://Exceptions/Handling%20custom%20exceptions%20in%20a%20priority%20list/src/prioritylist/PriorityList.java)
+- [Record.java](file://Exceptions/Handling%20custom%20exceptions%20in%20a%20priority%20list/src/prioritylist/Record.java)
+- [ListFullException.java](file://Exceptions/Handling%20custom%20exceptions%20in%20a%20priority%20list/src/exceptions/ListFullException.java)
+- [EmptyListException.java](file://Exceptions/Handling%20custom%20exceptions%20in%20a%20priority%20list/src/exceptions/EmptyListException.java)
+- [ElementNotFoundException.java](file://Exceptions/Handling%20custom%20exceptions%20in%20a%20priority%20list/src/exceptions/ElementNotFoundException.java)

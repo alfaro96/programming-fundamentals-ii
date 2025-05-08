@@ -1,0 +1,8 @@
+content:
+  - Managing team players with a resizable array
+  - Storing specific player types with generics
+  - Printing player details in a method
+  - Printing player details with wildcards
+  - Using an iterator to traverse a list
+  - Modifying a list during iteration
+  - Safely modifying a list with an iterator

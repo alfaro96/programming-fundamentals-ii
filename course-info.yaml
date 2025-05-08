@@ -7,7 +7,9 @@ vendor:
   name: Juan Carlos Alfaro Jiménez
 programming_language: Java
 content:
+  - Event-driven programming
   - Exceptions
+  - Collections
 environment_settings:
   jvm_language_level: JDK_1_8
 additional_files:
