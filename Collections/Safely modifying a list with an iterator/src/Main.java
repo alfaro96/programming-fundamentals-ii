@@ -13,37 +13,37 @@ import java.util.Iterator;
  */
 public class Main {
 
-   /**
-    * The entry point of the program.
-    * <p>
-    * This method creates a list of soccer player names and removes a player
-    * safely during iteration using {@link Iterator#remove()}.
-    * <br>
-    * Unlike the incorrect approach with a {@code for-each} loop, this version avoids
-    * {@link java.util.ConcurrentModificationException}.
-    * </p>
-    *
-    * @param args Command-line arguments (not used)
-    */
-   public static void main(String[] args) {
-      // Create a list of player names
-      ArrayList<String> players = new ArrayList<>();
-      players.add("Cristiano Ronaldo");
-      players.add("Lionel Messi");
-      players.add("Luka Modric");
-      players.add("Kevin De Bruyne");
+    /**
+     * The entry point of the program.
+     * <p>
+     * This method creates a list of soccer player names and removes a player
+     * safely during iteration using {@link Iterator#remove()}.
+     * <br>
+     * Unlike the incorrect approach with a {@code for-each} loop, this version avoids
+     * {@link java.util.ConcurrentModificationException}.
+     * </p>
+     *
+     * @param args Command-line arguments (not used)
+     */
+    public static void main(String[] args) {
+        // Create a list of player names
+        ArrayList<String> players = new ArrayList<>();
+        players.add("Cristiano Ronaldo");
+        players.add("Lionel Messi");
+        players.add("Luka Modric");
+        players.add("Kevin De Bruyne");
 
-      System.out.println("Original list: " + players);
+        System.out.println("Original list: " + players);
 
-      // Safely remove a player during iteration
-      Iterator<String> iterator = players.iterator();
-      while (iterator.hasNext()) {
-         String player = iterator.next();
-         if (player.equals("Luka Modric")) {
-            iterator.remove(); // Safe removal using the iterator
-         }
-      }
+        // Safely remove a player during iteration
+        Iterator<String> iterator = players.iterator();
+        while (iterator.hasNext()) {
+            String player = iterator.next();
+            if (player.equals("Luka Modric")) {
+                iterator.remove(); // Safe removal using the iterator
+            }
+        }
 
-      System.out.println("Updated list: " + players);
-   }
+        System.out.println("Updated list: " + players);
+    }
 }

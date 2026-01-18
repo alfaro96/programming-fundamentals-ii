@@ -10,6 +10,7 @@ content:
   - Event-driven programming
   - Exceptions
   - Collections
+  - Introduction to Java
 environment_settings:
   jvm_language_level: JDK_1_8
 additional_files:
@@ -17,4 +18,5 @@ additional_files:
   - name: settings.gradle
   - name: README.md
   - name: LICENSE
-yaml_version: 2
+  - name: gradle/wrapper/gradle-wrapper.properties
+yaml_version: 5
