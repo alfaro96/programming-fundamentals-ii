@@ -19,3 +19,7 @@ out/
 # Ignore Java backup files
 *~
 *.bak
+
+# JetBrains Academy remote metadata
+lesson-remote-info.yaml
+task-remote-info.yaml
