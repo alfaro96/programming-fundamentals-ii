@@ -20,6 +20,7 @@ out/
 *~
 *.bak
 
-# JetBrains Academy remote metadata
+# JetBrains Academy remote metadata and creator state
 lesson-remote-info.yaml
 task-remote-info.yaml
+.coursecreator/
