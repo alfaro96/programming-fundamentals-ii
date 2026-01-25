@@ -150,6 +150,6 @@ public class Library {
       }
 
       // Final edge case check
-      System.out.println("\nAttempting previousBook() at the start: " + myLibrary.previousBook());
+      System.out.println("\nAttempting previousBook() at the start: " + myLibrary.previousBook().toString());
    }
 }
