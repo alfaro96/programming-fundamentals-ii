@@ -25,5 +25,5 @@ The program **amplifies** the versatility of the **`Player`** class by providing
 
 ## View the files
 
-* [Player.java](file://Overloading%20class%20behavior/src/Player.java)
-* [Main.java](file://Overloading%20class%20behavior/src/Main.java)
+* [Player.java](file://src/Player.java)
+* [Main.java](file://src/Main.java)

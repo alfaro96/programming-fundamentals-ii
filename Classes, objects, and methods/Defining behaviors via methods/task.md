@@ -24,5 +24,5 @@ The program **enhances** the **`Player`** class by **providing** a **variety** o
 
 ## View the files
 
-* [Player.java](file://Defining%20behaviors%20via%20methods/src/Player.java)
-* [Main.java](file://Defining%20behaviors%20via%20methods/src/Main.java)
+* [Player.java](file://src/Player.java)
+* [Main.java](file://src/Main.java)

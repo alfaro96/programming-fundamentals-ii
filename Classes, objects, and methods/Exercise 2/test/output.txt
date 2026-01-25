@@ -1,0 +1,24 @@
+--- Full family registry ---
+Name: Alice Smith (Age: 42), Address: 123 Maple St
+  Children of Alice Smith:
+    - Name: Charlie (Age: 12), Address: 123 Maple St
+    - Name: Daisy (Age: 9), Address: 123 Maple St
+
+Name: Bob Brown (Age: 50), Address: 456 Oak Ave
+  Children of Bob Brown:
+    - Name: Edward (Age: 20), Address: 456 Oak Ave
+    - Name: Fiona (Age: 16), Address: 456 Oak Ave
+    - Name: George (Age: 23), Address: 456 Oak Ave
+
+Name: Helen White (Age: 28), Address: 789 Pine Rd
+
+--- Update test ---
+New age of Alice Smith: 43
+
+--- Person 1 offspring list  ---
+-> Child: Charlie (12 years old)
+-> Child: Daisy (9 years old)
+
+--- Person 2 age extremes  ---
+Youngest child: Fiona
+Oldest child: George

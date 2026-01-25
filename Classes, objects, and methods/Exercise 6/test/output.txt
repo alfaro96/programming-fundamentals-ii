@@ -1,0 +1,16 @@
+--- Testing add & growth ---
+System: Library storage doubled to 4
+Library: City Central Library (3 books total)
+
+--- Testing navigation ---
+Moving forward:
+  Read: Java I
+  Read: Java II
+  Read: Java III
+Current book: Java III
+
+Moving backward:
+  Returned to: Java II
+  Returned to: Java I
+
+Attempting previousBook() at the start: null

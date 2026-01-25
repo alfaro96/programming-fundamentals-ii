@@ -24,4 +24,4 @@ The program **`Welcome` executes** a series of **steps** to **initialize** and *
 
 ## View the files
 
-* [Welcome.java](file://Understanding%20the%20development%20lifecycle/src/Welcome.java)
+* [Welcome.java](file://src/Welcome.java)

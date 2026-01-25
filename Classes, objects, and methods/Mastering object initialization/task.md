@@ -25,5 +25,5 @@ The program **evolves** the **`Player`** class by **replacing step-by-step field
 
 ## View the files
 
-* [Player.java](file://Mastering%20object%20initialization/src/Player.java)
-* [Main.java](file://Mastering%20object%20initialization/src/Main.java)
+* [Player.java](file://src/Player.java)
+* [Main.java](file://src/Main.java)

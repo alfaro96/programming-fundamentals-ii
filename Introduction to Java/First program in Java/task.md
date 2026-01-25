@@ -26,4 +26,4 @@ This assignment **demonstrates** how to **transition** from **C to Java** by **i
 
 ## View the files
 
-* [Main.java](file://First%20program%20in%20Java/src/Main.java)
+* [Main.java](file://src/Main.java)

@@ -3,15 +3,9 @@ files:
   - name: src/Sum.java
     visible: true
     placeholders:
-      - offset: 458
-        length: 99
-        placeholder_text: "// TODO: Implement the iterative logic translated from C"
-      - offset: 812
-        length: 25
-        placeholder_text: "// TODO: Implement the formulaic logic"
-      - offset: 1065
-        length: 691
-        placeholder_text: "// TODO: Write your testing code here"
+      - offset: 0
+        length: 1764
+        placeholder_text: "/* TODO: Implement Sum class. */"
   - name: test/output.txt
     visible: false
     propagatable: false

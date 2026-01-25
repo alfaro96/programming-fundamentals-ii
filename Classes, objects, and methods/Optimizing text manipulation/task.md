@@ -26,4 +26,4 @@ The program compares how Java handles text depending on the chosen tool, focusin
 
 ## View the files
 
-* [Main.java](file://Optimizing%20text%20manipulation/src/Main.java)
+* [Main.java](file://src/Main.java)

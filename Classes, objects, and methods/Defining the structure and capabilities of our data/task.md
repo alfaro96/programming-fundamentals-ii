@@ -23,4 +23,4 @@ The program **`Player` defines** the **fundamental template** for a **new data t
 
 ## View the files
 
-* [Player.java](file://Defining%20the%20structure%20and%20capabilities%20of%20our%20data/src/Player.java)
+* [Player.java](file://src/Player.java)

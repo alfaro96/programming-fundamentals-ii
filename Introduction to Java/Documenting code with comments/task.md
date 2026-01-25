@@ -25,4 +25,4 @@ The program **`Comments`** includes **various ways** to **document code**:
 
 ## View the files
 
-* [Comments.java](file://Documenting%20code%20with%20comments/src/Comments.java)
+* [Comments.java](file://src/Comments.java)

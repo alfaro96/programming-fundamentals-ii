@@ -26,5 +26,5 @@ The program **`Main` executes** a series of logical **steps** to **manage** how 
 
 ## View the files
 
-* [Main.java](file://Materializing%20state%20and%20active%20behavior%20in%20memory/src/Main.java)
-* [Player.java](file://Materializing%20state%20and%20active%20behavior%20in%20memory/src/Player.java)
+* [Player.java](file://src/Player.java)
+* [Main.java](file://src/Main.java)

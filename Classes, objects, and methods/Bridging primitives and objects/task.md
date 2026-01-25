@@ -27,4 +27,4 @@ The program **explores** the **capabilities** of classes like **`Integer`**, **`
 
 ## View the files
 
-* [Main.java](file://Bridging%20primitives%20and%20objects/src/Main.java)
+* [Main.java](file://src/Main.java)

@@ -28,4 +28,4 @@ The program **`Initialization` defines** a **collection** of **integers** to sho
 
 ## View the files
 
-* [Initialization.java](file://Initializing%20arrays%20with%20fixed%20elements/src/Initialization.java)
+* [Initialization.java](file://src/Initialization.java)

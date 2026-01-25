@@ -25,4 +25,4 @@ The program **refines** the **`Player`** class by explicitly **using** the **sel
 
 ## View the files
 
-* [Player.java](file://Enforcing%20architectural%20clarity/src/Player.java)
+* [Player.java](file://src/Player.java)

@@ -1,0 +1,26 @@
+type: output
+files:
+  - name: test/output.txt
+    visible: false
+    propagatable: false
+  - name: test/input.txt
+    visible: false
+    propagatable: false
+  - name: src/Point.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 2080
+        placeholder_text: "/* TODO: Implement the Point class. */"
+  - name: src/Vector.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 3362
+        placeholder_text: "/* TODO: Implement the Vector class. */"
+  - name: src/Main.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 3197
+        placeholder_text: "/* TODO: Implement Main class. */"

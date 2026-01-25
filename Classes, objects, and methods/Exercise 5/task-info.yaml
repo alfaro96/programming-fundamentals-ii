@@ -1,0 +1,16 @@
+type: output
+files:
+  - name: src/Polynomial.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 4325
+        placeholder_text: "/* TODO: Implement Polynomial class. */"
+  - name: test/output.txt
+    visible: false
+    propagatable: false
+  - name: test/input.txt
+    visible: false
+    propagatable: false
+  - name: src/Monomial.java
+    visible: true

@@ -1,0 +1,16 @@
+type: output
+files:
+  - name: src/Library.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 4744
+        placeholder_text: "/* TODO: Implement Library class. */"
+  - name: test/output.txt
+    visible: false
+    propagatable: false
+  - name: test/input.txt
+    visible: false
+    propagatable: false
+  - name: src/Book.java
+    visible: true

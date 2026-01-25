@@ -28,4 +28,4 @@ The program **`Naming` defines** several **variables** to show the **difference*
 
 ## View the files
 
-* [Naming.java](file://Naming%20variables%20correctly/src/Naming.java)
+* [Naming.java](file://src/Naming.java)

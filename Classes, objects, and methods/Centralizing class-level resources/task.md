@@ -26,5 +26,5 @@ The program **transforms** the **`Player`** class into a **self-tracking registr
 
 ## View the files
 
-* [Player.java](file://Centralizing%20class-level%20resources/src/Player.java)
-* [Main.java](file://Centralizing%20class-level%20resources/src/Main.java)
+* [Player.java](file://src/Player.java)
+* [Main.java](file://src/Main.java)

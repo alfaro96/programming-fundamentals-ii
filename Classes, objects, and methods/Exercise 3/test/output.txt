@@ -1,0 +1,7 @@
+Reading B1 content:
+Page 1: Revised introduction
+Page 2: Variables and types
+
+Metadata after removal: 'Java basics' by J. Alfaro (2 pages). ISBN: ISBN-001
+Combined book: 'Java basics & Advanced Java' by J. Alfaro (3 pages). ISBN: ISBN-001-EXT
+B1 equals B3 (same ISBN)? true
