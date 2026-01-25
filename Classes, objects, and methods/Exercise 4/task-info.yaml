@@ -11,13 +11,13 @@ files:
     placeholders:
       - offset: 0
         length: 2080
-        placeholder_text: "/* TODO: Implement the Point class. */"
+        placeholder_text: "/* TODO: Implement Point class. */"
   - name: src/Vector.java
     visible: true
     placeholders:
       - offset: 0
         length: 3362
-        placeholder_text: "/* TODO: Implement the Vector class. */"
+        placeholder_text: "/* TODO: Implement Vector class. */"
   - name: src/Main.java
     visible: true
     placeholders:

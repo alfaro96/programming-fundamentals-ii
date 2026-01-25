@@ -10,5 +10,5 @@ files:
     visible: true
     placeholders:
       - offset: 0
-        length: 6567
-        placeholder_text: "/* TODO: Implement the Exercise 3 class. */"
+        length: 6573
+        placeholder_text: "/* TODO: Implement Book class. */"
