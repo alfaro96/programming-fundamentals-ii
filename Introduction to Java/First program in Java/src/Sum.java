@@ -1,10 +1,10 @@
 /**
- * Laboratory Assignment 0: Introduction to the compiler.
+ * Laboratory Assignment 0: First program in Java.
  * This class implements and compares iterative and formulaic summation methods.
  *
  * @author Juan Carlos Alfaro Jiménez
  */
-public class Main {
+public class Sum {
 
    /**
     * Calculates the sum of the first n natural numbers using an iterative approach.

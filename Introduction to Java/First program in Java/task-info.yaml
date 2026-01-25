@@ -1,15 +1,15 @@
 type: output
 files:
-  - name: src/Main.java
+  - name: src/Sum.java
     visible: true
     placeholders:
-      - offset: 466
+      - offset: 458
         length: 99
         placeholder_text: "// TODO: Implement the iterative logic translated from C"
-      - offset: 820
+      - offset: 812
         length: 25
         placeholder_text: "// TODO: Implement the formulaic logic"
-      - offset: 1073
+      - offset: 1065
         length: 691
         placeholder_text: "// TODO: Write your testing code here"
   - name: test/output.txt

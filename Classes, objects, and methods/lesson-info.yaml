@@ -1,0 +1,10 @@
+content:
+  - Defining the structure and capabilities of our data
+  - Materializing state and active behavior in memory
+  - Defining behaviors via methods
+  - Mastering object initialization
+  - Enforcing architectural clarity and resolving scope ambiguity
+  - Centralizing class-level resources
+  - Overloading class behavior
+  - Bridging primitives and objects
+  - Optimizing text manipulation
