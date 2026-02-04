@@ -18,14 +18,12 @@ public class Main {
       Player p1 = new Player("Lionel Messi", 36, "Argentina");
       Player p2 = new Player("Cristiano Ronaldo", 38, "Portugal");
 
-      System.out.println(p1.name);
-
       // 3. Confirming the count has updated globally
-      // Player.displayGlobalCount();
+      Player.displayGlobalCount();
 
       // 4. Using instance methods to see the shared data
       // Each player object reports its own name but the same global count
-      // p1.displayRegistryInfo();
-      // p2.displayRegistryInfo();
+      p1.displayRegistryInfo();
+      p2.displayRegistryInfo();
    }
 }
