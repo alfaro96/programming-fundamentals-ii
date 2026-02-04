@@ -34,5 +34,15 @@ public class Main {
       System.out.println("Player name: " + player.name);
       System.out.println("Player age: " + player.age);
       System.out.println("Player nationality: " + player.nationality);
+
+      Player player2 = new Player();
+      int age = 0;
+      player2.age = 18;
+      player2.nationality = "Morocco";
+      player2.name = "Lamine Yamal";
+
+      System.out.println("Player name: " + player2.name);
+      System.out.println("Player age: " + player2.age);
+      System.out.println("Player nationality: " + player2.nationality);
    }
 }

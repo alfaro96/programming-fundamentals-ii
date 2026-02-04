@@ -1,21 +1,23 @@
 type: output
 files:
-  - name: src/Sum.java
-    visible: true
-    placeholders:
-      - offset: 0
-        length: 1764
-        placeholder_text: "/* TODO: Implement Sum class. */"
   - name: test/output.txt
     visible: false
     propagatable: false
   - name: test/input.txt
     visible: false
     propagatable: false
-  - name: doc/package-tree.html
+  - name: src/es/uclm/esii/math/complex/ComplexNumber.java
     visible: true
-  - name: doc/package-summary.html
+    placeholders:
+      - offset: 0
+        length: 3962
+        placeholder_text: "/* TODO: Implement ComplexNumber class. */"
+  - name: src/es/uclm/esii/math/complex/Main.java
     visible: true
+    placeholders:
+      - offset: 0
+        length: 2154
+        placeholder_text: "/* TODO: Implement Main class. */"
   - name: doc/package-search-index.js
     visible: true
   - name: doc/index.html
@@ -37,8 +39,6 @@ files:
   - name: doc/help-doc.html
     visible: true
   - name: doc/element-list
-    visible: true
-  - name: doc/Sum.html
     visible: true
   - name: doc/allpackages-index.html
     visible: true

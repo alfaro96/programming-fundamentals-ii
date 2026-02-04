@@ -6,7 +6,7 @@ This assignment **demonstrates** how to **transition** from **C to Java** by **i
 
 ## What do you need to do?
 
-**In** the provided code template for **`Main.java`**, you will find the necessary structure to solve the following tasks. You must **complete** the **methods and logic** within this file **to** successfully **pass** the **verification tests**:
+**In** the provided code template for **`Sum.java`**, you will find the necessary structure to solve the following tasks. You must **complete** the **methods and logic** within this file **to** successfully **pass** the **verification tests**:
 
 * **Iterative sum implementation**: **Implement** a **`public static` method** named **`sum1`** that **calculates** the **summation** of the **first** $ \boldsymbol{n} $ **numbers**: $ sum1(n) = \sum_{i = 0}^{n} i $. **Initialize** a **variable** to $ \boldsymbol{0} $ and **use** a **`for` loop** to **accumulate** the **values** from $ \boldsymbol{0} $ **to** $ \boldsymbol{n} $.
 * **Formulaic sum implementation**: **Implement** a **second `public static` method** named **`sum2`** using a **mathematical shortcut**. **Calculate** the **sum** using the **arithmetic progression formula**: $ sum2(n) = \frac{n(n + 1)}{2} $.
@@ -26,4 +26,4 @@ This assignment **demonstrates** how to **transition** from **C to Java** by **i
 
 ## View the files
 
-* [Main.java](file://src/Main.java)
+* [Sum.java](file://src/Sum.java)

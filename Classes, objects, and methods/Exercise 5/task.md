@@ -1,4 +1,4 @@
-# Complex Composition: The Polynomial Class
+# Exercise 5
 
 This exercise focuses on the interaction between classes. A `Polynomial` is a mathematical entity composed of several `Monomial` objects. In this implementation, the structure relies on an array where the position of each element defines its mathematical role.
 
