@@ -1,8 +1,5 @@
 type: edu
 files:
-  - name: test/Tests.java
-    visible: false
-    propagatable: false
   - name: src/com/realestate/management/model/Apartment.java
     visible: true
     placeholders:
@@ -15,41 +12,12 @@ files:
       - offset: 0
         length: 7721
         placeholder_text: "/* TODO: Implement Parking class. */"
-  - name: doc/package-search-index.js
-    visible: true
-  - name: doc/index.html
-    visible: true
-  - name: doc/member-search-index.js
-    visible: true
-  - name: doc/tag-search-index.js
-    visible: true
-  - name: doc/overview-tree.html
-    visible: true
-  - name: doc/type-search-index.js
-    visible: true
-  - name: doc/allclasses-index.html
-    visible: true
-  - name: doc/module-search-index.js
-    visible: true
-  - name: doc/search.html
-    visible: true
-  - name: doc/help-doc.html
-    visible: true
-  - name: doc/element-list
-    visible: true
-  - name: doc/allpackages-index.html
-    visible: true
   - name: src/com/realestate/management/model/Storage.java
     visible: true
     placeholders:
       - offset: 0
         length: 7561
         placeholder_text: "/* TODO: Implement Storage class. */"
-  - name: doc/constant-values.html
-    visible: true
-  - name: doc/com/realestate/management/model/Storage.Status.html
-    visible: true
-  - name: doc/com/realestate/management/model/Parking.Status.html
-    visible: true
-  - name: doc/com/realestate/management/model/Storage.html
-    visible: true
+  - name: test/Tests.java
+    visible: false
+    propagatable: false

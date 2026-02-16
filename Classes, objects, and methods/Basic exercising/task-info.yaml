@@ -6,30 +6,6 @@ files:
       - offset: 0
         length: 3962
         placeholder_text: "/* TODO: Implement ComplexNumber class. */"
-  - name: doc/package-search-index.js
-    visible: true
-  - name: doc/index.html
-    visible: true
-  - name: doc/member-search-index.js
-    visible: true
-  - name: doc/tag-search-index.js
-    visible: true
-  - name: doc/overview-tree.html
-    visible: true
-  - name: doc/type-search-index.js
-    visible: true
-  - name: doc/allclasses-index.html
-    visible: true
-  - name: doc/module-search-index.js
-    visible: true
-  - name: doc/search.html
-    visible: true
-  - name: doc/help-doc.html
-    visible: true
-  - name: doc/element-list
-    visible: true
-  - name: doc/allpackages-index.html
-    visible: true
   - name: test/Tests.java
     visible: false
     propagatable: false
