@@ -180,38 +180,4 @@ public class Matrix {
          System.out.println();
       }
    }
-
-   /**
-    * Entry point for testing the {@link Matrix} class requirements.
-    * Verifies constructors, algebraic operations, and utility methods.
-    *
-    * @param args Command line arguments (not used).
-    */
-   public static void main(String[] args) {
-      System.out.println("--- Matrix testing suite ---");
-
-      // 1. Setup matrices
-      double[][] data = {{1, 2}, {3, 4}};
-      Matrix m1 = new Matrix(data);
-      Matrix m2 = new Matrix(2, 2, 10.0);
-      Matrix rect = new Matrix(2, 3, 1.0);
-
-      System.out.println("Matrix 1:");
-      m1.display();
-
-      // 2. Addition
-      System.out.println("\nAddition (M1 + M2):");
-      Matrix sum = m1.add(m2);
-      if (sum != null) sum.display();
-
-      // 3. Multiplication
-      System.out.println("\nMultiplication (M1 * M2):");
-      Matrix prod = m1.product(m2);
-      if (prod != null) prod.display();
-
-      // 4. Trace and transpose
-      System.out.println("\nTrace of M1: " + m1.trace());
-      System.out.println("\nTransposition of rectangular matrix (2 x 3 -> 3 x 2):");
-      rect.transpose().display();
-   }
 }

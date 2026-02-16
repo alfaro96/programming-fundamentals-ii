@@ -1,35 +1,61 @@
 # Basic exercising
 
-This assignment **demonstrates** how to **apply object-oriented abstraction** by **creating** a **`ComplexNumber` class** to **handle mathematical concepts** within Java.
+## Goals
 
----
+The **main focus** of this laboratory assignment is to **transition** from **real-world mathematical concepts** to **functional Java classes** through abstraction. You will **develop** the skills necessary to define **object structures** and **implement behaviors** using the principles of object-oriented programming.
 
-## What do you need to do?
+By the **end** of this **session**, **you will** be able to:
 
-**Create** a **project** using a **name of your preference**. You must **implement** the following **structure and logic** to **model complex numbers** ($ real + imaginary \times i $):
+* **Translate real-world concepts** into **Java classes** with appropriate attributes and methods.
+* **Define and overload multiple constructors** with different argument sets.
+* **Implement** class **methods** to **handle specific functionalities** and mathematical operations.
+* **Generate** professional **documentation** using the **Javadoc** standard.
 
-* **Package organization**: **Group** your **classes** into a **package using** a **professional naming standard** (e.g., `es.uclm.esi.math.complex`). **Packages** are a **mechanism** used to **group related code**, acting **like** a **folder system** to **organize code** and **prevent naming conflicts**.
-* **Attributes**: **Define** two **attributes**, **`real`** and **`imaginary`**, using **appropriate double data types**.
-* **Constructor overloading**: **Implement four** different **constructors** to allow flexible object creation: a **default** constructor ($ 0, 0 $), an **integer** constructor, a **double** constructor, and a **copy** constructor.
-* **Method implementation**: **Develop** the **following behaviors** for the class:
-  * **Arithmetic**: **Implement `add()`**, **`subtract()`**, and **overloaded `multiply()`** (scalar and complex) methods that **return** a **new `ComplexNumber`**.
-  * **Comparison**: **Implement `equals()` using** an **epsilon comparison** to **account** for **double rounding errors**.
-* **Incremental testing**: **Create** a **separate `Main` class**. **Remember to test every component you implement individually before moving to the next task and performing a final verification**.
-* **Documentation**: **Write Javadoc comments** (`/** */`) for **every class**, **attribute**, and **method**, then **generate** and **verify** the **technical documentation** via **`Tools -> Generate Javadoc...`**.
+## Tasks
 
----
+**Implement** a **project** to **handle complex numbers**, which are defined by a real part and an imaginary part ($ real + imaginary \times i $).
 
-## Key concepts
+### Environment setup
 
-* **Abstraction** is the **process** of **translating real-world concepts** (like complex numbers) **into Java classes** with **attributes** and **methods**.
-* **Method overloading allows** you to have **multiple methods** with the **same name** but **different arguments**, providing functional flexibility.
-* The **`toString()` method returns** a **human-legible text representation** of your **object** (e.g., `"3.5 + 2.0i"`), **formatting** its **internal attributes** into a **clear `String`** for display.
-* **Packages group related classes**, acting **like** a **folder system** to **organize code** and **prevent naming conflicts** according to industry standards.
-* **Javadoc transforms comments** into **professional** HTML **pages**, **listing** all **parameters** and **return types** for the project.
+1. **Create the project**: **Select** `New Project` and **choose** a **project name according to your preference**.
+2. **Understand packages**: A **package** in Java is a **mechanism used to group related classes**. It acts **similarly** to a **folder system** in your operating system, helping to **avoid naming conflicts** and **making** the **code easier** to **maintain and find**.
+3. **Organize the code**: **All** of your **classes** must be **contained** in a **package**. **Following** Java naming **standards**, **package names should be entirely in lowercase**. **Use** `es.uclm.esii.math.complex` as the **package name** for this project.
 
----
+### Implementation of the `ComplexNumber` class
 
-## View the files
+1. **Attributes**: Define **two attributes**, `real` and `imaginary`, **using** the **appropriate data types** (e.g., `double`).
 
-* [ComplexNumber.java](file://src/es/uclm/esi/math/complex/ComplexNumber.java)
-* [Main.java](file://src/es/uclm/esi/math/complex/Main.java)
+2. **Constructors**: **Implement** the following **four constructors**:
+   * **Default constructor**: Starts **both** fields to **0**.
+   * **Integer constructor**: Takes **two integer** values.
+   * **Double constructor**: Takes **two double** values.
+   * **Copy constructor**: Takes a different `ComplexNumber` **object** and **copies** its **values**.
+
+3. **Methods**: Implement the required functionality for the class:
+   * `add()`: **Adds** a **complex number** to the **current one** and **returns** a **new** complex number.
+   * `subtract()`: **Subtracts** a **complex number** from the **current one** and **returns** a **new** complex number.
+   * `multiply()`: **Overload** this **method** to **accept** either a **scalar value or** another **complex number**.
+   * `toString()`: **Returns** a **human-legible text representation** of your **object** , **formatting** its **internal attributes** into a **clear** `String` for **display**.
+     * **Logic**: **Concatenate** the `real` and `imaginary` **parts** following the **standard mathematical format**: $ real + imaginary \times i $.
+     * **Example**: For a **complex number** with `real = 3.5` and `imaginary = 2.0`, the **method** must **return** the exact **String** `"3.5 + 2.0i"`.
+   * `equals()`: **Compares two complex numbers** **using** an **epsilon** comparison to handle rounding errors.
+
+### Testing and documentation
+
+1. **Incremental testing strategy**: **Adopt** a **step-by-step verification** approach. It is **highly recommended** to **test** each **method or constructor** **individually immediately after** its **implementation**. **Ensure** that the **current logic** is **correct before proceeding** to the **next task**, **rather than attempting to debug the entire project only after full completion**.
+
+2. **Verification**: **Create** a separate `Main` **class with** a `main` **method** to serve as your testing environment.
+   * **Verify** that **all** four **constructors** initialize the attributes correctly.
+   * **Test** the **mathematical operations** (`add`, `subtract`, `multiply`) and **compare** the results against manual calculations.
+   * **Check** that `toString()` and `equals()` provide the **expected outputs** for various edge cases.
+
+3. **Javadoc**: **Document every class**, **attribute**, and **method** using the `/** ... */` format.
+   * **Navigate** to `Tools` $ \rightarrow $ `Generate JavaDoc...` to **transform** your **comments** into a **professional** HTML **documentation** page.
+
+### Extra: `ComplexNumberArray` class
+
+**Implement** a **class** representing an **array** of **complex numbers**:
+
+* **Attributes**: An **array** of `ComplexNumber` **objects**.
+* **Constructors**: A **constructor** that **creates** an **array** of a **specified length** and **fills** it with **random values**.
+* **Methods**: **Include** a `sumArray()` **method**, **and** a `toString()` method.

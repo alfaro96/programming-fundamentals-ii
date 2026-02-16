@@ -61,7 +61,22 @@ public class Polynomial {
    }
 
    /**
+    * Returns the monomial associated with a given exponent.
+    *
+    * @param exponent The exponent index to retrieve.
+    * @return The {@link Monomial} at that position, or {@code null} if it does not exist.
+    */
+   public Monomial getMonomial(int exponent) {
+      if (exponent >= 0 && exponent < this.maxSize) {
+         return this.monomials[exponent];
+      }
+      return null;
+   }
+
+   /**
     * Adds a monomial to the polynomial at the position matching its exponent.
+    * If a monomial already exists at that position, it is overwritten.
+    *
     * @param m The {@link Monomial} to add.
     */
    public void addMonomial(Monomial m) {
@@ -74,9 +89,87 @@ public class Polynomial {
    }
 
    /**
-    * Solves the polynomial for a specific value of X.
+    * Adds another polynomial to the current one.
+    * Returns a <b>new</b> polynomial representing the sum.
     *
-    * @param xValue The value to substitute for X.
+    * @param other The {@link Polynomial} to add.
+    * @return A new {@link Polynomial} instance.
+    */
+   public Polynomial add(Polynomial other) {
+      int newSize = Math.max(this.maxSize, other.maxSize);
+      Polynomial result = new Polynomial(newSize);
+
+      for (int i = 0; i < newSize; i++) {
+         Monomial m1 = this.getMonomial(i);
+         Monomial m2 = other.getMonomial(i);
+
+         if (m1 != null && m2 != null) {
+            // Add coefficients if both exist
+            result.addMonomial(m1.addition(m2));
+         } else if (m1 != null) {
+            // Copy m1 if m2 is null
+            result.addMonomial(new Monomial(m1.coefficient, m1.exponent));
+         } else if (m2 != null) {
+            // Copy m2 if m1 is null
+            result.addMonomial(new Monomial(m2.coefficient, m2.exponent));
+         }
+      }
+      return result;
+   }
+
+   /**
+    * Multiplies the polynomial by a scalar value.
+    * Returns a <b>new</b> polynomial.
+    *
+    * @param scalar The numerical value to multiply by.
+    * @return A new {@link Polynomial} instance.
+    */
+   public Polynomial scalarProduct(double scalar) {
+      Polynomial result = new Polynomial(this.maxSize);
+      for (int i = 0; i < this.maxSize; i++) {
+         if (this.monomials[i] != null) {
+            result.addMonomial(this.monomials[i].scalarProduct(scalar));
+         }
+      }
+      return result;
+   }
+
+   /**
+    * Multiplies the current polynomial by another polynomial.
+    * Returns a <b>new</b> polynomial representing the product.
+    *
+    * @param other The {@link Polynomial} to multiply with.
+    * @return A new {@link Polynomial} instance.
+    */
+   public Polynomial product(Polynomial other) {
+      // The degree of the product is roughly the sum of the max sizes
+      int newSize = this.maxSize + other.maxSize;
+      Polynomial result = new Polynomial(newSize);
+
+      for (int i = 0; i < this.maxSize; i++) {
+         if (this.monomials[i] != null) {
+            for (int j = 0; j < other.maxSize; j++) {
+               if (other.monomials[j] != null) {
+                  Monomial productMonomial = this.monomials[i].product(other.monomials[j]);
+
+                  // Check if we need to accumulate
+                  Monomial existing = result.getMonomial(productMonomial.exponent);
+                  if (existing != null) {
+                     result.addMonomial(existing.addition(productMonomial));
+                  } else {
+                     result.addMonomial(productMonomial);
+                  }
+               }
+            }
+         }
+      }
+      return result;
+   }
+
+   /**
+    * Solves the polynomial for a specific value of  $ X $.
+    *
+    * @param xValue The value to substitute for $ X $.
     * @return The numerical result.
     */
    public double solve(double xValue) {
@@ -108,36 +201,31 @@ public class Polynomial {
    }
 
    /**
-    * Entry point to verify the {@link Polynomial} class requirements.
-    * <p>
-    * This method tests:
-    * <ul>
-    * <li>Initialization via all three constructors.</li>
-    * <li>Adding monomials and solving for specific X values.</li>
-    * <li>Verification of polynomial formatting.</li>
-    * </ul>
-    * </p>
+    * Checks if two polynomials are equal by verifying if all their respective monomials are equal.
     *
-    * @param args Command line arguments (not used).
+    * @param o The object to compare with.
+    * @return {@code true} if both are polynomials and satisfy equality conditions.
     */
-   public static void main(String[] args) {
-      // 1. Object creation
-      double[] coeffs = {1.5, 2.0, 0, 3.0}; // 1.5 + 2X + 3X^3
-      Polynomial p1 = new Polynomial(coeffs);
+   @Override
+   public boolean equals(Object o) {
+      if (this == o) return true;
+      if (!(o instanceof Polynomial)) return false;
 
-      Polynomial p2 = new Polynomial(5);
-      p2.addMonomial(new Monomial(4.0, 2)); // 4X^2
+      Polynomial other = (Polynomial) o;
+      int checkSize = Math.max(this.maxSize, other.maxSize);
 
-      // 2. Display information
-      System.out.println("Polynomial 1: " + p1);
-      System.out.println("Polynomial 2: " + p2);
+      for (int i = 0; i < checkSize; i++) {
+         Monomial m1 = this.getMonomial(i);
+         Monomial m2 = other.getMonomial(i);
 
-      // 3. Solving for X
-      // P1(2) = 1.5 + 2(2) + 3(2^3) = 1.5 + 4 + 24 = 29.5
-      System.out.println("Result of P1 for X=2: " + p1.solve(2.0));
+         if (m1 == null && m2 == null) continue;
+         if (m1 == null || m2 == null) return false;
 
-      // 4. Equality check
-      Polynomial p1Clone = new Polynomial(coeffs);
-      System.out.println("Is P1 equal to its clone? " + p1.toString().equals(p1Clone.toString()));
+         // Using direct double comparison with epsilon logic for coefficients
+         if (Math.abs(m1.coefficient - m2.coefficient) > 1e-9) {
+            return false;
+         }
+      }
+      return true;
    }
 }

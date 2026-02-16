@@ -1,4 +1,4 @@
-type: output
+type: edu
 files:
   - name: src/Sum.java
     visible: true
@@ -6,12 +6,6 @@ files:
       - offset: 0
         length: 1764
         placeholder_text: "/* TODO: Implement Sum class. */"
-  - name: test/output.txt
-    visible: false
-    propagatable: false
-  - name: test/input.txt
-    visible: false
-    propagatable: false
   - name: doc/package-tree.html
     visible: true
   - name: doc/package-summary.html
@@ -42,3 +36,6 @@ files:
     visible: true
   - name: doc/allpackages-index.html
     visible: true
+  - name: test/Tests.java
+    visible: false
+    propagatable: false

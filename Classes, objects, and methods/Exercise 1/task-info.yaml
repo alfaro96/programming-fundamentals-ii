@@ -1,14 +1,11 @@
-type: output
+type: edu
 files:
-  - name: test/output.txt
-    visible: false
-    propagatable: false
-  - name: test/input.txt
-    visible: false
-    propagatable: false
   - name: src/Monomial.java
     visible: true
     placeholders:
       - offset: 0
-        length: 4474
+        length: 2608
         placeholder_text: "/* TODO: Implement the Monomial class. */"
+  - name: test/Tests.java
+    visible: false
+    propagatable: false

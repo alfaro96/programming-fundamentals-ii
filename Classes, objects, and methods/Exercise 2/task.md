@@ -1,48 +1,45 @@
 # Exercise 2
 
-This exercise takes object-oriented programming to a more descriptive level by utilizing complex attributes, specific array restrictions, and recursive behavior.
+A person refers to the concept of a `Person` and the attributes or behaviors that define it. The goal of this exercise is to define a `Person` class in Java. Compared to previous exercises, this requires more interpretation regarding how methods work, utilizes complex attributes like arrays of objects, and includes specific restrictions and error checking.
 
----
+### Implementation
 
-## Objective
+Implement a `Person` class with the following requirements:
 
-The goal of this task is to implement a `Person` class in Java that models personal data and manages a fixed-size registry of children.
+* **Attributes**:
+  * `String name`: The name of the person.
+  * `int age`: The age of the person.
+  * `double height`: The height in meters.
+  * `double weight`: The weight in kilograms.
+  * `String address`: The address of the person.
+  * `Person[] children`: An array containing each child a person has.
 
----
+* **Methods**:
+  * **Constructors**:
+    * A constructor that takes `name`, `age`, `height`, `weight`, `address`, and the number of children.
+    * A constructor that only takes `name`, `age`, `height`, `weight`, and `address`. The person is assumed to be childless and the array must be initialized appropriately.
+  * `addChild()`: A method that, given a `Person` as an argument, adds it to the children array. The array size is fixed; if it is full, the method should show an error.
+  * `getOldestChild()` and `getYoungestChild()`: Methods that return the oldest or youngest child in the children array.
+  * `toString()`: A method that returns a `String` representation of a person, including all information and the information of each child. Note: Since children are also `Person` objects, you can access their `toString()` method recursively.
 
-## Requirements
+### Recommendations
 
-### Attributes
+* **Incremental implementation**: It is highly recommended to implement and test each method individually before moving on to the next one, ensuring each part works correctly before building the rest of the class.
 
-* **Personal data**: `String name`, `int age`, `double height`, `double weight`, and `String address`.
-* **Complex attribute**: `Person[] children`, an array containing each child a person has.
+### Evaluation and testing
 
-### Methods
+To successfully complete the exercise, implement a `main` method to perform the following tests:
 
-* **Constructor overloading**:
-  1. A constructor for parents that initializes the `children` array with a specific size based on a provided number. 
-  2. A constructor for childless individuals where the array is initialized with size 0.
-* **`addChild(Person child)`**: Adds a child to the internal array. If the array is full, it must display an error message.
-* **`getOldestChild()` and `getYoungestChild()`**: Return the child with the maximum or minimum age from the array.
-* **`toString()`**: Returns a `String` representation of the person. Since children are also `Person` objects, you must call their `toString()` method recursively.
-* **`main(String[] args)`**: A test method located inside the class to verify all functionality.
+1. **Object creation and setup**:
+   * Create two `Person` objects: `Person 1` with two children and `Person 2` with three children.
+   * Create new `Person` objects and add them as children to each parent using `addChild()`.
+   * Create a third person, `Person 3`, using the childless constructor.
 
----
+2. **Functional verification**:
+   * Display the information of each person on the screen.
+   * Change the age of `Person 1` and verify the change on screen.
+   * Obtain the children array of `Person 1` and show it.
+   * Obtain and display the youngest and oldest child of `Person 2`.
 
-## Evaluation criteria
-
-To successfully complete the exercise, your internal `main` method must perform the following:
-
-1. **Object setup**: Create `Person 1` (2 children capacity), `Person 2` (3 children capacity), and `Person 3` (childless).
-2. **Relationship building**: Add new `Person` objects as children to each parent using `addChild()`.
-3. **Functional verification**:
-  * Display everyone's info.
-  * Update `Person 1`'s age and verify it on screen.
-  * Show `Person 1`'s children and identify `Person 2`'s oldest and youngest children.
-4. **Documentation**: Ensure the code is clean and includes proper Javadoc.
-
----
-
-## View the files
-
-* [Person.java](file://src/Person.java)
+3. **Clean code and documentation**:
+   * Ensure that the code is clean, legible, and includes explanatory comments where necessary.

@@ -1,50 +1,59 @@
-# Geometry
+# Exercise 4
 
-This task focuses on class collaboration. You will build a coordinate system where a `Vector` object uses `Point` objects to define its position and behavior in two-dimensional space.
-
----
-
-## Objective
-
-The goal is to define two classes, `Point` and `Vector`, to represent two-dimensional Cartesian coordinates and directed lines, implementing geometric operations like distance, colinearity, and centroids.
-
----
-
-## Requirements
+The goal of this exercise is to define two classes that work together: a `Point`, representing coordinates in two-dimensional cartesian space, and a `Vector`, representing a directed line between two points. Functionality in the `Vector` class will depend on methods previously implemented in the `Point` class.
 
 ### `Point`
 
-* **Attributes**: `double x` and `double y`.
-* **Constructors**: A default one at $ (0, 0) $ and a standard one for specific coordinates.
+Implement a `Point` class with the following requirements:
+
+* **Attributes**:
+  * `double x`: The $ X $ coordinate of the point.
+  * `double y`: The $ Y $ coordinate of the point.
+
 * **Methods**:
-  * `distance(Point other)`: Returns Euclidean distance.
-  * `isColinearTo(Point p1, Point p2)`: Checks if three points belong to one line.
-  * `middlePoint(Point other)`: Returns a new `Point` exactly between the two.
-  * `toString()` and `equals()`.
+  * **Constructors**:
+    * A default constructor that initializes the point at $ (0, 0) $.
+    * A standard constructor that takes $ X $ and $ Y $ coordinates as arguments.
+  * `distance()`: A method that, given another point, returns the Euclidean distance between them.
+  * `isColinearTo()`: A method that, given two additional points, returns whether the three points belong to a single line.
+  * `middlePoint()`: A method that, given another point, returns a **new** `Point` object placed exactly between the two.
+  * `toString()`: A method that returns the point in a readable format, such as `"(x, y)"`.
+  * `equals()`: A method that checks whether two points are equivalent.
 
 ### `Vector`
 
-* **Attributes**: `Point originPoint` and `Point endPoint`.
-* **Constructor**: Takes origin and end points as arguments.
+Implement a `Vector` class with the following requirements:
+
+* **Attributes**:
+  * `Point originPoint`: The point of origin of the vector.
+  * `Point endPoint`: The end point of the vector.
+
 * **Methods**:
-  * `add(Vector other)` and `subtract(Vector other)`: Returns a new `Vector` resulting from the operation.
-  * `scalarProduct(Vector other)`: Returns a new `Vector` representing the product.
-  * `centroid(Vector v2, Vector v3)`: Returns a `Point` representing the barycenter of three vectors.
-  * `toString()` and `equals()`.
+  * **Constructor**: A constructor that takes the origin and end points as arguments. No default constructor should be provided.
+  * `add()`: A method that, given another vector, returns a **new** `Vector` representing the addition of the two.
+  * `subtract()`: A method that, given another vector, returns a **new** `Vector` representing the subtraction of the second from the first.
+  * `scalarProduct()`: A method that, given another vector, returns a **new** `Vector` containing the scalar product.
+  * `centroid()`: A method that, given two other vectors, returns a `Point` representing the centroid or barycenter of the three.
+  * `toString()`: A method that returns the vector in a readable format, such as `"(x, y)` $ \rightarrow $ `(m, n)"`.
+  * `equals()`: A method that checks whether two vectors are equivalent.
 
----
+### Recommendations
 
-## Evaluation criteria
+* **Incremental implementation**: It is highly recommended to implement and test each method individually before moving on to the next one, ensuring each part works correctly before building the rest of the class.
 
-To successfully complete the exercise, implement internal `main` methods in both classes to:
+### Evaluation and testing
 
-1. **Point testing**: Define four points, compute distances, check colinearity, and find middle points.
-2. **Vector testing**: Define five vectors, perform additions and subtractions, and calculate centroids.
-3. **Clean code**: Ensure professional Javadoc and legible logic.
+To successfully complete the exercise, implement a `Main` class with a `main` method to perform the following tests:
 
----
+1. **`Point` testing**:
+   * Define four points and display them.
+   * Compute and show the distances, colinearity of three points, and the middle point between pairs.
+   * Verify if specific pairs of points are equal.
 
-## View the files
+2. **`Vector` testing**:
+   * Define five vectors and display them.
+   * Compute and show the addition, subtraction, and product of vector pairs.
+   * Determine the centroid of groups of vectors and verify vector equality.
 
-* [Point.java](file://src/Point.java)
-* [Vector.java](file://src/Vector.java)
+3. **Clean code and documentation**:
+   * Ensure the code is clean, legible, and includes explanatory comments where necessary.

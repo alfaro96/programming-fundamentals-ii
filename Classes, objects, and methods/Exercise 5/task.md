@@ -1,61 +1,52 @@
 # Exercise 5
+The goal of this exercise is to define the `Polynomial` class, representing an equation composed of several monomials. The polynomial follows the format:
 
-This exercise focuses on the interaction between classes. A `Polynomial` is a mathematical entity composed of several `Monomial` objects. In this implementation, the structure relies on an array where the position of each element defines its mathematical role.
+$$
+P(x) = c_0 + c_1 \cdot x + c_2 \cdot x^2 + \dots + c_n \cdot x^n
+$$
 
----
+This implementation requires the `Monomial` class.
 
-## Objective
+### Implementation
 
-The goal is to define the `Polynomial` class in Java to represent equations that follow the format:
+Implement a `Polynomial` class with the following requirements:
 
-$$ P(x) = c_{0} + c_{1} \cdot x + c_{2} \cdot x^{2} + \dots + c_{n} \cdot x^{n} $$.
+* **Attributes**:
+  * `Monomial[] monomials`: An array where each monomial's exponent corresponds to its position in the array. For instance, position 0 contains the monomial with exponent 0.
+  * If the polynomial lacks a monomial for a specific exponent, that array position remains empty.
+  * `int maxSize`: The maximum size of the array.
+  * `int numMonomials`: The current count of monomials in the array.
 
----
-
-## Requirements
-
-### Attributes
-
-* **`monomials (Monomial[])`**: An array where each monomial's exponent corresponds to its position in the array. For example, position 0 contains the monomial with exponent 0.
-* **`maxSize (int)`**: The maximum capacity of the internal array.
-* **`numMonomials (int)`**: The current count of monomials stored in the array.
-
-### Methods
-
-* **Constructors**:
-  * Creates an empty polynomial with a specified maximum capacity.
-  * Takes an array of coefficients (`double`s) where the index represents the exponent.
-  * Takes an array of `Monomial` objects.
-
-* **Array management**:
+* **Methods**:
+  * **Constructors**:
+    * A constructor that creates an empty polynomial with a specified maximum capacity.
+    * A constructor that takes an array of real numbers as coefficients, where the array index represents the exponent.
+    * A constructor that takes an array of `Monomial` objects.
   * `getMonomial()`: Returns the monomial associated with a given exponent.
-  * `addMonomial()`: Adds a monomial at the correct position based on its exponent.
+  * `addMonomial()`: Adds a monomial to the polynomial at the correct position based on its exponent.
   * `replaceMonomial()`: Replaces an existing monomial with a new one based on its exponent.
-
-* **Arithmetic operations**:
-  * `add()`: Adds another polynomial and returns a **new** `Polynomial`.
-  * `scalarProduct()`: Multiplies the polynomial by a scalar and returns a **new** `Polynomial`.
+  * `add()`: Adds another polynomial to the current one and returns a **new** `Polynomial`.
+  * `scalarProduct()`: Multiplies the polynomial by a scalar value and returns a **new** `Polynomial`.
   * `product()`: Multiplies the current polynomial by another and returns a **new** `Polynomial`.
+  * `solve()`: Given a value for $X$, calculates and returns the numerical result of the polynomial.
+  * `toString()`: Returns a human-legible `String` representation of the polynomial.
+  * `equals()`: Checks if two polynomials are equal by verifying if all their respective monomials are equal.
 
-* **Logic**:
-  * `solve()`: Calculates the numerical result for a given value of $ X $.
-  * `toString()`: Returns a human-legible representation of the polynomial.
-  * `equals()`: Checks if two polynomials are equal by verifying all their respective monomials.
+### Recommendations
 
----
+* **Incremental implementation**: It is highly recommended to implement and test each method individually before moving on to the next one, ensuring each part works correctly before building the rest of the class.
 
-## Evaluation criteria
+### Evaluation and testing
 
-To successfully complete the exercise, you must implement a `main` method to perform:
+To successfully complete the exercise, implement a `main` method to perform the following tests:
 
-1. **Object creation**: Instantiate polynomials using all three defined constructors.
-2. **Operational verification**: Perform calculations and ensure results match mathematical expectations.
-3. **Accuracy**: Solve the equations for specific values of $ X $.
-4. **Equality check**: Verify the equality of different instances.
-5. **Clean code**: Ensure legible implementation and professional Javadoc documentation.
+1. **Object creation**:
+   * Create polynomials using all three defined constructors.
 
----
+2. **Operations and verification**:
+   * Perform operations between polynomials and ensure the results match expected values.
+   * Solve the polynomials for specific $X$ values to verify numerical accuracy.
+   * Check the equality of different polynomial instances.
 
-## View the files
-
-* [Polynomial.java](src/Polynomial.java)
+3. **Clean code and documentation**:
+   * Ensure the code is clean, legible, and includes explanatory comments where necessary.

@@ -27,10 +27,8 @@ public class Player {
      * @param nationality The country of origin.
      */
     public Player(String id, String name, int age, String nationality) {
+        this(name, age, nationality);
         this.id = id;
-        this.name = name;
-        this.age = age;
-        this.nationality = nationality;
     }
 
     /**
@@ -69,6 +67,7 @@ public class Player {
      * @param minutes The duration in minutes.
      */
     public void train(String exercise, int minutes) {
+        // this.train(exercise);
         System.out.println(this.name + " trains " + exercise + " for " + minutes + " min.");
     }
 
@@ -78,6 +77,7 @@ public class Player {
      * @param exercise The training drill name.
      */
     public void train(String exercise) {
+        this.train(exercise, 1);
         System.out.println(this.name + " is doing a quick session of " + exercise + ".");
     }
 

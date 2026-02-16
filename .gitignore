@@ -6,6 +6,9 @@
 *.iml
 out/
 
+# Documentation
+doc/
+
 # Gradle build cache
 .gradle/
 

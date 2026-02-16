@@ -6,35 +6,49 @@
  */
 public class Person {
 
-    /** The name of the person. */
+    /**
+     * The name of the person.
+     */
     public String name;
 
-    /** The age in years. */
+    /**
+     * The age in years.
+     */
     public int age;
 
-    /** The height in meters. */
+    /**
+     * The height in meters.
+     */
     public double height;
 
-    /** The weight in kilograms. */
+    /**
+     * The weight in kilograms.
+     */
     public double weight;
 
-    /** The residential address. */
+    /**
+     * The residential address.
+     */
     public String address;
 
-    /** A fixed-size array containing references to the person's children. */
+    /**
+     * A fixed-size array containing references to the person's children.
+     */
     public Person[] children;
 
-    /** Counter for the children currently added to the array. */
+    /**
+     * Counter for the children currently added to the array.
+     */
     private int currentChildrenCount = 0;
 
     /**
      * Constructs a {@link Person} with a specific capacity for children.
      *
-     * @param name Name of the person.
-     * @param age Age in years.
-     * @param height Height in meters.
-     * @param weight Weight in kilograms.
-     * @param address Home address.
+     * @param name             Name of the person.
+     * @param age              Age in years.
+     * @param height           Height in meters.
+     * @param weight           Weight in kilograms.
+     * @param address          Home address.
      * @param numberOfChildren The fixed size of the children array.
      */
     public Person(String name, int age, double height, double weight, String address, int numberOfChildren) {
@@ -50,10 +64,10 @@ public class Person {
      * Constructs a childless {@link Person}.
      * The children array is initialized with size 0.
      *
-     * @param name Name of the person.
-     * @param age Age in years.
-     * @param height Height in meters.
-     * @param weight Weight in kilograms.
+     * @param name    Name of the person.
+     * @param age     Age in years.
+     * @param height  Height in meters.
+     * @param weight  Weight in kilograms.
      * @param address Home address.
      */
     public Person(String name, int age, double height, double weight, String address) {
@@ -131,44 +145,5 @@ public class Person {
             }
         }
         return info;
-    }
-
-    /**
-     * Entry point to verify all exercise requirements.
-     *
-     * @param args Command line arguments.
-     */
-    public static void main(String[] args) {
-        // 1. Object creation and setup 
-        Person p1 = new Person("Alice Smith", 42, 1.68, 62.0, "123 Maple St", 2);
-        Person p2 = new Person("Bob Brown", 50, 1.82, 88.0, "456 Oak Ave", 3);
-        Person p3 = new Person("Helen White", 28, 1.72, 65.0, "789 Pine Rd");
-
-        // 2. Adding children 
-        p1.addChild(new Person("Charlie", 12, 1.55, 45.0, "123 Maple St"));
-        p1.addChild(new Person("Daisy", 9, 1.35, 32.0, "123 Maple St"));
-
-        p2.addChild(new Person("Edward", 20, 1.78, 75.0, "456 Oak Ave"));
-        p2.addChild(new Person("Fiona", 16, 1.62, 54.0, "456 Oak Ave"));
-        p2.addChild(new Person("George", 23, 1.88, 92.0, "456 Oak Ave"));
-
-        // 3. Functional verification 
-        System.out.println("--- Full family registry ---");
-        System.out.println(p1.toString() + "\n");
-        System.out.println(p2.toString() + "\n");
-        System.out.println(p3.toString() + "\n");
-
-        System.out.println("--- Update test ---");
-        p1.age = 43; // Change age 
-        System.out.println("New age of " + p1.name + ": " + p1.age);
-
-        System.out.println("\n--- Exercise 2 1 offspring list  ---");
-        for (Person child : p1.children) {
-            System.out.println("-> Child: " + child.name + " (" + child.age + " years old)");
-        }
-
-        System.out.println("\n--- Exercise 2 2 age extremes  ---");
-        System.out.println("Youngest child: " + p2.getYoungestChild().name);
-        System.out.println("Oldest child: " + p2.getOldestChild().name);
     }
 }

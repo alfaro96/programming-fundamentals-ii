@@ -1,14 +1,11 @@
-type: output
+type: edu
 files:
   - name: src/Matrix.java
     visible: true
     placeholders:
       - offset: 0
-        length: 6177
+        length: 5091
         placeholder_text: "/* TODO: Implement Matrix class. */"
-  - name: test/output.txt
-    visible: false
-    propagatable: false
-  - name: test/input.txt
+  - name: test/Tests.java
     visible: false
     propagatable: false

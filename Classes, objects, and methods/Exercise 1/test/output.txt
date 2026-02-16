@@ -1,6 +1,0 @@
-Monomial 1: 2.0X^3
-Valid addition (2.0X^3 + 4.5X^3): 6.5X^3
-Invalid addition Test: Correctly returned null for mismatched exponents.
-Scalar Product (2.0X^3 * 3.0): 6.0X^3
-Monomial Product (2.0X^3 * 1.0X^5): 2.0X^8
-Evaluation of m1 for X=2.0: 16.0

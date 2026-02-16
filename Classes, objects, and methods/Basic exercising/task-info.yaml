@@ -1,23 +1,11 @@
-type: output
+type: edu
 files:
-  - name: test/output.txt
-    visible: false
-    propagatable: false
-  - name: test/input.txt
-    visible: false
-    propagatable: false
   - name: src/es/uclm/esii/math/complex/ComplexNumber.java
     visible: true
     placeholders:
       - offset: 0
         length: 3962
         placeholder_text: "/* TODO: Implement ComplexNumber class. */"
-  - name: src/es/uclm/esii/math/complex/Main.java
-    visible: true
-    placeholders:
-      - offset: 0
-        length: 2154
-        placeholder_text: "/* TODO: Implement Main class. */"
   - name: doc/package-search-index.js
     visible: true
   - name: doc/index.html
@@ -42,3 +30,6 @@ files:
     visible: true
   - name: doc/allpackages-index.html
     visible: true
+  - name: test/Tests.java
+    visible: false
+    propagatable: false

@@ -1,45 +1,40 @@
 # Exercise 6
 
-This exercise focuses on managing object collections that can grow dynamically. You will implement a `Library` class that stores `Book` objects and provides a navigation system to "read" through them one by one.
+The goal of this exercise is to define the `Library` class, which represents a library containing several `Book` objects. To complete this exercise, you must use the `Book` class.
 
----
+### Implementation
 
-## Objective
+Implement an `Library` class with the following requirements:
 
-The goal of this exercise is to define a `Library` class in Java that represents a container for books, handling manual array resizing and navigation state.
+* **Attributes**:
+  * `String name`: The name of the library.
+  * `Book[] books`: An array containing every `Book` within the library.
+  * `int currentBookIndex`: An index representing the book currently being read. By default, this starts at -1, indicating that no book is currently selected.
 
----
+* **Methods**:
+  * **Constructor**:
+    * A constructor that takes a name and the initial maximum capacity of books. By default, the library starts without any books.
+  * `addBook()`: Adds a given book to the first empty position in the array. If the array is full, its size must be doubled before adding the book. Since arrays are immutable, you must create a new, larger array and copy the existing values.
+  * `getCurrentBook()`: Returns the `Book` specified by the current index.
+  * `nextBook()`: Moves the current index to the next book and returns it. If no more books exist, it should return a null value.
+  * `previousBook()`: Moves the current index to the previous book and returns it. If no books exist before the current one, it should return a null value.
+  * `toString()`: Returns a human-legible `String` representing the library's information. This method should not print the books themselves, only the information about the library.
 
-## Requirements
+### Recommendations
 
-### Attributes
+* **Incremental implementation**: It is highly recommended to implement and test each method individually before moving on to the next one, ensuring each part works correctly before building the rest of the class.
 
-* **`String name`**: The name of the library.
-* **`Book[] books`**: An array that stores the library's collection.
-* **`int currentBookIndex`**: A pointer representing the book currently being read. It defaults to -1 to indicate no book is selected.
+### Evaluation and testing
 
-### Methods
+To successfully complete the exercise, implement a `main` method to perform the following tests:
 
-* **Constructor**: Takes a name and initial capacity. The library starts without any books.
-* **`addBook(Book book)`**: Adds a book to the first available spot. **Crucial**: If the array is full, you must double its size by creating a new array and copying existing values.
-* **`getCurrentBook()`**: Returns the book at the current index.
-* **`nextBook()`**: Advances the index and returns the next book. Returns `null` if the end of the collection is reached.
-* **`previousBook()`**: Moves the index back and returns the previous book. Returns `null` if it goes before the first book.
-* **`toString()`**: Returns basic info about the library (name and total books), excluding the content of the books themselves.
+1. **Class functionality**:
+   * Create the `Library` class with all specified attributes, constructors, and methods.
 
----
+2. **Main method testing**:
+   * Create a library and several books.
+   * Add books to the library, ensuring the initial size is small enough to trigger the array-doubling logic.
+   * Move through the library using navigation methods and verify that edge cases (reaching non-existent books) are handled properly.
 
-## Evaluation criteria
-
-To successfully complete the exercise, you must implement a `main` method within the `Library` class to:
-
-1. **Creation**: Instantiate a library with a small initial capacity (e.g., 2).
-2. **Growth**: Add enough books to trigger the array-doubling logic.
-3. **Navigation**: Use `nextBook()` and `previousBook()` to traverse the collection and verify that edge cases (start and end of list) are handled.
-4. **Documentation**: Provide clear Javadoc and maintain clean code standards.
-
----
-
-## View the files
-
-* [Library.java](src/Library.java)
+3. **Clean code and documentation**:
+    * Ensure that the code is clean, legible, and includes explanatory comments where necessary.

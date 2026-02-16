@@ -1,14 +1,11 @@
-type: output
+type: edu
 files:
-  - name: test/output.txt
-    visible: false
-    propagatable: false
-  - name: test/input.txt
-    visible: false
-    propagatable: false
   - name: src/Book.java
     visible: true
     placeholders:
       - offset: 0
-        length: 6573
+        length: 5219
         placeholder_text: "/* TODO: Implement Book class. */"
+  - name: test/Tests.java
+    visible: false
+    propagatable: false

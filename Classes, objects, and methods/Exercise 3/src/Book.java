@@ -161,37 +161,4 @@ public class Book {
         Book book = (Book) o;
         return this.ISBN.equals(book.ISBN);
     }
-
-    /**
-     * Entry point to verify all functional requirements of the exercise.
-     *
-     * @param args Command line arguments.
-     */
-    public static void main(String[] args) {
-        // 1. Creation and addPage test
-        String[] initialPages = {"Intro content"};
-        Book b1 = new Book("Java basics", "J. Alfaro", 2024, "ISBN-001", initialPages);
-        b1.addPage(1, "Variables and types");
-        b1.addPage(2, "Classes and objects");
-
-        // 2. replacePage and readPage test
-        b1.replacePage(0, "Revised introduction");
-        System.out.println("Reading B1 content:");
-        System.out.println("Page 1: " + b1.readPage());
-        System.out.println("Page 2: " + b1.readPage());
-
-        // 3. removePage test
-        b1.removePage(1); // Remove "Variables and Types"
-        System.out.println("\nMetadata after removal: " + b1.toString());
-
-        // 4. concatenateWith and equals test
-        Book b2 = new Book("Advanced Java", "J. Alfaro", 2025, "ISBN-002", new String[]{"Generics"});
-        Book combined = b1.concatenateWith(b2);
-        if (combined != null) {
-            System.out.println("Combined book: " + combined.toString());
-        }
-
-        Book b3 = new Book("Clone", "Other", 2024, "ISBN-001", new String[]{""});
-        System.out.println("B1 equals B3 (same ISBN)? " + b1.equals(b3));
-    }
 }
