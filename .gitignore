@@ -1,5 +1,6 @@
-# Compiled class files
+# Build and compiled class files
 *.class
+**/build/
 
 # IDE files
 .idea/
