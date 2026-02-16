@@ -21,3 +21,5 @@ files:
   - name: test/Tests.java
     visible: false
     propagatable: false
+  - name: src/com/realestate/management/model/Building.java
+    visible: true

@@ -317,3 +317,237 @@ To verify the entire system, you must create a separate class named `Main.java`.
 * **Purpose**: Use this class as your **central testing hub**. It should contain a `public static void main(String[] args)` method where you simulate different scenarios, such as creating a deluxe apartment, selling a large parking space, or searching for units within a price range.
 
 **Reminder**: **Adopt an incremental testing strategy**. Always **verify** that the current step works perfectly before implementing the next one. This prevents small errors from becoming difficult-to-solve problems later.
+
+## Phase 2
+
+### 1. Introduction
+
+This document describes the implementation of the `Building` class, which represents the **intermediate level of complexity** of the system. A building manages collections of **apartments**, **parking spaces**, and **storage rooms**, utilizing the basic classes developed in the previous phase.
+
+#### 1.1. Prerequisites
+
+Before implementing this class, the following classes must be completed:
+
+* `Apartment` (including `Status` and `Quality` enumerations).
+* `Parking`.
+* `Storage`.
+
+#### 1.2. Objectives of this phase
+
+* **Manage 2D arrays** (apartments, garage) and **1D arrays** (storage rooms).
+* **Implement initialization methods** and automatic data generation.
+* **Create visualizations** of the building status.
+* **Develop search and filtering functions**.
+* **Implement complex operations** such as merging properties.
+
+### 2. Structure of the `Building` class
+
+#### 2.1. Main attributes
+
+* `name` (`String`): Name of the building.
+* `apartments` (`Apartment[][]`): **2D matrix** representing `[floor][door]`.
+* `numFloors` (`int`): Total number of floors.
+* `apartmentsPerFloor` (`int`): Number of apartments per floor.
+* `garage` (`Parking[][]`): **2D matrix** representing `[floor][spot]`. **There are 2 fixed garage floors**.
+* `spotsPerGarageFloor` (`int`): Number of parking spots per garage floor.
+* `storageRooms` (`Storage[]`): **1D array** of storage units.
+* `numStorageRooms` (`int`): Total number of storage rooms.
+
+#### 2.2. Constants
+
+* `GARAGE_FLOORS`: A constant set to **2**. The garage always has exactly 2 floors (basement -1 and basement -2).
+
+### 3. Constructor and initialization
+
+#### 3.1. Main constructor
+
+* **Signature**: `public Building(String name, int numFloors, int apartmentsPerFloor, int spotsPerGarageFloor, int numStorageRooms)`.
+* **Actions**:
+    1. Assign parameters to corresponding attributes.
+    2. **Initialize** the apartments matrix: `new Apartment[numFloors][apartmentsPerFloor]`.
+    3. **Initialize** the garage matrix: `new Parking[Building.GARAGE_FLOORS][spotsPerGarageFloor]`.
+    4. **Initialize** the storage array: `new Storage[numStorageRooms]`.
+    5. Call `generateRandomApartments()`.
+    6. Call `generateRandomGarage()`.
+    7. Call `generateRandomStorage()`.
+
+#### 3.2. Automatic random generation
+
+The constructor automatically calls the random generation methods. It is not necessary to manually initialize with default values.
+
+##### 3.2.1. `generateRandomApartments()`
+
+Generate apartments with realistic random characteristics.
+
+* **Logic**: Iterate through all floors and doors. For each position, generate random values within realistic ranges.
+* **Ranges**:
+    * **Price**: $ 80,000 + (floor \times 10,000) + random(0 - 120,000) $ euros.
+    * **Surface**: **40** to **180** $ m^2 $.
+    * **Rooms**: **1** to **5**.
+
+##### 3.2.2. `generateRandomGarage()`
+
+Generate parking spaces with random characteristics.
+
+* **Ranges**:
+    * **Price**: **8,000** to **30,000** euros.
+    * **Surface**: **8** to **20** $ m^2 $.
+
+##### 3.2.3. `generateRandomStorage()`
+
+Generate storage units with random characteristics.
+
+* **Ranges**:
+    * **Price**: **1,500** to **8,000** euros.
+    * **Surface**: **3** to **15** $ m^2 $.
+
+### 4. Basic access methods
+
+#### 4.1. General getters
+
+* `getName()` and `setName(String)`: Gets and sets the building name, respectively.
+* `getNumFloors()`: Returns the number of floors.
+* `getApartmentsPerFloor()`: Returns the number of apartments per floor.
+* `getGarageFloors()`: Returns the constant `GARAGE_FLOORS`.
+* `getSpotsPerGarageFloor()`: Returns the number of spots per garage floor.
+* `getNumStorageRooms()`: Returns the number of storage rooms.
+
+#### 4.2. Property access methods
+
+* `getApartment(int floor, int door)`:
+    * **Validates** that indices are within limits.
+    * Returns the `Apartment` at the specific position or `null` if invalid.
+* `setApartment(int floor, int door, Apartment apartment)`:
+    * **Validates** indices before assignment.
+    * Useful for merging operations.
+* **Note**: Methods `getParking(int basement, int spot)` and `getStorage(int index)` work similarly.
+
+### 5. Visualization methods
+
+#### 5.1. `showStatus()`
+
+Show a tabular view of the building's apartments.
+
+* **Output format**:
+    * Title with building name and legend.
+    * Header with door numbers.
+    * Floors displayed from **top to bottom** (highest to lowest).
+    * Status of each apartment using `toString()` (`"F"`/`"R"`/`"S"`).
+
+#### 5.2. `showBuildingMatrix()`
+
+Show a complete view of the building including apartments, garage, and storage. Includes three sections:
+
+1. **Apartments**: Matrix of floors and doors.
+2. **Garage**: Matrix of basements and spots.
+3. **Storage**: Linear array of storage units.
+
+### 6. Counting and statistics methods
+
+These methods provide quantitative information about the building's state.
+
+#### 6.1. `Apartment` counting methods
+
+* `countAvailableApartments()`: Counts apartments with status `FREE`.
+* `countReservedApartments()`: Counts apartments with status `RESERVED`.
+* `countSoldApartments()`: Counts apartments with status `SOLD`.
+* `getTotalApartments()`: Counts all non-null apartments.
+
+#### 6.2. Income calculation methods
+
+* `calculatePotentialIncome()`: Sums the prices of **all** apartments (sold or not).
+* `calculateSoldIncome()`: Sums the prices of **only** `SOLD` apartments.
+* **Note**: Counting and income methods must have equivalent versions for `Parking` and `Storage`.
+
+### 7. Search and filter methods
+
+#### 7.1. Individual criteria search (apartments)
+
+* `searchApartmentsBySurface(double min, double max)`:
+    * Iterates through all apartments.
+    * Uses `matchesSurface()` from the `Apartment` class.
+    * Displays available ones meeting criteria.
+* `searchApartmentsByPrice(double min, double max)`: Similar to above, filtering by price.
+* `searchApartmentsByRooms(int min, int max)`: Filters by number of rooms.
+
+#### 7.2. Combined search (apartments)
+
+* `searchApartments(double minSurface, double maxSurface, double minPrice, double maxPrice, int minRooms, int maxRooms)`:
+    * Searches for apartments meeting **ALL** criteria simultaneously.
+    * Uses the three `matches...()` methods from the `Apartment` class.
+
+#### 7.3. `Parking` and `Storage` search
+
+Implement analogous methods for `Parking` and `Storage` (e.g., search by surface, price, or size classification).
+
+### 8. Complex operations
+
+#### 8.1. Merging apartments
+
+##### 8.1.1. `canJoinApartments(int floor, int door1, int door2)`
+
+Verify if two apartments can be joined.
+
+* **Conditions**:
+    * Doors must be **contiguous**: $ | $`door1` $ - $ `door2`$ | == 1 $.
+    * Both apartments must **exist** (not `null`).
+    * Both must be **available** (status `FREE`).
+
+##### 8.1.2. `joinApartments(int floor, int door1, int door2, String dni, Quality quality)`
+
+Merge two contiguous apartments into one.
+
+* **Process**:
+    1. Ensure `door1` $ < $ `door2` (swap if necessary).
+    2. Verify they can be joined (call `canJoinApartments`).
+    3. **Sum**: Price, square meters, and rooms of both units.
+    4. Create a `new Apartment` with summed values.
+    5. **Sell** the new apartment to the buyer with specified quality.
+    6. Place the unified apartment at `door1`.
+    7. **Shift** all subsequent apartments to the left starting from `door2`.
+    8. Set the last position to `null`.
+    9. Return `true` if successful.
+
+#### 8.2. Merging `Storage` units
+
+Works similarly to apartments:
+
+* `canJoinStorage(int index1, int index2)`: Verify contiguous indices and existence.
+* `joinStorage(int index1, int index2, String dni)`:
+    * Sum price and surface.
+    * Create new unit and mark as `SOLD`.
+    * **Shift** the array to the left.
+
+### 9. DNI query methods
+
+These methods find all properties belonging to a specific buyer.
+
+#### 9.1. Counting methods
+
+* `countApartmentsByDni(String dni)`
+* `countParkingByDni(String dni)`
+* `countStorageByDni(String dni)`
+
+#### 9.2. Listing methods
+
+* `listApartmentsByDni(String dni)`
+* `listParkingByDni(String dni)`
+* `listStorageByDni(String dni)`
+* **Implementation**: Iterate through properties, compare DNI using `equalsIgnoreCase()`, and display matches.
+
+### 10. Recommended implementation order
+
+1. **Basic structure**: Class declaration, attributes, constructor, random generation, basic getters.
+2. **Property access**: `getApartment`, `setApartment`, etc.
+3. **Visualization**: `showStatus` (apartments) and `showBuildingMatrix` (full).
+4. **Counting methods**: Counters for all property types and states.
+5. **Income calculation**: Revenue logic.
+6. **Search and filter**: Individual and combined searches.
+7. **DNI queries**: Counts and lists by buyer.
+8. **Complex operations**: Merging logic for apartments and storage.
+
+### 11. Key concepts
+
+* **Array management**: Handling 2D matrices and 1D arrays.
+* **Index validation**: Checking bounds before accessing arrays.
+* **Array shifting**: Technique to remove elements while maintaining order.

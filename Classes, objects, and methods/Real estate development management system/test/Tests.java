@@ -1,6 +1,4 @@
-import com.realestate.management.model.Apartment;
-import com.realestate.management.model.Parking;
-import com.realestate.management.model.Storage;
+import com.realestate.management.model.*;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -179,5 +177,136 @@ public class Tests {
     // 3. Test filter matching logic
     Assert.assertTrue("Should match size filter 2 (Large)", largeS.matchesSize(2));
     Assert.assertFalse("Should NOT match size filter 1 (Small)", largeS.matchesSize(1));
+  }
+
+  // =================================================================
+  // BUILDING TESTS (PHASE 2)
+  // =================================================================
+
+  /**
+   * Verifies the initialization and automatic generation of the {@link Building}.
+   * <p>
+   * <b>Scenario:</b>
+   * <ol>
+   * <li>Creates a Building with specific dimensions.</li>
+   * <li>Verifies that the number of floors and limits are correct.</li>
+   * <li>Accesses specific positions to ensure arrays are populated (not {@code null}).</li>
+   * </ol>
+   * </p>
+   */
+  @Test
+  public void testBuildingInitialization() {
+    // 1. Create building
+    Building building = new Building("Test Tower", 5, 4, 10, 8);
+
+    // 2. Verify dimensions
+    Assert.assertEquals("Building name should match", "Test Tower", building.getName());
+    Assert.assertEquals("Should have 5 floors", 5, building.getNumFloors());
+    Assert.assertEquals("Should have 4 apartments per floor", 4, building.getApartmentsPerFloor());
+
+    // 3. Verify random generation (basic check)
+    // Floor 0, Door 0 should not be null
+    Assert.assertNotNull("Apartments should be initialized", building.getApartment(0, 0));
+  }
+
+  /**
+   * Verifies the complex logic of merging two apartments.
+   * <p>
+   * <b>Scenario:</b>
+   * <ol>
+   * <li>Selects two contiguous apartments (floor 0, door 0 and door 1).</li>
+   * <li>Records their initial surface area and price.</li>
+   * <li>Executes {@link Building#joinApartments}.</li>
+   * <li>Verifies the result is {@code true} (success).</li>
+   * <li>Checks that the new apartment at door 0 has the combined surface area.</li>
+   * <li>Checks that door 1 is now effectively removed (shifted).</li>
+   * </ol>
+   * </p>
+   */
+  @Test
+  public void testApartmentMergingLogic() {
+    Building building = new Building("Merge Plaza", 2, 4, 5, 5);
+
+    // 1. Setup deterministic data for testing
+    // Overwrite random data to ensure predictable math
+    Apartment a1 = new Apartment(100000.0, 50.0, 1);
+    Apartment a2 = new Apartment(100000.0, 50.0, 1);
+
+    building.setApartment(0, 0, a1);
+    building.setApartment(0, 1, a2);
+
+    // 2. Perform merge
+    boolean result = building.joinApartments(0, 0, 1, "11111111H", Apartment.Quality.STANDARD);
+
+    // 3. Verify success
+    Assert.assertTrue("Merge should return true for valid adjacent apartments", result);
+
+    // 4. Verify properties of the new merged unit
+    Apartment merged = building.getApartment(0, 0);
+    Assert.assertNotNull("Merged apartment should exist at first index", merged);
+
+    // Surface: 50 + 50 = 100
+    Assert.assertEquals("Merged surface should be sum of parts",
+            100.0, merged.getSquareMeters(), DELTA);
+
+    // Price: (100k + 100k) * quality multiplier (1.0 for standard) = 200k
+    // Note: getBasePrice() is 200k. getPrice() depends on quality.
+    Assert.assertEquals("Merged price should be sum of parts",
+            200000.0, merged.getPrice(), DELTA);
+
+    // Status: Should be SOLD
+    Assert.assertEquals("Merged apartment should be auto-sold",
+            Apartment.Status.SOLD, merged.getStatus());
+
+    // 5. Verify array shifting (door 1 should now contain what was at door 2, or be null if end)
+    Assert.assertNotSame("Door 1 should not be the original a2 object", a2, building.getApartment(0, 1));
+
+    // Index 3 (last one) should be null because of the shift
+    Assert.assertNull("Last apartment slot should be null after shift",
+            building.getApartment(0, 3));
+  }
+
+  /**
+   * Verifies the validation logic within the merging process.
+   * <p>
+   * <b>Scenario:</b> Attempts to merge non-contiguous apartments and ensures failure.
+   * </p>
+   */
+  @Test
+  public void testInvalidMerge() {
+    Building building = new Building("Error Tower", 2, 4, 5, 5);
+
+    // Attempt to join door 0 and door 2 (skip 1)
+    boolean result = building.joinApartments(0, 0, 2, "11111111H", Apartment.Quality.STANDARD);
+
+    Assert.assertFalse("Should NOT merge non-contiguous apartments", result);
+  }
+
+  /**
+   * Verifies statistical methods of the building.
+   */
+  @Test
+  public void testBuildingStatistics() {
+    Building building = new Building("Stats Center", 1, 2, 0, 0);
+
+    // Set explicit apartments
+    Apartment a1 = new Apartment(100.0, 10.0, 1); // Free
+    Apartment a2 = new Apartment(200.0, 20.0, 1); // Free
+    building.setApartment(0, 0, a1);
+    building.setApartment(0, 1, a2);
+
+    // 1. Count available
+    Assert.assertEquals("Should count 2 available apartments",
+            2, building.countAvailableApartments());
+
+    // 2. Reserve one
+    a1.reserve("123", Apartment.Quality.STANDARD);
+    Assert.assertEquals("Should count 1 available apartment",
+            1, building.countAvailableApartments());
+
+    // 3. Potential income (sum of all prices regardless of status)
+    // a1 (100) + a2 (200) = 300
+    Assert.assertEquals("Potential income should be sum of all prices",
+            300.0, building.calculatePotentialIncome(), DELTA);
   }
 }
