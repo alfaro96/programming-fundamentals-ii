@@ -1,3 +1,5 @@
+# Exercise 1
+
 In mathematics, a monomial is the product of a variable, raised to a power, by a constant. Usually, it has the structure:
 
 $$

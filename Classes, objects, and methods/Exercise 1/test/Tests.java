@@ -2,7 +2,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * Laboratory Assignment: Monomial Test Suite.
+ * Laboratory Assignment: {@link Monomial} test suite.
  * <p>
  * This class performs unit testing on the {@link Monomial} class to verify
  * the correctness of algebraic operations, string representation, and evaluation logic.

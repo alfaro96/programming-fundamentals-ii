@@ -1,0 +1,19 @@
+type: edu
+files:
+  - name: test/Tests.java
+    visible: false
+    propagatable: false
+  - name: src/housing/Housing.java
+    visible: true
+  - name: src/housing/SingleFamily.java
+    visible: true
+  - name: src/housing/Chalet.java
+    visible: true
+  - name: src/housing/CountryHouse.java
+    visible: true
+  - name: src/housing/Apartment.java
+    visible: true
+  - name: src/housing/RealEstate.java
+    visible: true
+  - name: src/Main.java
+    visible: true

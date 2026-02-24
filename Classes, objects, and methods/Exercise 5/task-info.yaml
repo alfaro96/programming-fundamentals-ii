@@ -4,7 +4,7 @@ files:
     visible: true
     placeholders:
       - offset: 0
-        length: 3189
+        length: 7338
         placeholder_text: "/* TODO: Implement Polynomial class. */"
   - name: src/Monomial.java
     visible: true

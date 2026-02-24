@@ -2,5 +2,3 @@ type: theory
 files:
   - name: src/Main.java
     visible: true
-  - name: .DS_Store
-    visible: true

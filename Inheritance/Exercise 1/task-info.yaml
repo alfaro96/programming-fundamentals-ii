@@ -1,0 +1,27 @@
+type: edu
+files:
+  - name: src/Main.java
+    visible: true
+  - name: test/Tests.java
+    visible: false
+    propagatable: false
+  - name: src/Employee.java
+    visible: true
+  - name: src/Lawyer.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 1415
+        placeholder_text: "/* TODO: Implement the Lawyer class. */"
+  - name: src/Secretary.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 657
+        placeholder_text: "/* TODO: Implement the Secretary class. */"
+  - name: src/Janitor.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 730
+        placeholder_text: "/* TODO: Implement the Janitor class. */"
