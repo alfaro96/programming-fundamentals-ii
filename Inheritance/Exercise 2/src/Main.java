@@ -1,47 +1,46 @@
-import housing.Chalet;
-import housing.CountryHouse;
-import housing.RealEstate;
-import housing.SingleFamily;
-import housing.Housing;
+import antiques.*;
 
 /**
- * Main application class to demonstrate the Real Estate Management system.
- * Shows object instantiation, array insertion, and polymorphic method calls.
+ * Main application class to test the {@link Antique} {@link Collection}  matrix operations.
  *
  * @author Juan Carlos Alfaro Jiménez
  */
 public class Main {
 
-    /**
-     * Entry point of the program.
-     *
-     * @param args Command line arguments (not used).
-     */
     public static void main(String[] args) {
-        // 1. Create a RealEstate instance
-        RealEstate agency = new RealEstate(3);
+        // 1. Create a collection with a matrix of 4 centuries and 4 columns
+        Collection myCollection = new Collection(4, 4);
 
-        // 2. Create the three required housing objects
-        Chalet luxuryChalet = new Chalet(200000.0, 2, 50.0, 300.0);
-        SingleFamily standardHome = new SingleFamily(150000.0, 1, 40.0);
-        CountryHouse hugeEstate = new CountryHouse(300000.0, 1000.0, luxuryChalet);
+        // Populate Century 1 (row 0)
+        myCollection.addFurniture(new Furniture("A1", 45, "Wood")); // Target for deletion
+        myCollection.addFurniture(new Painting("A2", 50, "Fresco"));
+        myCollection.addFurniture(new Painting("A3", 60, "Oil"));
+        myCollection.addFurniture(new Furniture("A4", 70, "Oak"));
 
-        // Add them to the agency
-        agency.addHousing(luxuryChalet);
-        agency.addHousing(standardHome);
-        agency.addHousing(hugeEstate);
+        // Populate Century 2 (row 1)
+        myCollection.addFurniture(new Painting("A5", 150, "Watercolor"));
+        myCollection.addFurniture(new Furniture("A6", 160, "Pine"));
 
-        System.out.println("--- Real Estate summary ---");
+        // Populate Century 3 (row 2)
+        myCollection.addFurniture(new Painting("A7", 250, "Pastel"));
+        myCollection.addFurniture(new Painting("A8", 260, "Acrylic"));
+        myCollection.addFurniture(new Furniture("A9", 270, "Mahogany"));
 
-        // 3. Display how many SingleFamily homes are not Chalet
-        int nonChalets = agency.countNonChaletSingleFamily();
-        System.out.println("SingleFamily homes (excluding chalets): " + nonChalets);
+        // Populate Century 4 (row 3)
+        myCollection.addFurniture(new Painting("A10", 310, "Gouache"));
+        myCollection.addFurniture(new Furniture("A11", 350, "Cedar")); // Target for deletion
+        myCollection.addFurniture(new Painting("A12", 360, "Tempera"));
 
-        // 4. Display the housing object with the highest tax
-        Housing highestTax = agency.getHighestTaxHousing();
-        System.out.println("\nHousing with the highest tax:");
-        if (highestTax != null) {
-            System.out.println(highestTax.toString());
-        }
+        // Show initial state matching the first table in the prompt
+        System.out.println("Initial state:");
+        myCollection.displayMatrix();
+
+        // 2. Call deleteFurniture() twice as requested
+        myCollection.deleteFurniture(45); // Should delete A1 and shift A2, A3, A4
+        myCollection.deleteFurniture(350); // Should delete A11 and shift A12
+
+        // 3. Display the resulting matrix matching the second table
+        System.out.println("\nState after deletions:");
+        myCollection.displayMatrix();
     }
 }

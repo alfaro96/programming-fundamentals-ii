@@ -1,0 +1,47 @@
+type: edu
+files:
+  - name: test/Tests.java
+    visible: false
+    propagatable: false
+  - name: src/housing/Housing.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 1304
+        placeholder_text: "/* TODO: Implement Housing class. */"
+  - name: src/housing/SingleFamily.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 2366
+        placeholder_text: "/* TODO: Implement SingleFamily class. */"
+  - name: src/housing/Chalet.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 1143
+        placeholder_text: "/* TODO: Implement Chalet class. */"
+  - name: src/housing/CountryHouse.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 1610
+        placeholder_text: "/* TODO: Implement CountryHouse class. */"
+  - name: src/housing/Apartment.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 1134
+        placeholder_text: "/* TODO: Implement Apartment class. */"
+  - name: src/housing/RealEstate.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 2400
+        placeholder_text: "/* TODO: Implement RealEstate class. */"
+  - name: src/Main.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 1607
+        placeholder_text: "/* TODO: Implement Main class. */"

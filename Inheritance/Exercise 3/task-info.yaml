@@ -1,0 +1,29 @@
+type: edu
+files:
+  - name: test/Tests.java
+    visible: false
+    propagatable: false
+  - name: src/shapes/GeometricFigure.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 2383
+        placeholder_text: "/* TODO: Implement GeometricFigure class. */"
+  - name: src/shapes/polygons/RegularPolygon.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 1818
+        placeholder_text: "/* TODO: Implement RegularPolygon class. */"
+  - name: src/shapes/quadrilaterals/Parallelogram.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 2651
+        placeholder_text: "/* TODO: Implement Parallelogram class. */"
+  - name: src/shapes/container/FiguresContainer.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 2839
+        placeholder_text: "/* TODO: Implement FiguresContainer class. */"

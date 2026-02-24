@@ -7,7 +7,9 @@ content:
   - Redefining inherited behaviors
   - Implementing object casting
   - Verifying object types
+  - Exercise 1
   - Understanding static polymorphism
   - Understanding dynamic polymorphism
-  - Exercise 1
-  - Exercise 2
+  - Listing Object methods
+  - Defining abstract blueprints
+  - Exercise 5

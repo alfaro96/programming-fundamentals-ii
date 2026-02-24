@@ -2,6 +2,10 @@ type: edu
 files:
   - name: src/Main.java
     visible: true
+    placeholders:
+      - offset: 0
+        length: 2119
+        placeholder_text: "/* TODO: Implement Main class. */"
   - name: test/Tests.java
     visible: false
     propagatable: false

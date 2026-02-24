@@ -1,0 +1,41 @@
+type: edu
+files:
+  - name: test/Tests.java
+    visible: false
+    propagatable: false
+  - name: src/numbers/Real.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 2246
+        placeholder_text: "/* TODO: Implement Real class. */"
+  - name: src/numbers/Irrational.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 2169
+        placeholder_text: "/* TODO: Implement Irrational class. */"
+  - name: src/numbers/Rational.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 3371
+        placeholder_text: "/* TODO: Implement Rational class. */"
+  - name: src/numbers/Integer.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 2604
+        placeholder_text: "/* TODO: Implement Integer class. */"
+  - name: src/numbers/Natural.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 2527
+        placeholder_text: "/* TODO: Implement Natural class. */"
+  - name: src/Main.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 2423
+        placeholder_text: "/* TODO: Implement Main class. */"

@@ -3,17 +3,33 @@ files:
   - name: test/Tests.java
     visible: false
     propagatable: false
-  - name: src/housing/Housing.java
+  - name: src/antiques/Antique.java
     visible: true
-  - name: src/housing/SingleFamily.java
+    placeholders:
+      - offset: 0
+        length: 1053
+        placeholder_text: "/* TODO: Implement Antique class. */"
+  - name: src/antiques/Painting.java
     visible: true
-  - name: src/housing/Chalet.java
+    placeholders:
+      - offset: 0
+        length: 885
+        placeholder_text: "/* TODO: Implement Painting class. */"
+  - name: src/antiques/Furniture.java
     visible: true
-  - name: src/housing/CountryHouse.java
+    placeholders:
+      - offset: 0
+        length: 881
+        placeholder_text: "/* TODO: Implement Furniture class. */"
+  - name: src/antiques/Collection.java
     visible: true
-  - name: src/housing/Apartment.java
-    visible: true
-  - name: src/housing/RealEstate.java
-    visible: true
+    placeholders:
+      - offset: 0
+        length: 3937
+        placeholder_text: "/* TODO: Implement Collection class. */"
   - name: src/Main.java
     visible: true
+    placeholders:
+      - offset: 0
+        length: 1949
+        placeholder_text: "/* TODO: Implement Main class. */"
