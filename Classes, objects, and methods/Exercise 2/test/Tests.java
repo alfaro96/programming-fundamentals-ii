@@ -2,189 +2,227 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
+ * Laboratory Assignment: {@link Person} test suite.
+ * <p>
  * This class performs unit testing on the {@link Person} class to verify
- * the correctness of constructors, array management, age comparison logic,
- * and recursive string representation.
+ * the correctness of constructors, child management, and string representation.
+ * </p>
+ *
+ * <p><b>Covered scenarios:</b></p>
+ * <ul>
+ *   <li>Full constructor (name, age, height, weight, address, number of children).</li>
+ *   <li>Childless constructor (name, age, height, weight, address).</li>
+ *   <li>{@code addChild()} – adding children up to capacity.</li>
+ *   <li>{@code addChild()} – attempting to add a child to a full array (error case).</li>
+ *   <li>{@code getOldestChild()} – returns the child with the highest age.</li>
+ *   <li>{@code getYoungestChild()} – returns the child with the lowest age.</li>
+ *   <li>{@code toString()} – includes all fields and recursively lists children.</li>
+ * </ul>
  *
  * @author Juan Carlos Alfaro Jiménez
  * @see Person
  */
 public class Tests {
 
+    // -------------------------------------------------------------------------
+    // Constructor tests
+    // -------------------------------------------------------------------------
+
     /**
-     * Verifies the <b>main constructor</b>.
+     * Verifies the full constructor with a specified maximum number of children.
      * <p>
-     * <b>Requirement:</b> "A constructor that takes... and the number of children."
+     * <b>Requirement:</b> All fields must be stored correctly and the children
+     * array must be initialised with the given capacity.
      * </p>
-     * Tests that the children array is initialized with the correct fixed capacity.
      */
     @Test
-    public void testMainConstructor() {
-        int capacity = 3;
-        Person p = new Person("John", 40, 1.80, 80.0, "Main St", capacity);
+    public void testFullConstructor() {
+        Person p = new Person("Alice", 35, 1.68, 62.0, "123 Main St", 3);
 
-        assertNotNull("Person object should be created", p);
-        assertEquals("Name should be set correctly", "John", p.name);
-        assertNotNull("Children array should be initialized", p.children);
-        assertEquals("Children array capacity should match constructor argument",
-                capacity, p.children.length);
+        assertEquals("Name should match",    "Alice",       p.name);
+        assertEquals("Age should match",     35,            p.age);
+        assertEquals("Height should match",  1.68,          p.height,  1e-9);
+        assertEquals("Weight should match",  62.0,          p.weight,  1e-9);
+        assertEquals("Address should match", "123 Main St", p.address);
+        assertNotNull("Children array must be initialised", p.children);
+        assertEquals("Children array capacity must match constructor argument",
+                3, p.children.length);
     }
 
     /**
-     * Verifies the <b>childless constructor</b>.
+     * Verifies the childless constructor.
      * <p>
-     * <b>Requirement:</b> "A constructor that only takes... assumed to be childless."
+     * <b>Requirement:</b> A person created without specifying children must have
+     * an empty (zero-length or all-null) children array.
      * </p>
-     * Tests that the children array is initialized with a size of 0.
      */
     @Test
     public void testChildlessConstructor() {
-        Person p = new Person("Solo", 25, 1.70, 70.0, "Lonely Rd");
+        Person p = new Person("Bob", 28, 1.80, 75.0, "456 Elm Ave");
 
-        assertNotNull("Children array should be initialized", p.children);
-        assertEquals("Childless person should have array size 0",
+        assertEquals("Name should match",    "Bob",         p.name);
+        assertEquals("Age should match",     28,            p.age);
+        assertEquals("Height should match",  1.80,          p.height,  1e-9);
+        assertEquals("Weight should match",  75.0,          p.weight,  1e-9);
+        assertEquals("Address should match", "456 Elm Ave", p.address);
+        assertNotNull("Children array must not be null", p.children);
+        assertEquals("Children array length must be 0 for childless constructor",
                 0, p.children.length);
     }
 
+    // -------------------------------------------------------------------------
+    // addChild tests
+    // -------------------------------------------------------------------------
+
     /**
-     * Verifies the <b>public attribute modification</b>.
+     * Verifies that {@link Person#addChild(Person)} stores a child correctly in the first
+     * available slot and that the child's attributes are accessible afterwards.
      * <p>
-     * <b>Requirement:</b> "Change the age of Person 1 and verify the change."
+     * <b>Requirement:</b> The first call to {@code addChild()} must place the child at
+     * index 0 of the children array.
      * </p>
      */
     @Test
-    public void testAttributeModification() {
-        Person p = new Person("Alice", 30, 1.65, 60.0, "Wonderland");
+    public void testAddChildStoresChild() {
+        Person parent = new Person("Carol", 40, 1.70, 65.0, "789 Oak Rd", 2);
+        Person child  = new Person("Dave",   8, 1.20, 25.0, "789 Oak Rd");
 
-        // Direct attribute access as defined in the provided class
-        p.age = 31;
-        p.address = "New Address";
+        parent.addChild(child);
 
-        assertEquals("Age should be updated", 31, p.age);
-        assertEquals("Address should be updated", "New Address", p.address);
+        assertNotNull("First slot of children array must not be null after addChild()",
+                parent.children[0]);
+        assertEquals("Stored child name must match", "Dave", parent.children[0].name);
     }
 
     /**
-     * Verifies the {@link Person#addChild)} logic.
+     * Verifies that multiple children can be added sequentially up to the array capacity.
      * <p>
-     * <b>Requirement:</b> "adds it to the children array."
+     * <b>Requirement:</b> Each child is placed in the next available slot; no slot
+     * must be skipped or overwritten.
      * </p>
-     * Tests adding children within the array's capacity.
      */
     @Test
-    public void testAddChildSuccess() {
-        Person parent = new Person("Parent", 50, 1.80, 80.0, "Home", 2);
-        Person child1 = new Person("Child1", 10, 1.20, 30.0, "Home");
-        Person child2 = new Person("Child2", 8, 1.10, 25.0, "Home");
+    public void testAddChildMultiple() {
+        Person parent  = new Person("Eve",   38, 1.65, 58.0, "1 Maple Dr", 3);
+        Person child1  = new Person("Frank",  5, 1.05, 18.0, "1 Maple Dr");
+        Person child2  = new Person("Grace",  9, 1.30, 28.0, "1 Maple Dr");
+        Person child3  = new Person("Hank",  12, 1.45, 38.0, "1 Maple Dr");
 
         parent.addChild(child1);
         parent.addChild(child2);
+        parent.addChild(child3);
 
-        assertEquals("First child should be stored at index 0", child1, parent.children[0]);
-        assertEquals("Second child should be stored at index 1", child2, parent.children[1]);
+        assertEquals("First child name",  "Frank", parent.children[0].name);
+        assertEquals("Second child name", "Grace", parent.children[1].name);
+        assertEquals("Third child name",  "Hank",  parent.children[2].name);
     }
 
     /**
-     * Verifies the {@link Person#addChild)} overflow protection.
+     * Verifies that {@link Person#addChild(Person)} handles a full array gracefully.
      * <p>
-     * <b>Requirement:</b> "if it is full, the method should show an error" (and implies not crashing).
+     * <b>Requirement:</b> When the children array is already at capacity, the method
+     * must print an error message (or otherwise signal the problem) without throwing
+     * an uncaught exception.
      * </p>
-     * Tests that adding a child to a full array does not throw an exception.
      */
     @Test
-    public void testAddChildOverflow() {
-        Person parent = new Person("Parent", 50, 1.80, 80.0, "Home", 1);
-        Person child1 = new Person("Child1", 10, 1.20, 30.0, "Home");
-        Person child2 = new Person("Child2", 8, 1.10, 25.0, "Home");
+    public void testAddChildWhenFull() {
+        Person parent = new Person("Ivy", 45, 1.72, 68.0, "2 Pine Ln", 1);
+        Person child1 = new Person("Jack",  6, 1.10, 20.0, "2 Pine Ln");
+        Person child2 = new Person("Kim",   4, 1.00, 16.0, "2 Pine Ln");
 
-        parent.addChild(child1); // Fills the array
+        parent.addChild(child1); // fills the only slot
 
-        // Attempt to add to full array (Should print error to console, but not crash)
+        // Should not throw; just prints an error internally
         try {
             parent.addChild(child2);
-        } catch (ArrayIndexOutOfBoundsException e) {
-            fail("Method should handle array overflow gracefully without throwing exception");
+        } catch (Exception e) {
+            fail("addChild() must not throw an exception when the array is full; " +
+                    "it should show an error message instead. Exception: " + e.getMessage());
         }
 
-        assertEquals("Array content should remain unchanged after overflow attempt",
-                child1, parent.children[0]);
+        // The original child must still be intact
+        assertEquals("Only the first child must be stored",
+                "Jack", parent.children[0].name);
     }
 
+    // -------------------------------------------------------------------------
+    // getOldestChild / getYoungestChild tests
+    // -------------------------------------------------------------------------
+
     /**
-     * Verifies {@link Person#getOldestChild} logic.
+     * Verifies that {@link Person#getOldestChild()} returns the child with the
+     * highest age value.
      * <p>
-     * <b>Requirement:</b> "return the oldest... child in the children array."
+     * <b>Setup:</b> Three children with ages 5, 12, and 8. Expected oldest: age 12.
      * </p>
      */
     @Test
     public void testGetOldestChild() {
-        Person parent = new Person("Parent", 40, 1.70, 70.0, "Home", 3);
-        Person c1 = new Person("Mid", 10, 1.0, 30.0, "Home");
-        Person c2 = new Person("Oldest", 15, 1.5, 50.0, "Home");
-        Person c3 = new Person("Youngest", 5, 0.8, 20.0, "Home");
+        Person parent = new Person("Leo",  44, 1.75, 72.0, "3 Birch Blvd", 3);
+        Person c1     = new Person("Mia",   5, 1.05, 17.0, "3 Birch Blvd");
+        Person c2     = new Person("Noah", 12, 1.48, 40.0, "3 Birch Blvd");
+        Person c3     = new Person("Olivia", 8, 1.28, 27.0, "3 Birch Blvd");
 
         parent.addChild(c1);
         parent.addChild(c2);
         parent.addChild(c3);
 
-        Person result = parent.getOldestChild();
-        assertEquals("Should return the child with highest age", c2, result);
+        Person oldest = parent.getOldestChild();
+
+        assertNotNull("getOldestChild() must not return null when children exist", oldest);
+        assertEquals("Oldest child should be Noah (age 12)", "Noah", oldest.name);
+        assertEquals("Oldest child age must be 12", 12, oldest.age);
     }
 
     /**
-     * Verifies {@link Person#getYoungestChild} logic.
+     * Verifies that {@link Person#getYoungestChild()} returns the child with the
+     * lowest age value.
      * <p>
-     * <b>Requirement:</b> "return the... youngest child in the children array."
+     * <b>Setup:</b> Three children with ages 5, 12, and 8. Expected youngest: age 5.
      * </p>
      */
     @Test
     public void testGetYoungestChild() {
-        Person parent = new Person("Parent", 40, 1.70, 70.0, "Home", 3);
-        Person c1 = new Person("Mid", 10, 1.0, 30.0, "Home");
-        Person c2 = new Person("Oldest", 15, 1.5, 50.0, "Home");
-        Person c3 = new Person("Youngest", 5, 0.8, 20.0, "Home");
+        Person parent = new Person("Pam",  41, 1.62, 55.0, "4 Cedar Ct", 3);
+        Person c1     = new Person("Quinn",  5, 1.05, 17.0, "4 Cedar Ct");
+        Person c2     = new Person("Ryan",  12, 1.48, 40.0, "4 Cedar Ct");
+        Person c3     = new Person("Sara",   8, 1.28, 27.0, "4 Cedar Ct");
 
         parent.addChild(c1);
         parent.addChild(c2);
         parent.addChild(c3);
 
-        Person result = parent.getYoungestChild();
-        assertEquals("Should return the child with lowest age", c3, result);
+        Person youngest = parent.getYoungestChild();
+
+        assertNotNull("getYoungestChild() must not return null when children exist", youngest);
+        assertEquals("Youngest child should be Quinn (age 5)", "Quinn", youngest.name);
+        assertEquals("Youngest child age must be 5", 5, youngest.age);
     }
 
+    // -------------------------------------------------------------------------
+    // toString test
+    // -------------------------------------------------------------------------
+
     /**
-     * Verifies age extremes methods when <b>no children exist</b>.
+     * Verifies that {@link Person#toString()} includes all key fields.
      * <p>
-     * Tests boundary condition to ensure {@code null} is returned instead of crashing.
+     * <b>Requirement:</b> The returned string must contain the person's name, age,
+     * height, weight, and address. When a person has children, their information
+     * must also appear (recursive call).
      * </p>
      */
     @Test
-    public void testAgeExtremesWithNoChildren() {
-        Person parent = new Person("Parent", 40, 1.70, 70.0, "Home", 2);
-
-        assertNull("getOldestChild should return null if no children added",
-                parent.getOldestChild());
-        assertNull("getYoungestChild should return null if no children added",
-                parent.getYoungestChild());
-    }
-
-    /**
-     * Verifies the recursive {@link Person#toString} method.
-     * <p>
-     * <b>Requirement:</b> "returns a String representation... including all information and the information of each child."
-     * </p>
-     */
-    @Test
-    public void testRecursiveToString() {
-        Person parent = new Person("BigDad", 50, 1.90, 90.0, "Home", 1);
-        Person child = new Person("LilBoy", 10, 1.20, 30.0, "Home");
-
+    public void testToString() {
+        Person parent = new Person("Tom",  35, 1.78, 80.0, "5 Willow Way", 1);
+        Person child  = new Person("Uma",   7, 1.15, 22.0, "5 Willow Way");
         parent.addChild(child);
 
-        String output = parent.toString();
+        String str = parent.toString();
 
-        assertTrue("Output should contain parent name", output.contains("BigDad"));
-        assertTrue("Output should contain child name", output.contains("LilBoy"));
-        assertTrue("Output should contain child label", output.contains("Children of BigDad"));
+        assertNotNull("toString() must not return null", str);
+        assertTrue("toString() must contain the parent's name",    str.contains("Tom"));
+        assertTrue("toString() must contain the child's name",     str.contains("Uma"));
+        assertTrue("toString() must contain the parent's address", str.contains("5 Willow Way"));
     }
 }

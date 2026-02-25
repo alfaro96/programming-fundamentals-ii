@@ -6,6 +6,8 @@ files:
       - offset: 0
         length: 2608
         placeholder_text: "/* TODO: Implement the Monomial class. */"
+  - name: src/Main.java
+    visible: true
   - name: test/Tests.java
     visible: false
     propagatable: false
