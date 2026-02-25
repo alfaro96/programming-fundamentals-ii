@@ -1,5 +1,6 @@
 import exceptions.*;
-import prioritylist.*;
+import prioritylist.Record;
+import prioritylist.PriorityList;
 
 /**
  * Demonstrates the usage of the {@link PriorityList} class and custom exception handling in Java.

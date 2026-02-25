@@ -1,0 +1,55 @@
+type: edu
+files:
+  - name: test/Tests.java
+    visible: false
+    propagatable: false
+  - name: src/vehicles/RepairVehicle.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 5725
+        placeholder_text: "/* TODO: Implement RepairVehicle class. */"
+  - name: src/vehicles/SaleVehicle.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 4325
+        placeholder_text: "/* TODO: Implement SaleVehicle class. */"
+  - name: src/vehicles/Vehicle.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 3312
+        placeholder_text: "/* TODO: Implement Vehicle class. */"
+  - name: src/commerces/Employee.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 7291
+        placeholder_text: "/* TODO: Implement Employee class. */"
+  - name: src/commerces/Commerce.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 13899
+        placeholder_text: "/* TODO: Implement Commerce class. */"
+  - name: src/commerces/Restaurant.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 5828
+        placeholder_text: "/* TODO: Implement Restaurant class. */"
+  - name: src/commerces/CarDealership.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 11152
+        placeholder_text: "/* TODO: Implement CarDealership class. */"
+  - name: src/associations/CommerceAssociation.java
+    visible: true
+  - name: src/Main.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 5361
+        placeholder_text: "/* TODO: Implement Main class. */"
