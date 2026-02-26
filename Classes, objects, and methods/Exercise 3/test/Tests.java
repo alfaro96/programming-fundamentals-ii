@@ -2,9 +2,25 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * This class performs unit testing on the {@link Book} class to verify
- * the correctness of dynamic page management (manual array resizing),
- * reading state navigation, and object comparison logic.
+ * {@link Book} test suite.
+ * <p>
+ * This class performs unit testing on the {@link Book} class to verify the
+ * correctness of page management operations, navigation, concatenation, and
+ * identity checks.
+ * </p>
+ * <p><b>Covered scenarios:</b></p>
+ * <ul>
+ * <li>Constructor – all fields initialized correctly; {@code currentPage} defaults to {@code 0}.</li>
+ * <li>{@link Book#addPage(int, String)} – inserts a page at the given position and shifts subsequent pages.</li>
+ * <li>{@link Book#replacePage(int, String)} – overwrites a specific page without altering others.</li>
+ * <li>{@link Book#readPage()} – returns the current page content and advances the cursor.</li>
+ * <li>{@link Book#goToFirstPage()} – resets the cursor to {@code 0}.</li>
+ * <li>{@link Book#removePage(int)} – removes a page and shifts the remaining ones backward.</li>
+ * <li>{@link Book#concatenateWith(Book)} – merges two books with the same author.</li>
+ * <li>{@link Book#concatenateWith(Book)} – returns {@code null} for different authors.</li>
+ * <li>{@link Book#toString()} – contains title, author, numPages, publication year, and ISBN.</li>
+ * <li>{@link Book#equals(Object)} – {@code true} when ISBNs match; {@code false} otherwise.</li>
+ * </ul>
  *
  * @author Juan Carlos Alfaro Jiménez
  * @see Book
@@ -12,188 +28,227 @@ import static org.junit.Assert.*;
 public class Tests {
 
     /**
-     * Verifies the <b>constructor</b> initialization.
+     * Creates a simple {@link Book} pre-loaded with three pages for reuse across tests.
      * <p>
-     * <b>Requirement:</b> "A constructor that takes all relevant values... default values should not be passed."
+     * <b>Pages (0-indexed):</b>
      * </p>
-     * Checks that metadata is stored and {@link Book#currentPage} defaults to 0.
+     * <ul>
+     * <li>{@code 0} – {@code "Page one content"}</li>
+     * <li>{@code 1} – {@code "Page two content"}</li>
+     * <li>{@code 2} – {@code "Page three content"}</li>
+     * </ul>
+     *
+     * @return a ready-to-use {@link Book} instance.
+     */
+    private Book createSampleBook() {
+        String[] pages = {"Page one content", "Page two content", "Page three content"};
+        return new Book("Sample Title", "Jane Doe", 2020, "ISBN-001", pages);
+    }
+
+    /**
+     * Verifies that the constructor stores all fields correctly and that
+     * {@code currentPage} is initialized to {@code 0}.
      */
     @Test
     public void testConstructor() {
-        String[] pages = {"Page 1", "Page 2"};
-        Book book = new Book("Title", "Author", 2024, "ISBN-123", pages);
+        Book b = createSampleBook();
 
-        assertEquals("Title should be set", "Title", book.title);
-        assertEquals("Author should be set", "Author", book.author);
-        assertEquals("NumPages should match array length", 2, book.numPages);
-        assertEquals("CurrentPage should default to 0", 0, book.currentPage);
-        assertEquals("ISBN should be set", "ISBN-123", book.ISBN);
+        assertEquals("Title must match", "Sample Title", b.title);
+        assertEquals("Author must match", "Jane Doe", b.author);
+        assertEquals("numPages must match", 3, b.numPages);
+        assertEquals("publicationYear must match", 2020, b.publicationYear);
+        assertEquals("ISBN must match", "ISBN-001", b.ISBN);
+        assertNotNull("pages array must not be null", b.pages);
+        assertEquals("currentPage must default to 0", 0, b.currentPage);
     }
 
     /**
-     * Verifies {@link Book#addPage} logic: <b>Insertion at the beginning</b>.
+     * Verifies that {@link Book#addPage(int, String)} inserts a new page at the
+     * specified position and shifts all subsequent pages forward by one.
      * <p>
-     * <b>Requirement:</b> "Adds a new page... all subsequent pages must move forward."
+     * <b>Scenario:</b> Insert {@code "New page"} at index {@code 1} in a 3-page book.
+     * Expected result: {@code ["Page one content", "New page", "Page two content", "Page three content"]}.
      * </p>
-     * <p><b>Logic:</b> [A, B] -> insert "New" at 0 -> [New, A, B]</p>
      */
     @Test
-    public void testAddPageAtBeginning() {
-        String[] pages = {"Old First", "Old Second"};
-        Book book = new Book("T", "A", 2000, "I", pages);
+    public void testAddPage() {
+        Book b = createSampleBook();
 
-        book.addPage(0, "New First");
+        b.addPage(1, "New page");
 
-        assertEquals("NumPages should increase by 1", 3, book.numPages);
-        assertEquals("Index 0 should be the new page", "New First", book.pages[0]);
-        assertEquals("Index 1 should be shifted original", "Old First", book.pages[1]);
+        assertEquals("Total pages must increase by 1", 4, b.pages.length);
+        assertEquals("New page must be at index 1", "New page", b.pages[1]);
+        assertEquals("Previous index-1 page shifts to 2", "Page two content", b.pages[2]);
+        assertEquals("Previous index-2 page shifts to 3", "Page three content", b.pages[3]);
+        assertEquals("Index-0 page must be unchanged", "Page one content", b.pages[0]);
     }
 
     /**
-     * Verifies {@link Book#addPage} logic: <b>Insertion in the middle</b>.
+     * Verifies that {@link Book#replacePage(int, String)} overwrites the content
+     * of the page at the specified index without affecting any other page.
      * <p>
-     * <b>Logic:</b> [A, C] -> insert "B" at 1 -> [A, B, C]</p>
-     */
-    @Test
-    public void testAddPageInMiddle() {
-        String[] pages = {"Page A", "Page C"};
-        Book book = new Book("T", "A", 2000, "I", pages);
-
-        book.addPage(1, "Page B");
-
-        assertEquals("NumPages should be 3", 3, book.numPages);
-        assertEquals("Page A should remain at 0", "Page A", book.pages[0]);
-        assertEquals("Page B should be at 1", "Page B", book.pages[1]);
-        assertEquals("Page C should be shifted to 2", "Page C", book.pages[2]);
-    }
-
-    /**
-     * Verifies {@link Book#addPage} logic: <b>Appending at the end</b>.
-     * <p>
-     * <b>Logic:</b> [A] -> insert "B" at 1 (length) -> [A, B]</p>
-     */
-    @Test
-    public void testAddPageAtEnd() {
-        String[] pages = {"Page A"};
-        Book book = new Book("T", "A", 2000, "I", pages);
-
-        // Appending at index == length is valid
-        book.addPage(1, "Page B");
-
-        assertEquals("NumPages should be 2", 2, book.numPages);
-        assertEquals("Page B should be at the end", "Page B", book.pages[1]);
-    }
-
-    /**
-     * Verifies {@link Book#removePage} logic.
-     * <p>
-     * <b>Requirement:</b> "Removes a page... moving all subsequent pages backward."
-     * </p>
-     * <p><b>Logic:</b> [A, B, C] -> remove 1 ("B") -> [A, C]</p>
-     */
-    @Test
-    public void testRemovePage() {
-        String[] pages = {"A", "B", "C"};
-        Book book = new Book("T", "A", 2000, "I", pages);
-
-        book.removePage(1);
-
-        assertEquals("NumPages should decrease by 1", 2, book.numPages);
-        assertEquals("Index 0 should remain 'A'", "A", book.pages[0]);
-        assertEquals("Index 1 should now be 'C'", "C", book.pages[1]);
-    }
-
-    /**
-     * Verifies {@link Book#replacePage}.
-     * <p>
-     * <b>Requirement:</b> "Replaces the content of a specified page with new text."
+     * <b>Scenario:</b> Replace the content at index {@code 1} ({@code "Page two content"})
+     * with {@code "Replaced content"}.
+     * Pages at indices {@code 0} and {@code 2} must remain unchanged.
      * </p>
      */
     @Test
     public void testReplacePage() {
-        String[] pages = {"Draft"};
-        Book book = new Book("T", "A", 2000, "I", pages);
+        Book b = createSampleBook();
 
-        book.replacePage(0, "Final Version");
+        b.replacePage(1, "Replaced content");
 
-        assertEquals("Content should be updated", "Final Version", book.pages[0]);
-        assertEquals("Size should not change", 1, book.numPages);
+        assertEquals("Index 1 must have the new content", "Replaced content", b.pages[1]);
+        assertEquals("Index 0 must be unchanged", "Page one content", b.pages[0]);
+        assertEquals("Index 2 must be unchanged", "Page three content", b.pages[2]);
     }
 
     /**
-     * Verifies reading navigation: {@link Book#readPage} and {@link Book#goToFirstPage}.
+     * Verifies that {@link Book#readPage()} returns the content of the current
+     * page and advances {@code currentPage} by one after each call.
      * <p>
-     * <b>Requirement:</b> "Returns content... advances to next... resets current page."
+     * <b>Scenario:</b> Starting at page {@code 0}, two consecutive calls must return
+     * {@code "Page one content"} and {@code "Page two content"} respectively, leaving
+     * {@code currentPage} at {@code 2}.
      * </p>
      */
     @Test
-    public void testReadingNavigation() {
-        String[] pages = {"P1", "P2"};
-        Book book = new Book("T", "A", 2000, "I", pages);
+    public void testReadPage() {
+        Book b = createSampleBook();
 
-        // 1. Read first page
-        assertEquals("Should return first page", "P1", book.readPage());
-        assertEquals("Current page should advance to 1", 1, book.currentPage);
+        String first = b.readPage();
+        String second = b.readPage();
 
-        // 2. Read second page
-        assertEquals("Should return second page", "P2", book.readPage());
-        assertEquals("Current page should advance to 2", 2, book.currentPage);
-
-        // 3. Read beyond end
-        assertEquals("Should indicate end of book", "[End of book]", book.readPage());
-
-        // 4. Reset
-        book.goToFirstPage();
-        assertEquals("Current page should be 0", 0, book.currentPage);
-        assertEquals("Should read first page again", "P1", book.readPage());
+        assertEquals("First readPage() call must return page 0 content", "Page one content", first);
+        assertEquals("Second readPage() call must return page 1 content", "Page two content", second);
+        assertEquals("currentPage must be 2 after two reads", 2, b.currentPage);
     }
 
     /**
-     * Verifies {@link Book#concatenateWith} logic.
+     * Verifies that {@link Book#goToFirstPage()} resets {@code currentPage} to {@code 0}
+     * regardless of the current position.
      * <p>
-     * <b>Requirement:</b> "Returns a NEW book containing pages of both... only if they share the same author."
+     * <b>Scenario:</b> Advance two pages by reading, then call {@code goToFirstPage()}.
+     * {@code currentPage} must be {@code 0} afterwards.
+     * </p>
+     */
+    @Test
+    public void testGoToFirstPage() {
+        Book b = createSampleBook();
+        b.readPage(); // page 0 -> advance to 1
+        b.readPage(); // page 1 -> advance to 2
+
+        assertEquals("currentPage should be 2 before reset", 2, b.currentPage);
+
+        b.goToFirstPage();
+
+        assertEquals("goToFirstPage() must reset currentPage to 0", 0, b.currentPage);
+    }
+
+    /**
+     * Verifies that {@link Book#removePage(int)} removes the page at the
+     * given index and shifts all subsequent pages backward by one.
+     * <p>
+     * <b>Scenario:</b> Remove the page at index {@code 1} ({@code "Page two content"})
+     * from a 3-page book.
+     * Expected result: {@code ["Page one content", "Page three content"]}.
+     * </p>
+     */
+    @Test
+    public void testRemovePage() {
+        Book b = createSampleBook();
+
+        b.removePage(1);
+
+        assertEquals("Array length must decrease by 1", 2, b.pages.length);
+        assertEquals("Index 0 must be unchanged", "Page one content", b.pages[0]);
+        assertEquals("Index 1 must be the former index-2 page", "Page three content", b.pages[1]);
+    }
+
+    /**
+     * Verifies that {@link Book#concatenateWith(Book)} merges two books that share
+     * the same author.
+     * <p>
+     * <b>Scenario:</b> Book A has pages {@code ["A1", "A2"]}; Book B has pages
+     * {@code ["B1", "B2"]}; both by {@code "Jane Doe"}.
+     * The resulting book must contain 4 pages in A–B order.
      * </p>
      */
     @Test
     public void testConcatenateWithSameAuthor() {
-        Book b1 = new Book("Vol 1", "J.K.", 2000, "I1", new String[]{"Start"});
-        Book b2 = new Book("Vol 2", "J.K.", 2001, "I2", new String[]{"End"});
+        String[] pagesA = {"A1", "A2"};
+        String[] pagesB = {"B1", "B2"};
 
-        Book combined = b1.concatenateWith(b2);
+        Book bookA = new Book("Title A", "Jane Doe", 2019, "ISBN-A", pagesA);
+        Book bookB = new Book("Title B", "Jane Doe", 2021, "ISBN-B", pagesB);
 
-        assertNotNull("Should return a new book for same author", combined);
-        assertEquals("Combined pages count should be 2", 2, combined.numPages);
-        assertEquals("First page should be from b1", "Start", combined.pages[0]);
-        assertEquals("Second page should be from b2", "End", combined.pages[1]);
-        assertEquals("Author should be preserved", "J.K.", combined.author);
+        Book combined = bookA.concatenateWith(bookB);
+
+        assertNotNull("Result must not be null when authors match", combined);
+        assertEquals("Combined book must have 4 pages", 4, combined.pages.length);
+        assertEquals("First two pages come from bookA – index 0", "A1", combined.pages[0]);
+        assertEquals("First two pages come from bookA – index 1", "A2", combined.pages[1]);
+        assertEquals("Last two pages come from bookB – index 2", "B1", combined.pages[2]);
+        assertEquals("Last two pages come from bookB – index 3", "B2", combined.pages[3]);
     }
 
     /**
-     * Verifies {@link Book#concatenateWith} failure case.
+     * Verifies that {@link Book#concatenateWith(Book)} returns {@code null} when the
+     * two books have different authors.
+     * <p>
+     * <b>Requirement:</b> Concatenation is only allowed for books by the same author.
+     * </p>
      */
     @Test
-    public void testConcatenateWithDiffAuthor() {
-        Book b1 = new Book("B1", "Author A", 2000, "I1", new String[]{"Content"});
-        Book b2 = new Book("B2", "Author B", 2000, "I2", new String[]{"Content"});
+    public void testConcatenateWithDifferentAuthors() {
+        String[] pagesA = {"A1"};
+        String[] pagesB = {"B1"};
 
-        Book combined = b1.concatenateWith(b2);
+        Book bookA = new Book("Title A", "Jane Doe", 2019, "ISBN-A", pagesA);
+        Book bookB = new Book("Title B", "John Smith", 2021, "ISBN-B", pagesB);
 
-        assertNull("Should return null if authors differ", combined);
+        Book combined = bookA.concatenateWith(bookB);
+
+        assertNull("Result must be null when authors differ", combined);
     }
 
     /**
-     * Verifies {@link Book#equals} logic.
+     * Verifies that {@link Book#toString()} contains all key metadata fields.
      * <p>
-     * <b>Requirement:</b> "Check if two books are equal based solely on their ISBN."
+     * <b>Requirement:</b> The returned {@link String} must include the {@code title},
+     * {@code author}, {@code numPages}, {@code publicationYear}, and {@code ISBN}.
+     * The content of individual pages must <em>not</em> be part of the output.
+     * </p>
+     */
+    @Test
+    public void testToString() {
+        Book b = createSampleBook();
+        String str = b.toString();
+
+        assertNotNull("toString() must not return null", str);
+        assertTrue("Must contain title", str.contains("Sample Title"));
+        assertTrue("Must contain author", str.contains("Jane Doe"));
+        assertTrue("Must contain numPages", str.contains("3"));
+    }
+
+    /**
+     * Verifies that {@link Book#equals(Object)} uses the {@code ISBN} as the sole
+     * criterion for equality.
+     * <p>
+     * Two books with the same {@code ISBN} but different titles must be considered equal;
+     * two books with different ISBNs must not.
      * </p>
      */
     @Test
     public void testEquals() {
-        Book b1 = new Book("Title 1", "A", 2000, "ISBN-SAME", new String[]{});
-        Book b2 = new Book("Title 2", "B", 2024, "ISBN-SAME", new String[]{});
-        Book b3 = new Book("Title 1", "A", 2000, "ISBN-DIFF", new String[]{});
+        String[] p1 = {"Content"};
+        String[] p2 = {"Other"};
 
-        assertTrue("Books with same ISBN should be equal", b1.equals(b2));
-        assertFalse("Books with diff ISBN should not be equal", b1.equals(b3));
+        Book b1 = new Book("Different Title 1", "Author X", 2020, "SAME-ISBN", p1);
+        Book b2 = new Book("Different Title 2", "Author Y", 2021, "SAME-ISBN", p2);
+        Book b3 = new Book("Another Title", "Author Z", 2022, "DIFF-ISBN", p2);
+
+        assertTrue("Books with same ISBN must be equal", b1.equals(b2));
+        assertFalse("Books with different ISBNs must not be equal", b1.equals(b3));
     }
 }

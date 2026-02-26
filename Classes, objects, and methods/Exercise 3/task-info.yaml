@@ -4,8 +4,10 @@ files:
     visible: true
     placeholders:
       - offset: 0
-        length: 5219
+        length: 5213
         placeholder_text: "/* TODO: Implement Book class. */"
   - name: test/Tests.java
     visible: false
     propagatable: false
+  - name: src/Main.java
+    visible: true

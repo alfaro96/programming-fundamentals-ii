@@ -18,7 +18,7 @@ public class Book {
     /** Year the book was published. */
     public int publicationYear;
 
-    /** The International Standard Exercise 3 Number. */
+    /** The international standard book number. */
     public String ISBN;
 
     /** Array containing the text content of each page. */

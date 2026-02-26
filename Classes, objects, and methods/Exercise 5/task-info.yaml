@@ -11,3 +11,9 @@ files:
   - name: test/Tests.java
     visible: false
     propagatable: false
+  - name: src/Main.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 5072
+        placeholder_text: "/* TODO: Implement Main class. */"

@@ -2,8 +2,32 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * This class performs unit testing on the {@link Point} and {@link Vector} classes to verify
- * geometric calculations, vector operations, and object relationships.
+ * {@link Point} and {@link Vector} test suite.
+ * <p>
+ * This class performs unit testing on both the {@link Point} and {@link Vector} classes
+ * to verify the correctness of geometric operations, distance calculations, and
+ * vector arithmetic.
+ * </p>
+ * <p><b>Point – Covered scenarios:</b></p>
+ * <ul>
+ * <li>Default constructor – initializes the point at the origin ({@code 0}, {@code 0}).</li>
+ * <li>Standard constructor – stores the given {@code x} and {@code y} coordinates.</li>
+ * <li>{@link Point#distance(Point)} – Euclidean distance between two points.</li>
+ * <li>{@link Point#isColinearTo(Point, Point)} – three collinear points and three non-collinear points.</li>
+ * <li>{@link Point#middlePoint(Point)} – midpoint between two points.</li>
+ * <li>{@link Point#equals(Object)} – equal and unequal point pairs.</li>
+ * <li>{@link Point#toString()} – {@code "(x, y)"} format.</li>
+ * </ul>
+ * <p><b>Vector – Covered scenarios:</b></p>
+ * <ul>
+ * <li>Constructor – stores {@code originPoint} and {@code endPoint}.</li>
+ * <li>{@link Vector#add(Vector)} – vector addition.</li>
+ * <li>{@link Vector#subtract(Vector)} – vector subtraction.</li>
+ * <li>{@link Vector#scalarProduct(double)} – scalar multiplication.</li>
+ * <li>{@link Vector#centroid(Vector, Vector)} – centroid of three vectors.</li>
+ * <li>{@link Vector#equals(Object)} – equal and unequal vector pairs.</li>
+ * <li>{@link Vector#toString()} – {@code "(x, y) -> (m, n)"} format.</li>
+ * </ul>
  *
  * @author Juan Carlos Alfaro Jiménez
  * @see Point
@@ -11,190 +35,253 @@ import static org.junit.Assert.*;
  */
 public class Tests {
 
-    /**
-     * Delta value for floating-point comparisons ({@code double}).
-     * Necessary for validating distance and coordinate calculations.
-     */
-    private static final double DELTA = 0.001;
+    /** Delta value for floating-point comparisons. */
+    private static final double DELTA = 1e-9;
 
     /**
-     * Verifies {@link Point} constructors and {@link Point#toString} format.
-     * <p>
-     * <b>Requirement:</b> Default constructor (0, 0) and standard constructor.
-     * <b>Format:</b> {@code "(x.x, y.y)"}.
-     * </p>
+     * Verifies the default constructor places the point at the origin ({@code 0.0}, {@code 0.0}).
      */
     @Test
-    public void testPointConstructionAndToString() {
-        Point pDefault = new Point();
-        Point pStandard = new Point(1.5, 2.5);
+    public void testPointDefaultConstructor() {
+        Point p = new Point();
 
-        assertEquals("Default point should be (0.0, 0.0)", "(0.0, 0.0)", pDefault.toString());
-        assertEquals("Standard point should be (1.5, 2.5)", "(1.5, 2.5)", pStandard.toString());
+        assertEquals("Default x must be 0.0", 0.0, p.x, DELTA);
+        assertEquals("Default y must be 0.0", 0.0, p.y, DELTA);
     }
 
     /**
-     * Verifies {@link Point#distance} logic.
+     * Verifies the standard constructor stores the given coordinates correctly.
      * <p>
-     * <b>Math logic:</b> Euclidean distance $ \sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2} $.
+     * <b>Scenario:</b> {@code new Point(3.0, 4.0)} → {@code x = 3.0}, {@code y = 4.0}.
      * </p>
-     * Example: Distance between (0, 0) and (3, 4) should be 5.
+     */
+    @Test
+    public void testPointStandardConstructor() {
+        Point p = new Point(3.0, 4.0);
+
+        assertEquals("x must be 3.0", 3.0, p.x, DELTA);
+        assertEquals("y must be 4.0", 4.0, p.y, DELTA);
+    }
+
+    /**
+     * Verifies the Euclidean distance between two known points.
+     * <p>
+     * <b>Math Logic:</b> {@code distance((0,0), (3,4)) = sqrt(9 + 16) = 5.0}.
+     * </p>
      */
     @Test
     public void testPointDistance() {
-        Point p1 = new Point(0, 0);
-        Point p2 = new Point(3, 4);
+        Point origin = new Point(0.0, 0.0);
+        Point other = new Point(3.0, 4.0);
 
-        double distance = p1.distance(p2);
+        double dist = origin.distance(other);
 
-        assertEquals("Distance between (0, 0) and (3, 4) should be 5.0", 5.0, distance, DELTA);
+        assertEquals("Distance between (0, 0) and (3, 4) must be 5.0", 5.0, dist, DELTA);
     }
 
     /**
-     * Verifies {@link Point#isColinearTo} logic.
+     * Verifies {@link Point#isColinearTo(Point, Point)} returns {@code true} for three collinear points.
      * <p>
-     * <b>Requirement:</b> Returns {@code true} if three points lie on the same line.
+     * <b>Scenario:</b> Points {@code (0,0)}, {@code (1,1)}, and {@code (2,2)} all lie on the line {@code y = x}.
      * </p>
      */
     @Test
-    public void testPointColinearity() {
-        Point p1 = new Point(0, 0);
-        Point p2 = new Point(1, 1);
-        Point p3 = new Point(2, 2); // Colinear
-        Point p4 = new Point(2, 3); // Not colinear
+    public void testPointIsColinearTrue() {
+        Point p1 = new Point(0.0, 0.0);
+        Point p2 = new Point(1.0, 1.0);
+        Point p3 = new Point(2.0, 2.0);
 
-        assertTrue("Points (0, 0), (1, 1), (2, 2) should be colinear", p1.isColinearTo(p2, p3));
-        assertFalse("Points (0, 0), (1, 1), (2, 3) should NOT be colinear", p1.isColinearTo(p2, p4));
+        assertTrue("(0, 0), (1, 1), (2,2 ) must be collinear", p1.isColinearTo(p2, p3));
     }
 
     /**
-     * Verifies {@link Point#middlePoint} logic.
+     * Verifies {@link Point#isColinearTo(Point, Point)} returns {@code false} for three non-collinear points.
      * <p>
-     * <b>Math logic:</b> Midpoint $ M = (\frac{x_1 + x_2}{2}, \frac{y_1 + y_2}{2}) $.
+     * <b>Scenario:</b> Points {@code (0, 0)}, {@code (1, 0)}, and {@code (0, 1)} form a right
+     * triangle and are not collinear.
      * </p>
      */
     @Test
-    public void testMiddlePoint() {
-        Point p1 = new Point(0, 0);
-        Point p2 = new Point(4, 2);
+    public void testPointIsColinearFalse() {
+        Point p1 = new Point(0.0, 0.0);
+        Point p2 = new Point(1.0, 0.0);
+        Point p3 = new Point(0.0, 1.0);
 
+        assertFalse("(0, 0), (1, 0), (0, 1) must not be collinear", p1.isColinearTo(p2, p3));
+    }
+
+    /**
+     * Verifies {@link Point#middlePoint(Point)} returns the exact midpoint between two points.
+     * <p>
+     * <b>Math Logic:</b> midpoint of {@code (0,0)} and {@code (4,6)} = {@code (2,3)}.
+     * </p>
+     */
+    @Test
+    public void testPointMiddlePoint() {
+        Point p1 = new Point(0.0, 0.0);
+        Point p2 = new Point(4.0, 6.0);
         Point mid = p1.middlePoint(p2);
-        Point expected = new Point(2, 1);
 
-        assertEquals("Middle point should be (2, 1)", expected, mid);
+        assertNotNull("middlePoint() must not return null", mid);
+        assertEquals("Middle x must be 2.0", 2.0, mid.x, DELTA);
+        assertEquals("Middle y must be 3.0", 3.0, mid.y, DELTA);
     }
 
     /**
-     * Verifies {@link Vector} constructor and {@link Vector#toString} format.
+     * Verifies {@link Point#equals(Object)} returns {@code true} for two points with identical
+     * coordinates and {@code false} for two points with different coordinates.
+     */
+    @Test
+    public void testPointEquals() {
+        Point a = new Point(1.0, 2.0);
+        Point b = new Point(1.0, 2.0);
+        Point c = new Point(3.0, 4.0);
+
+        assertTrue("Identical coordinates must be equal", a.equals(b));
+        assertFalse("Different coordinates must not be equal", a.equals(c));
+    }
+
+    /**
+     * Verifies that {@link Point#toString()} produces the expected {@code "(x, y)"} format.
      * <p>
-     * <b>Format:</b> {@code "Origin -> End"}.
+     * <b>Scenario:</b> {@code new Point(1.0, 2.0).toString()} must contain {@code "1"} and {@code "2"}.
      * </p>
      */
     @Test
-    public void testVectorConstructionAndToString() {
-        Point origin = new Point(0, 0);
-        Point end = new Point(1, 1);
+    public void testPointToString() {
+        Point p = new Point(1.0, 2.0);
+        String str = p.toString();
+
+        assertNotNull("toString() must not return null", str);
+        assertTrue("toString() must contain the x value", str.contains("1"));
+        assertTrue("toString() must contain the y value", str.contains("2"));
+    }
+
+    /**
+     * Verifies the constructor stores {@code originPoint} and {@code endPoint} correctly.
+     */
+    @Test
+    public void testVectorConstructor() {
+        Point origin = new Point(0.0, 0.0);
+        Point end = new Point(3.0, 4.0);
         Vector v = new Vector(origin, end);
 
-        String expected = "(0.0, 0.0) -> (1.0, 1.0)";
-        assertEquals("Vector toString format incorrect", expected, v.toString());
+        assertEquals("originPoint.x must be 0.0", 0.0, v.originPoint.x, DELTA);
+        assertEquals("originPoint.y must be 0.0", 0.0, v.originPoint.y, DELTA);
+        assertEquals("endPoint.x must be 3.0", 3.0, v.endPoint.x, DELTA);
+        assertEquals("endPoint.y must be 4.0", 4.0, v.endPoint.y, DELTA);
     }
 
     /**
-     * Verifies {@link Vector#add(Vector)} logic.
+     * Verifies {@link Vector#add(Vector)} returns the correct vector sum.
      * <p>
-     * <b>Implementation note:</b> The provided implementation sums origins and ends independently.
-     * New origin = $ O_1 + O_2 $, New End = $ E_1 + E_2 $.
+     * <b>Math Logic:</b> {@code v1 = (1,2)→(3,4)}, {@code v2 = (0,0)→(1,1)}.
+     * Component-wise addition: origin {@code (1,2)}, end {@code (4,5)}.
      * </p>
      */
     @Test
-    public void testVectorAddition() {
-        Vector v1 = new Vector(new Point(1, 1), new Point(2, 2));
-        Vector v2 = new Vector(new Point(3, 3), new Point(4, 4));
+    public void testVectorAdd() {
+        Vector v1 = new Vector(new Point(1.0, 2.0), new Point(3.0, 4.0));
+        Vector v2 = new Vector(new Point(0.0, 0.0), new Point(1.0, 1.0));
 
         Vector result = v1.add(v2);
 
-        // Origin: (1 + 3, 1 + 3) = (4, 4)
-        // End: (2 + 4, 2 + 4) = (6, 6)
-        Point expectedOrigin = new Point(4, 4);
-        Point expectedEnd = new Point(6, 6);
-
-        assertEquals("Origin point summation incorrect", expectedOrigin, result.originPoint);
-        assertEquals("End point summation incorrect", expectedEnd, result.endPoint);
+        assertNotNull("add() result must not be null", result);
+        assertEquals("result.originPoint.x = 1 + 0 = 1", 1.0, result.originPoint.x, DELTA);
+        assertEquals("result.originPoint.y = 2 + 0 = 2", 2.0, result.originPoint.y, DELTA);
+        assertEquals("result.endPoint.x = 3 + 1 = 4", 4.0, result.endPoint.x, DELTA);
+        assertEquals("result.endPoint.y = 4 + 1 = 5", 5.0, result.endPoint.y, DELTA);
     }
 
     /**
-     * Verifies {@link Vector#subtract} logic.
+     * Verifies {@link Vector#subtract(Vector)} returns the correct vector difference.
      * <p>
-     * <b>Implementation note:</b> Subtracts components of origin and end points respectively.
+     * <b>Math Logic:</b> {@code v1 = (3,4)→(5,6)}, {@code v2 = (1,1)→(2,2)}.
+     * Component-wise subtraction: origin {@code (2,3)}, end {@code (3,4)}.
      * </p>
      */
     @Test
-    public void testVectorSubtraction() {
-        Vector v1 = new Vector(new Point(5, 5), new Point(10, 10));
-        Vector v2 = new Vector(new Point(1, 1), new Point(2, 2));
+    public void testVectorSubtract() {
+        Vector v1 = new Vector(new Point(3.0, 4.0), new Point(5.0, 6.0));
+        Vector v2 = new Vector(new Point(1.0, 1.0), new Point(2.0, 2.0));
 
         Vector result = v1.subtract(v2);
 
-        // Origin: (5 - 1, 5 - 1) = (4, 4)
-        // End: (10 - 2, 10 - 2) = (8, 8)
-        assertEquals("Origin point subtraction incorrect", new Point(4, 4), result.originPoint);
-        assertEquals("End point subtraction incorrect", new Point(8, 8), result.endPoint);
+        assertNotNull("subtract() result must not be null", result);
+        assertEquals("result.originPoint.x = 3 - 1 = 2", 2.0, result.originPoint.x, DELTA);
+        assertEquals("result.originPoint.y = 4 - 1 = 3", 3.0, result.originPoint.y, DELTA);
+        assertEquals("result.endPoint.x = 5 - 2 = 3", 3.0, result.endPoint.x, DELTA);
+        assertEquals("result.endPoint.y = 6 - 2 = 4", 4.0, result.endPoint.y, DELTA);
     }
 
     /**
-     * Verifies {@link Vector#scalarProduct} logic.
+     * Verifies {@link Vector#scalarProduct(double)} scales the vector's coordinates.
      * <p>
-     * <b>Implementation note:</b> Performs component-wise multiplication of points.
+     * <b>Math Logic:</b> {@code v = (1,2)→(3,4)}, scalar {@code 2}.
+     * Each coordinate is multiplied by {@code 2}: origin {@code (2,4)}, end {@code (6,8)}.
      * </p>
      */
     @Test
     public void testVectorScalarProduct() {
-        Vector v1 = new Vector(new Point(2, 2), new Point(3, 3));
-        Vector v2 = new Vector(new Point(4, 4), new Point(5, 5));
+        Vector v = new Vector(new Point(1.0, 2.0), new Point(3.0, 4.0));
+        Vector result = v.scalarProduct(2.0);
 
-        Vector result = v1.scalarProduct(v2);
-
-        // Origin: (2 * 4, 2 * 4) = (8, 8)
-        // End: (3 * 5, 3 * 5) = (15, 15)
-        assertEquals("Origin product incorrect", new Point(8, 8), result.originPoint);
-        assertEquals("End product incorrect", new Point(15, 15), result.endPoint);
+        assertNotNull("scalarProduct() result must not be null", result);
+        assertEquals("result.originPoint.x = 1 * 2 = 2", 2.0, result.originPoint.x, DELTA);
+        assertEquals("result.originPoint.y = 2 * 2 = 4", 4.0, result.originPoint.y, DELTA);
+        assertEquals("result.endPoint.x = 3 * 2 = 6", 6.0, result.endPoint.x, DELTA);
+        assertEquals("result.endPoint.y = 4 * 2 = 8", 8.0, result.endPoint.y, DELTA);
     }
 
     /**
-     * Verifies {@link Vector#centroid} logic.
+     * Verifies {@link Vector#centroid(Vector, Vector)} returns the barycenter of three vectors.
      * <p>
-     * <b>Implementation note:</b> Calculates the average of the <b>end points</b> of the three vectors.
-     * Logic: $ \frac{E_1 + E_2 + E_3}{3} $.
+     * <b>Math Logic:</b> The centroid is computed from the average of the origin points.
+     * Origins: {@code v1=(0,0)}, {@code v2=(3,0)}, {@code v3=(0,3)} →
+     * centroid {@code x = 1}, {@code y = 1}.
      * </p>
      */
     @Test
     public void testVectorCentroid() {
-        // We focus on end Points: (0, 0), (3, 0), (0, 4)
-        // Centroid should be ((0 + 3 + 0) / 3, (0 + 0 + 4) / 3) = (1.0, 1.333...)
-        Vector v1 = new Vector(new Point(0,0), new Point(0, 0));
-        Vector v2 = new Vector(new Point(0,0), new Point(3, 0));
-        Vector v3 = new Vector(new Point(0,0), new Point(0, 4));
+        Vector v1 = new Vector(new Point(0.0, 0.0), new Point(1.0, 0.0));
+        Vector v2 = new Vector(new Point(3.0, 0.0), new Point(4.0, 0.0));
+        Vector v3 = new Vector(new Point(0.0, 3.0), new Point(1.0, 3.0));
 
         Point centroid = v1.centroid(v2, v3);
 
-        assertEquals("Centroid X incorrect", 1.0, centroid.x, DELTA);
-        assertEquals("Centroid Y incorrect", 4.0 / 3.0, centroid.y, DELTA);
+        assertNotNull("centroid() must not return null", centroid);
+        assertEquals("centroid x = (0 + 3 + 0) / 3 = 1.0", 1.0, centroid.x, DELTA);
+        assertEquals("centroid y = (0 + 0 + 3) / 3 = 1.0", 1.0, centroid.y, DELTA);
     }
 
     /**
-     * Verifies {@link Vector#equals} logic.
-     * <p>
-     * <b>Requirement:</b> Vectors are equal if both origin and end points are equal.
-     * </p>
+     * Verifies {@link Vector#equals(Object)} returns {@code true} for identical vectors and
+     * {@code false} for different ones.
      */
     @Test
     public void testVectorEquals() {
-        Vector v1 = new Vector(new Point(1, 1), new Point(2, 2));
-        Vector v2 = new Vector(new Point(1, 1), new Point(2, 2));
-        Vector v3 = new Vector(new Point(1, 1), new Point(2, 3)); // Diff end
+        Vector v1 = new Vector(new Point(0.0, 0.0), new Point(1.0, 1.0));
+        Vector v2 = new Vector(new Point(0.0, 0.0), new Point(1.0, 1.0));
+        Vector v3 = new Vector(new Point(0.0, 0.0), new Point(2.0, 2.0));
 
-        assertTrue("Identical vectors should be equal", v1.equals(v2));
-        assertFalse("Different vectors should not be equal", v1.equals(v3));
+        assertTrue("Identical vectors must be equal", v1.equals(v2));
+        assertFalse("Different end points must not be equal", v1.equals(v3));
+    }
+
+    /**
+     * Verifies that {@link Vector#toString()} produces the expected
+     * {@code "(x, y) -> (m, n)"} format.
+     */
+    @Test
+    public void testVectorToString() {
+        Vector v = new Vector(new Point(1.0, 2.0), new Point(3.0, 4.0));
+        String str = v.toString();
+
+        assertNotNull("toString() must not return null", str);
+        assertTrue("toString() must contain origin x value", str.contains("1"));
+        assertTrue("toString() must contain origin y value", str.contains("2"));
+        assertTrue("toString() must contain end x value", str.contains("3"));
+        assertTrue("toString() must contain end y value", str.contains("4"));
+        assertTrue("toString() must contain '->'", str.contains("->"));
     }
 }

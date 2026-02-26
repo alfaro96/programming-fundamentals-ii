@@ -10,8 +10,14 @@ files:
     visible: true
     placeholders:
       - offset: 0
-        length: 3362
+        length: 3406
         placeholder_text: "/* TODO: Implement Vector class. */"
   - name: test/Tests.java
     visible: false
     propagatable: false
+  - name: src/Main.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 4482
+        placeholder_text: "/* TODO: Implement Main class. */"

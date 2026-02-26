@@ -48,14 +48,15 @@ public class Vector {
     }
 
     /**
-     * Performs a scalar product (component-wise multiplication) between vectors.
+     * Performs a scalar multiplication, multiplying each component of this
+     * {@link Vector} by the given scalar value.
      *
-     * @param other The vector to multiply with.
-     * @return A new {@link Vector} containing the product.
+     * @param scalar The scalar value to multiply by.
+     * @return A new {@link Vector} whose components are each multiplied by {@code scalar}.
      */
-    public Vector scalarProduct(Vector other) {
-        Point newOrigin = new Point(this.originPoint.x * other.originPoint.x, this.originPoint.y * other.originPoint.y);
-        Point newEnd = new Point(this.endPoint.x * other.endPoint.x, this.endPoint.y * other.endPoint.y);
+    public Vector scalarProduct(double scalar) {
+        Point newOrigin = new Point(this.originPoint.x * scalar, this.originPoint.y * scalar);
+        Point newEnd = new Point(this.endPoint.x * scalar, this.endPoint.y * scalar);
         return new Vector(newOrigin, newEnd);
     }
 
@@ -67,7 +68,7 @@ public class Vector {
      * @return A {@link Point} representing the centroid.
      */
     public Point centroid(Vector v2, Vector v3) {
-        double avgX = (this.endPoint.x + v2.endPoint.x + v3.endPoint.x) / 3.0;
+        double avgX = (this.originPoint.x + v2.originPoint.x + v3.originPoint.x) / 3.0;
         double avgY = (this.endPoint.y + v2.endPoint.y + v3.endPoint.y) / 3.0;
         return new Point(avgX, avgY);
     }
