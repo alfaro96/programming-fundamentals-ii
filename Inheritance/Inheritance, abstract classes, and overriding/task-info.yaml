@@ -47,9 +47,13 @@ files:
         placeholder_text: "/* TODO: Implement CarDealership class. */"
   - name: src/associations/CommerceAssociation.java
     visible: true
+    placeholders:
+      - offset: 0
+        length: 8199
+        placeholder_text: "/* TODO: Implement CommerceAssociation class. */"
   - name: src/Main.java
     visible: true
     placeholders:
       - offset: 0
-        length: 5361
+        length: 5353
         placeholder_text: "/* TODO: Implement Main class. */"

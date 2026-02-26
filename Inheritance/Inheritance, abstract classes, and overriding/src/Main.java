@@ -16,7 +16,6 @@ import commerces.Restaurant;
  *   <li>Cloning the association.</li>
  *   <li>Replacing one of the restaurants with a new car dealership.</li>
  * </ol>
- * </p>
  *
  * @author Juan Carlos Alfaro Jiménez
  * @see Commerce
