@@ -1,5 +1,6 @@
 package com.realestate.management.model;
 
+import java.io.Serializable;
 import java.util.Random;
 
 /**
@@ -15,7 +16,10 @@ import java.util.Random;
  *
  * @author Juan Carlos Alfaro Jiménez
  */
-public class Building {
+public class Building implements Serializable {
+
+    /** Serial version UID for object serialization. */
+    private static final long serialVersionUID = 1L;
 
     /** Name of the building. */
     private String name;
@@ -85,13 +89,10 @@ public class Building {
         Random random = new Random();
         for (int i = 0; i < this.numFloors; i++) {
             for (int j = 0; j < this.apartmentsPerFloor; j++) {
-                // Floor number for calculation
                 int floorNum = i + 1;
-
                 double price = 80000 + (floorNum * 10000) + random.nextInt(120001);
-                double surface = 40 + random.nextInt(141); // 40 to 180
-                int rooms = 1 + random.nextInt(5); // 1 to 5
-
+                double surface = 40 + random.nextInt(141);
+                int rooms = 1 + random.nextInt(5);
                 this.apartments[i][j] = new Apartment(price, surface, rooms);
             }
         }
@@ -124,6 +125,10 @@ public class Building {
             this.storageRooms[i] = new Storage(price, surface);
         }
     }
+
+    // =========================================================================
+    // GETTERS AND SETTERS
+    // =========================================================================
 
     /**
      * Gets the name of the building.
@@ -195,7 +200,7 @@ public class Building {
      * Retrieves a specific apartment.
      *
      * @param floor Floor index (0 to {@link #numFloors} - 1).
-     * @param door Door index (0 to {@link #apartmentsPerFloor} -1).
+     * @param door Door index (0 to {@link #apartmentsPerFloor} - 1).
      * @return The {@link Apartment} or {@code null} if indices are invalid.
      */
     public Apartment getApartment(int floor, int door) {
@@ -219,17 +224,56 @@ public class Building {
     }
 
     /**
-     * Internal helper method to validate if the provided floor and door indices are within the building's bounds.
-     * <p>
-     * Checks if the floor is between 0 and {@link #numFloors} - 1, and if the door is between 0 and {@link #apartmentsPerFloor} - 1.
-     * </p>
+     * Retrieves a specific parking space from the garage.
+     *
+     * @param basement Basement index (0 to {@link #GARAGE_FLOORS} - 1).
+     * @param spot Spot index (0 to {@link #spotsPerGarageFloor} - 1).
+     * @return The {@link Parking} space, or {@code null} if indices are invalid.
+     */
+    public Parking getParking(int basement, int spot) {
+        if (isValidParkingIndex(basement, spot)) {
+            return this.garage[basement][spot];
+        }
+        return null;
+    }
+
+    /**
+     * Retrieves a specific storage unit.
+     *
+     * @param index The index of the storage unit (0 to {@link #numStorageRooms} - 1).
+     * @return The {@link Storage} unit, or {@code null} if the index is invalid.
+     */
+    public Storage getStorage(int index) {
+        if (index >= 0 && index < this.numStorageRooms) {
+            return this.storageRooms[index];
+        }
+        return null;
+    }
+
+    // =========================================================================
+    // INDEX VALIDATION
+    // =========================================================================
+
+    /**
+     * Internal helper to validate apartment indices.
      *
      * @param floor The floor index to check.
      * @param door The door index to check.
-     * @return {@code true} if both indices are valid, {@code false} otherwise.
+     * @return {@code true} if both indices are within valid bounds.
      */
     private boolean isValidApartmentIndex(int floor, int door) {
         return floor >= 0 && floor < this.numFloors && door >= 0 && door < this.apartmentsPerFloor;
+    }
+
+    /**
+     * Internal helper to validate parking indices.
+     *
+     * @param basement The basement index to check.
+     * @param spot The spot index to check.
+     * @return {@code true} if both indices are within valid bounds.
+     */
+    private boolean isValidParkingIndex(int basement, int spot) {
+        return basement >= 0 && basement < Building.GARAGE_FLOORS && spot >= 0 && spot < this.spotsPerGarageFloor;
     }
 
     /**
@@ -246,19 +290,53 @@ public class Building {
         }
         System.out.println();
 
-        // Iterate from top floor down to 0
         for (int i = this.numFloors - 1; i >= 0; i--) {
             System.out.printf("Floor %2d ", i + 1);
             for (int j = 0; j < this.apartmentsPerFloor; j++) {
                 Apartment apt = this.apartments[i][j];
                 if (apt == null) {
-                    System.out.print(" [ ]"); // Empty space (e.g. after merge)
+                    System.out.print(" [ ]");
                 } else {
                     System.out.printf(" [%s]", apt.toString());
                 }
             }
             System.out.println();
         }
+    }
+
+    /**
+     * Displays a tabular view of the garage status.
+     * Shows each basement level with all its parking spots.
+     */
+    public void showGarageStatus() {
+        System.out.println("\n[ GARAGE: " + this.name + " ]");
+        System.out.println("Legend: F=Free, S=Sold\n");
+
+        System.out.print("            ");
+        for (int j = 0; j < this.spotsPerGarageFloor; j++) {
+            System.out.printf(" S%d ", j + 1);
+        }
+        System.out.println();
+
+        for (int i = 0; i < Building.GARAGE_FLOORS; i++) {
+            System.out.printf("Basement %d ", -(i + 1));
+            for (int j = 0; j < this.spotsPerGarageFloor; j++) {
+                System.out.printf(" [%s]", this.garage[i][j].toString());
+            }
+            System.out.println();
+        }
+    }
+
+    /**
+     * Displays the list of all storage units with their current status.
+     */
+    public void showStorageStatus() {
+        System.out.println("\n[ STORAGE: " + this.name + " ]");
+        System.out.println("Legend: F=Free, S=Sold\n");
+        for (int i = 0; i < this.numStorageRooms; i++) {
+            System.out.printf(" T%d[%s]", i + 1, this.storageRooms[i].toString());
+        }
+        System.out.println("\n");
     }
 
     /**
@@ -286,12 +364,8 @@ public class Building {
 
     /**
      * Counts the total number of apartments that are currently available.
-     * <p>
-     * Iterates through the entire building matrix, checking that the {@link Apartment} exists (is not {@code null})
-     * and that its status is specifically {@link Apartment.Status#FREE}.
-     * </p>
      *
-     * @return The count of apartments where {@link Apartment#isAvailable} returns {@code true}.
+     * @return The count of apartments with {@link Apartment.Status#FREE} status.
      */
     public int countAvailableApartments() {
         int count = 0;
@@ -306,14 +380,66 @@ public class Building {
     }
 
     /**
-     * Calculates the total potential income of the building.
+     * Counts the total number of apartments that are currently reserved.
+     *
+     * @return The count of apartments with {@link Apartment.Status#RESERVED} status.
+     */
+    public int countReservedApartments() {
+        int count = 0;
+        for (int i = 0; i < this.numFloors; i++) {
+            for (int j = 0; j < this.apartmentsPerFloor; j++) {
+                if (this.apartments[i][j] != null && this.apartments[i][j].getStatus() == Apartment.Status.RESERVED) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    /**
+     * Counts the total number of apartments that have been sold.
+     *
+     * @return The count of apartments with {@link Apartment.Status#SOLD} status.
+     */
+    public int countSoldApartments() {
+        int count = 0;
+        for (int i = 0; i < this.numFloors; i++) {
+            for (int j = 0; j < this.apartmentsPerFloor; j++) {
+                if (this.apartments[i][j] != null && this.apartments[i][j].getStatus() == Apartment.Status.SOLD) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    /**
+     * Counts the total number of existing (non-null) apartments in the building.
      * <p>
-     * Sums the price of <b>all</b> existing {@link Apartment} objects, regardless of their current status
-     * ({@link Apartment.Status#SOLD}, {@link Apartment.Status#RESERVED}, or {@link Apartment.Status#FREE}).
-     * This represents the maximum revenue possible for the residential area.
+     * This may differ from {@code numFloors * apartmentsPerFloor} if apartments have been merged.
      * </p>
      *
-     * @return The total sum of prices obtained via {@link Apartment#getPrice}.
+     * @return The total count of existing {@link Apartment} objects.
+     */
+    public int countTotalApartments() {
+        int count = 0;
+        for (int i = 0; i < this.numFloors; i++) {
+            for (int j = 0; j < this.apartmentsPerFloor; j++) {
+                if (this.apartments[i][j] != null) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    /**
+     * Calculates the total potential income from all apartments.
+     * <p>
+     * Sums the price of <b>all</b> existing {@link Apartment} objects, regardless of status.
+     * </p>
+     *
+     * @return The total sum of prices obtained via {@link Apartment#getPrice()}.
      */
     public double calculatePotentialIncome() {
         double total = 0;
@@ -328,7 +454,382 @@ public class Building {
     }
 
     /**
-     * Searches for apartments meeting combined criteria.
+     * Calculates the real income from apartments already sold.
+     * <p>
+     * Only sums the price of apartments with {@link Apartment.Status#SOLD} status.
+     * </p>
+     *
+     * @return The total sum of prices for sold apartments.
+     */
+    public double calculateRealApartmentIncome() {
+        double total = 0;
+        for (int i = 0; i < this.numFloors; i++) {
+            for (int j = 0; j < this.apartmentsPerFloor; j++) {
+                Apartment apt = this.apartments[i][j];
+                if (apt != null && apt.getStatus() == Apartment.Status.SOLD) {
+                    total += apt.getPrice();
+                }
+            }
+        }
+        return total;
+    }
+
+    /**
+     * Counts the number of parking spaces currently available.
+     *
+     * @return The count of parking spaces with {@link Parking.Status#FREE} status.
+     */
+    public int countAvailableParking() {
+        int count = 0;
+        for (int i = 0; i < Building.GARAGE_FLOORS; i++) {
+            for (int j = 0; j < this.spotsPerGarageFloor; j++) {
+                if (this.garage[i][j].isAvailable()) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    /**
+     * Counts the number of parking spaces that have been sold.
+     *
+     * @return The count of parking spaces with {@link Parking.Status#SOLD} status.
+     */
+    public int countSoldParking() {
+        int count = 0;
+        for (int i = 0; i < Building.GARAGE_FLOORS; i++) {
+            for (int j = 0; j < this.spotsPerGarageFloor; j++) {
+                if (this.garage[i][j].getStatus() == Parking.Status.SOLD) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    /**
+     * Returns the total number of parking spaces in the building.
+     *
+     * @return {@link #GARAGE_FLOORS} multiplied by {@link #spotsPerGarageFloor}.
+     */
+    public int countTotalParking() {
+        return Building.GARAGE_FLOORS * this.spotsPerGarageFloor;
+    }
+
+    /**
+     * Calculates the total potential income from all parking spaces.
+     *
+     * @return The sum of prices of all {@link Parking} objects.
+     */
+    public double calculatePotentialParkingIncome() {
+        double total = 0;
+        for (int i = 0; i < Building.GARAGE_FLOORS; i++) {
+            for (int j = 0; j < this.spotsPerGarageFloor; j++) {
+                total += this.garage[i][j].getPrice();
+            }
+        }
+        return total;
+    }
+
+    /**
+     * Calculates the real income from parking spaces already sold.
+     *
+     * @return The sum of prices of sold {@link Parking} objects.
+     */
+    public double calculateRealParkingIncome() {
+        double total = 0;
+        for (int i = 0; i < Building.GARAGE_FLOORS; i++) {
+            for (int j = 0; j < this.spotsPerGarageFloor; j++) {
+                Parking p = this.garage[i][j];
+                if (p.getStatus() == Parking.Status.SOLD) {
+                    total += p.getPrice();
+                }
+            }
+        }
+        return total;
+    }
+
+    /**
+     * Counts the number of storage units currently available.
+     *
+     * @return The count of storage units with {@link Storage.Status#FREE} status.
+     */
+    public int countAvailableStorage() {
+        int count = 0;
+        for (int i = 0; i < this.numStorageRooms; i++) {
+            if (this.storageRooms[i].isAvailable()) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    /**
+     * Counts the number of storage units that have been sold.
+     *
+     * @return The count of storage units with {@link Storage.Status#SOLD} status.
+     */
+    public int countSoldStorage() {
+        int count = 0;
+        for (int i = 0; i < this.numStorageRooms; i++) {
+            if (this.storageRooms[i].getStatus() == Storage.Status.SOLD) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    /**
+     * Calculates the total potential income from all storage units.
+     *
+     * @return The sum of prices of all {@link Storage} objects.
+     */
+    public double calculatePotentialStorageIncome() {
+        double total = 0;
+        for (int i = 0; i < this.numStorageRooms; i++) {
+            total += this.storageRooms[i].getPrice();
+        }
+        return total;
+    }
+
+    /**
+     * Calculates the real income from storage units already sold.
+     *
+     * @return The sum of prices of sold {@link Storage} objects.
+     */
+    public double calculateRealStorageIncome() {
+        double total = 0;
+        for (int i = 0; i < this.numStorageRooms; i++) {
+            Storage s = this.storageRooms[i];
+            if (s.getStatus() == Storage.Status.SOLD) {
+                total += s.getPrice();
+            }
+        }
+        return total;
+    }
+
+    // =========================================================================
+    // DNI QUERIES
+    // =========================================================================
+
+    /**
+     * Counts the number of apartments associated with a specific buyer DNI.
+     *
+     * @param dni The buyer's identification string.
+     * @return The count of apartments whose {@code buyerDni} matches the given DNI.
+     */
+    public int countApartmentsByDni(String dni) {
+        int count = 0;
+        for (int i = 0; i < this.numFloors; i++) {
+            for (int j = 0; j < this.apartmentsPerFloor; j++) {
+                Apartment apt = this.apartments[i][j];
+                if (apt != null && dni.equals(apt.getBuyerDni())) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    /**
+     * Calculates the total investment in apartments for a specific buyer DNI.
+     *
+     * @param dni The buyer's identification string.
+     * @return The sum of prices of all apartments belonging to the given DNI.
+     */
+    public double apartmentInvestmentByDni(String dni) {
+        double total = 0;
+        for (int i = 0; i < this.numFloors; i++) {
+            for (int j = 0; j < this.apartmentsPerFloor; j++) {
+                Apartment apt = this.apartments[i][j];
+                if (apt != null && dni.equals(apt.getBuyerDni())) {
+                    total += apt.getPrice();
+                }
+            }
+        }
+        return total;
+    }
+
+    /**
+     * Lists all apartments associated with a specific buyer DNI, printing their details.
+     *
+     * @param dni The buyer's identification string.
+     */
+    public void listApartmentsByDni(String dni) {
+        for (int i = 0; i < this.numFloors; i++) {
+            for (int j = 0; j < this.apartmentsPerFloor; j++) {
+                Apartment apt = this.apartments[i][j];
+                if (apt != null && dni.equals(apt.getBuyerDni())) {
+                    System.out.printf("  [%s] Floor %d, Door %d: %s%n",
+                            this.name, i + 1, j + 1, apt.getDetails());
+                }
+            }
+        }
+    }
+
+    /**
+     * Counts the number of parking spaces associated with a specific buyer DNI.
+     *
+     * @param dni The buyer's identification string.
+     * @return The count of parking spaces whose {@code buyerDni} matches the given DNI.
+     */
+    public int countParkingByDni(String dni) {
+        int count = 0;
+        for (int i = 0; i < Building.GARAGE_FLOORS; i++) {
+            for (int j = 0; j < this.spotsPerGarageFloor; j++) {
+                if (dni.equals(this.garage[i][j].getBuyerDni())) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    /**
+     * Calculates the total investment in parking spaces for a specific buyer DNI.
+     *
+     * @param dni The buyer's identification string.
+     * @return The sum of prices of all parking spaces belonging to the given DNI.
+     */
+    public double parkingInvestmentByDni(String dni) {
+        double total = 0;
+        for (int i = 0; i < Building.GARAGE_FLOORS; i++) {
+            for (int j = 0; j < this.spotsPerGarageFloor; j++) {
+                Parking p = this.garage[i][j];
+                if (dni.equals(p.getBuyerDni())) {
+                    total += p.getPrice();
+                }
+            }
+        }
+        return total;
+    }
+
+    /**
+     * Lists all parking spaces associated with a specific buyer DNI, printing their details.
+     *
+     * @param dni The buyer's identification string.
+     */
+    public void listParkingByDni(String dni) {
+        for (int i = 0; i < Building.GARAGE_FLOORS; i++) {
+            for (int j = 0; j < this.spotsPerGarageFloor; j++) {
+                Parking p = this.garage[i][j];
+                if (dni.equals(p.getBuyerDni())) {
+                    System.out.printf("  [%s] Basement %d, Spot %d: %s%n",
+                            this.name, -(i + 1), j + 1, p.getDetails());
+                }
+            }
+        }
+    }
+
+    /**
+     * Counts the number of storage units associated with a specific buyer DNI.
+     *
+     * @param dni The buyer's identification string.
+     * @return The count of storage units whose {@code buyerDni} matches the given DNI.
+     */
+    public int countStorageByDni(String dni) {
+        int count = 0;
+        for (int i = 0; i < this.numStorageRooms; i++) {
+            if (dni.equals(this.storageRooms[i].getBuyerDni())) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    /**
+     * Calculates the total investment in storage units for a specific buyer DNI.
+     *
+     * @param dni The buyer's identification string.
+     * @return The sum of prices of all storage units belonging to the given DNI.
+     */
+    public double storageInvestmentByDni(String dni) {
+        double total = 0;
+        for (int i = 0; i < this.numStorageRooms; i++) {
+            Storage s = this.storageRooms[i];
+            if (dni.equals(s.getBuyerDni())) {
+                total += s.getPrice();
+            }
+        }
+        return total;
+    }
+
+    /**
+     * Lists all storage units associated with a specific buyer DNI, printing their details.
+     *
+     * @param dni The buyer's identification string.
+     */
+    public void listStorageByDni(String dni) {
+        for (int i = 0; i < this.numStorageRooms; i++) {
+            Storage s = this.storageRooms[i];
+            if (dni.equals(s.getBuyerDni())) {
+                System.out.printf("  [%s] Storage T%d: %s%n",
+                        this.name, i + 1, s.getDetails());
+            }
+        }
+    }
+
+    // =========================================================================
+    // APARTMENT SEARCHES
+    // =========================================================================
+
+    /**
+     * Searches for available apartments whose surface area falls within the given range.
+     *
+     * @param minSurface Minimum surface area in m².
+     * @param maxSurface Maximum surface area in m².
+     */
+    public void searchApartmentsBySurface(double minSurface, double maxSurface) {
+        for (int i = 0; i < this.numFloors; i++) {
+            for (int j = 0; j < this.apartmentsPerFloor; j++) {
+                Apartment apt = this.apartments[i][j];
+                if (apt != null && apt.isAvailable() && apt.matchesSurface(minSurface, maxSurface)) {
+                    System.out.printf("  [%s] Floor %d, Door %d: %s%n",
+                            this.name, i + 1, j + 1, apt.getDetails());
+                }
+            }
+        }
+    }
+
+    /**
+     * Searches for available apartments whose final price falls within the given range.
+     *
+     * @param minPrice Minimum price in euros.
+     * @param maxPrice Maximum price in euros.
+     */
+    public void searchApartmentsByPrice(double minPrice, double maxPrice) {
+        for (int i = 0; i < this.numFloors; i++) {
+            for (int j = 0; j < this.apartmentsPerFloor; j++) {
+                Apartment apt = this.apartments[i][j];
+                if (apt != null && apt.isAvailable() && apt.matchesPrice(minPrice, maxPrice)) {
+                    System.out.printf("  [%s] Floor %d, Door %d: %s%n",
+                            this.name, i + 1, j + 1, apt.getDetails());
+                }
+            }
+        }
+    }
+
+    /**
+     * Searches for available apartments whose room count falls within the given range.
+     *
+     * @param minRooms Minimum number of rooms.
+     * @param maxRooms Maximum number of rooms.
+     */
+    public void searchApartmentsByRooms(int minRooms, int maxRooms) {
+        for (int i = 0; i < this.numFloors; i++) {
+            for (int j = 0; j < this.apartmentsPerFloor; j++) {
+                Apartment apt = this.apartments[i][j];
+                if (apt != null && apt.isAvailable() && apt.matchesRooms(minRooms, maxRooms)) {
+                    System.out.printf("  [%s] Floor %d, Door %d: %s%n",
+                            this.name, i + 1, j + 1, apt.getDetails());
+                }
+            }
+        }
+    }
+
+    /**
+     * Searches for available apartments matching all combined criteria simultaneously.
      *
      * @param minSurf Minimum surface area.
      * @param maxSurf Maximum surface area.
@@ -338,19 +839,175 @@ public class Building {
      * @param maxRooms Maximum rooms.
      */
     public void searchApartments(double minSurf, double maxSurf, double minPrice, double maxPrice, int minRooms, int maxRooms) {
-        System.out.println("Searching apartments...");
-        for (int i = 0; i < numFloors; i++) {
-            for (int j = 0; j < apartmentsPerFloor; j++) {
-                Apartment apt = apartments[i][j];
-                if (apt != null && apt.isAvailable() &&
-                        apt.matchesSurface(minSurf, maxSurf) &&
-                        apt.matchesPrice(minPrice, maxPrice) &&
-                        apt.matchesRooms(minRooms, maxRooms)) {
-                    System.out.println("Found at Floor " + (i+1) + " Door " + (j+1) + ": " + apt.getDetails());
+        for (int i = 0; i < this.numFloors; i++) {
+            for (int j = 0; j < this.apartmentsPerFloor; j++) {
+                Apartment apt = this.apartments[i][j];
+                if (apt != null && apt.isAvailable()
+                        && apt.matchesSurface(minSurf, maxSurf)
+                        && apt.matchesPrice(minPrice, maxPrice)
+                        && apt.matchesRooms(minRooms, maxRooms)) {
+                    System.out.printf("  [%s] Floor %d, Door %d: %s%n",
+                            this.name, i + 1, j + 1, apt.getDetails());
                 }
             }
         }
     }
+
+    // =========================================================================
+    // PARKING SEARCHES
+    // =========================================================================
+
+    /**
+     * Searches for available parking spaces whose surface area falls within the given range.
+     *
+     * @param minSurface Minimum surface area in m².
+     * @param maxSurface Maximum surface area in m².
+     */
+    public void searchParkingBySurface(double minSurface, double maxSurface) {
+        for (int i = 0; i < Building.GARAGE_FLOORS; i++) {
+            for (int j = 0; j < this.spotsPerGarageFloor; j++) {
+                Parking p = this.garage[i][j];
+                if (p.isAvailable() && p.matchesSurface(minSurface, maxSurface)) {
+                    System.out.printf("  [%s] Basement %d, Spot %d: %s%n",
+                            this.name, -(i + 1), j + 1, p.getDetails());
+                }
+            }
+        }
+    }
+
+    /**
+     * Searches for available parking spaces whose price falls within the given range.
+     *
+     * @param minPrice Minimum price in euros.
+     * @param maxPrice Maximum price in euros.
+     */
+    public void searchParkingByPrice(double minPrice, double maxPrice) {
+        for (int i = 0; i < Building.GARAGE_FLOORS; i++) {
+            for (int j = 0; j < this.spotsPerGarageFloor; j++) {
+                Parking p = this.garage[i][j];
+                if (p.isAvailable() && p.matchesPrice(minPrice, maxPrice)) {
+                    System.out.printf("  [%s] Basement %d, Spot %d: %s%n",
+                            this.name, -(i + 1), j + 1, p.getDetails());
+                }
+            }
+        }
+    }
+
+    /**
+     * Searches for available parking spaces that match the specified size classification.
+     *
+     * @param sizeFilter The size filter code (0 = any, 1 = small, 2 = large).
+     * @see Parking#matchesSize(int)
+     */
+    public void searchParkingBySize(int sizeFilter) {
+        for (int i = 0; i < Building.GARAGE_FLOORS; i++) {
+            for (int j = 0; j < this.spotsPerGarageFloor; j++) {
+                Parking p = this.garage[i][j];
+                if (p.isAvailable() && p.matchesSize(sizeFilter)) {
+                    System.out.printf("  [%s] Basement %d, Spot %d: %s%n",
+                            this.name, -(i + 1), j + 1, p.getDetails());
+                }
+            }
+        }
+    }
+
+    /**
+     * Searches for available parking spaces matching all combined criteria simultaneously.
+     *
+     * @param minSurf Minimum surface area.
+     * @param maxSurf Maximum surface area.
+     * @param minPrice Minimum price.
+     * @param maxPrice Maximum price.
+     * @param sizeFilter The size filter code (0 = any, 1 = small, 2 = large).
+     */
+    public void searchParking(double minSurf, double maxSurf, double minPrice, double maxPrice, int sizeFilter) {
+        for (int i = 0; i < Building.GARAGE_FLOORS; i++) {
+            for (int j = 0; j < this.spotsPerGarageFloor; j++) {
+                Parking p = this.garage[i][j];
+                if (p.isAvailable()
+                        && p.matchesSurface(minSurf, maxSurf)
+                        && p.matchesPrice(minPrice, maxPrice)
+                        && p.matchesSize(sizeFilter)) {
+                    System.out.printf("  [%s] Basement %d, Spot %d: %s%n",
+                            this.name, -(i + 1), j + 1, p.getDetails());
+                }
+            }
+        }
+    }
+
+    // =========================================================================
+    // STORAGE SEARCHES
+    // =========================================================================
+
+    /**
+     * Searches for available storage units whose surface area falls within the given range.
+     *
+     * @param minSurface Minimum surface area in m².
+     * @param maxSurface Maximum surface area in m².
+     */
+    public void searchStorageBySurface(double minSurface, double maxSurface) {
+        for (int i = 0; i < this.numStorageRooms; i++) {
+            Storage s = this.storageRooms[i];
+            if (s.isAvailable() && s.matchesSurface(minSurface, maxSurface)) {
+                System.out.printf("  [%s] Storage T%d: %s%n", this.name, i + 1, s.getDetails());
+            }
+        }
+    }
+
+    /**
+     * Searches for available storage units whose price falls within the given range.
+     *
+     * @param minPrice Minimum price in euros.
+     * @param maxPrice Maximum price in euros.
+     */
+    public void searchStorageByPrice(double minPrice, double maxPrice) {
+        for (int i = 0; i < this.numStorageRooms; i++) {
+            Storage s = this.storageRooms[i];
+            if (s.isAvailable() && s.matchesPrice(minPrice, maxPrice)) {
+                System.out.printf("  [%s] Storage T%d: %s%n", this.name, i + 1, s.getDetails());
+            }
+        }
+    }
+
+    /**
+     * Searches for available storage units that match the specified size classification.
+     *
+     * @param sizeFilter The size filter code (0 = any, 1 = small, 2 = large).
+     * @see Storage#matchesSize(int)
+     */
+    public void searchStorageBySize(int sizeFilter) {
+        for (int i = 0; i < this.numStorageRooms; i++) {
+            Storage s = this.storageRooms[i];
+            if (s.isAvailable() && s.matchesSize(sizeFilter)) {
+                System.out.printf("  [%s] Storage T%d: %s%n", this.name, i + 1, s.getDetails());
+            }
+        }
+    }
+
+    /**
+     * Searches for available storage units matching all combined criteria simultaneously.
+     *
+     * @param minSurf Minimum surface area.
+     * @param maxSurf Maximum surface area.
+     * @param minPrice Minimum price.
+     * @param maxPrice Maximum price.
+     * @param sizeFilter The size filter code (0 = any, 1 = small, 2 = large).
+     */
+    public void searchStorage(double minSurf, double maxSurf, double minPrice, double maxPrice, int sizeFilter) {
+        for (int i = 0; i < this.numStorageRooms; i++) {
+            Storage s = this.storageRooms[i];
+            if (s.isAvailable()
+                    && s.matchesSurface(minSurf, maxSurf)
+                    && s.matchesPrice(minPrice, maxPrice)
+                    && s.matchesSize(sizeFilter)) {
+                System.out.printf("  [%s] Storage T%d: %s%n", this.name, i + 1, s.getDetails());
+            }
+        }
+    }
+
+    // =========================================================================
+    // JOIN OPERATIONS
+    // =========================================================================
 
     /**
      * Verifies if two apartments on the same floor can be joined into a single unit.
@@ -367,31 +1024,32 @@ public class Building {
      * @param door1 The index of the first door.
      * @param door2 The index of the second door.
      * @return {@code true} if all conditions for merging are met, {@code false} otherwise.
-     * @see #joinApartments(int, int, int, String, Apartment.Quality)
      */
     public boolean canJoinApartments(int floor, int door1, int door2) {
         if (!isValidApartmentIndex(floor, door1) || !isValidApartmentIndex(floor, door2)) return false;
-        if (Math.abs(door1 - door2) != 1) return false; // Must be contiguous
+        if (Math.abs(door1 - door2) != 1) return false;
 
-        Apartment apt1 = apartments[floor][door1];
-        Apartment apt2 = apartments[floor][door2];
+        Apartment apt1 = this.apartments[floor][door1];
+        Apartment apt2 = this.apartments[floor][door2];
 
         return apt1 != null && apt2 != null && apt1.isAvailable() && apt2.isAvailable();
     }
 
     /**
-     * Merges two contiguous apartments into one larger unit.
-     * The new unit is sold immediately to the buyer.
+     * Merges two contiguous apartments into one larger unit and sells it immediately.
+     * <p>
+     * The new unit's attributes (price, surface, rooms) are the sum of both originals.
+     * After the merge, the second slot is removed and the remaining apartments shift left.
+     * </p>
      *
      * @param floor Floor index.
      * @param door1 First door index.
      * @param door2 Second door index.
      * @param dni Buyer's DNI.
-     * @param quality Quality for the new merged apartment.
-     * @return {@code true} if merge was successful.
+     * @param quality Quality tier for the merged apartment.
+     * @return {@code true} if the merge was successful.
      */
     public boolean joinApartments(int floor, int door1, int door2, String dni, Apartment.Quality quality) {
-        // Ensure door1 is the left one
         if (door1 > door2) {
             int temp = door1; door1 = door2; door2 = temp;
         }
@@ -401,34 +1059,36 @@ public class Building {
             return false;
         }
 
-        Apartment apt1 = apartments[floor][door1];
-        Apartment apt2 = apartments[floor][door2];
+        Apartment apt1 = this.apartments[floor][door1];
+        Apartment apt2 = this.apartments[floor][door2];
 
-        // 1. Calculate new attributes
         double newPrice = apt1.getBasePrice() + apt2.getBasePrice();
         double newSurface = apt1.getSquareMeters() + apt2.getSquareMeters();
         int newRooms = apt1.getRooms() + apt2.getRooms();
 
-        // 2. Create new merged apartment
         Apartment mergedApt = new Apartment(newPrice, newSurface, newRooms);
-        mergedApt.setQuality(quality); // Set quality first to adjust price calculation
-        mergedApt.sell(dni, quality);  // Mark as SOLD
+        mergedApt.sell(dni, quality);
 
-        // 3. Update grid logic
+        this.apartments[floor][door1] = mergedApt;
 
-        // Place merged apartment in the first slot
-        apartments[floor][door1] = mergedApt;
-
-        // Shift remaining apartments to the left to fill the gap left by door2
-        for (int k = door2; k < apartmentsPerFloor - 1; k++) {
-            apartments[floor][k] = apartments[floor][k + 1];
+        for (int k = door2; k < this.apartmentsPerFloor - 1; k++) {
+            this.apartments[floor][k] = this.apartments[floor][k + 1];
         }
-
-        // Nullify the last position
-        apartments[floor][apartmentsPerFloor - 1] = null;
+        this.apartments[floor][this.apartmentsPerFloor - 1] = null;
 
         System.out.println("Success: Joined apartments at floor " + (floor + 1));
-
         return true;
+    }
+
+    /**
+     * Returns a short string representation of the building for list displays.
+     *
+     * @return The building name and its main dimensions.
+     */
+    @Override
+    public String toString() {
+        return String.format("%s (%d floors, %d apt/floor, %d parking/basement, %d storage)",
+                this.name, this.numFloors, this.apartmentsPerFloor,
+                this.spotsPerGarageFloor, this.numStorageRooms);
     }
 }

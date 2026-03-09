@@ -551,3 +551,346 @@ These methods find all properties belonging to a specific buyer.
 * **Array management**: Handling 2D matrices and 1D arrays.
 * **Index validation**: Checking bounds before accessing arrays.
 * **Array shifting**: Technique to remove elements while maintaining order.
+
+## Phase 3
+
+### 1. Introduction
+
+This document describes the implementation of the highest level of the system: the `Developer` class, which manages multiple buildings, and the user interface (`Main`). This phase integrates all previously developed components.
+
+#### 1.1. Prerequisites
+
+Before implementing this phase, the following must be completed:
+
+* `Apartment`, `Parking`, and `Storage` classes.
+* `Building` class with all its methods.
+
+#### 1.2. Objectives of this phase
+
+* Manage dynamic collections of buildings.
+* Implement aggregated operations across multiple buildings.
+* Develop a complete user interface with menus.
+
+### 2. `Developer` class
+
+#### 2.1. Structure
+
+##### 2.1.1. Main attributes
+
+* **name** (`String`): Name of the real estate developer.
+* **buildings** (`Building[]`): Dynamic array of buildings.
+* **numBuildings** (`int`): Counter for buildings currently in the array.
+
+##### 2.1.2. Dynamic array management
+
+The `buildings` array is managed dynamically:
+
+* Initial capacity: 3 buildings.
+* When full, it automatically doubles in capacity.
+* `numBuildings` tracks how many buildings actually exist.
+
+#### 2.2. Constructor and building management
+
+##### 2.2.1. `public Developer(String name)`
+
+1. Assigns the developer's name.
+2. Initializes the array with capacity 3: `buildings = new Building[3]`.
+3. Creates two new buildings and places them in the array.
+4. Sets `numBuildings = 2`.
+
+##### 2.2.2. `addBuilding(Building building)`
+
+1. Verify if the array is full (`numBuildings == buildings.length`).
+2. If full: double capacity with `Arrays.copyOf(buildings, buildings.length * 2)`.
+3. Add the building at the `numBuildings` position.
+4. Increment `numBuildings`.
+
+##### 2.2.3. Access methods
+
+* `getBuilding(int index)`: Returns the building at the specified index (with bounds validation).
+* `getBuildings()`: Returns a copy of the array containing only valid buildings.
+* `getNumBuildings()`: Returns the number of buildings.
+
+#### 2.3. Sales operations
+
+The `Developer` delegates sales operations to the corresponding buildings, but adds validation and informative messages.
+
+##### 2.3.1. `public boolean sellApartment(int buildingIndex, int floor, int door, String dni, Apartment.Quality quality)`
+
+1. Obtain the building using `getBuilding(buildingIndex)`.
+2. If the building is `null`: show an error and return `false`.
+3. Obtain the apartment from the building.
+4. If the apartment is `null`: show an error and return `false`.
+5. Attempt to sell the apartment by calling `apartment.sell(dni, quality)`.
+6. If successful: show a confirmation message with details.
+7. Return the result.
+
+##### 2.3.2. `public boolean reserveApartment(int buildingIndex, int floor, int door, String dni, Apartment.Quality quality)`
+
+Works similarly to `sellApartment()` but calls `apartment.reserve()` instead of `sell()`.
+
+##### 2.3.3. `public boolean sellParking(int buildingIndex, int basement, int spot, String dni)`
+
+* Validate that the building exists.
+* Validate that the parking spot exists.
+* Validate that the parking spot is available.
+* Sell and show a confirmation message.
+
+##### 2.3.4. `public boolean sellStorage(int buildingIndex, int storageIndex, String dni)`
+
+Works analogously to `sellParking()`.
+
+#### 2.4. Aggregated statistics
+
+##### 2.4.1. `public void showGeneralStatistics()`
+
+Show a complete summary of all properties across all buildings:
+
+* **For `Apartment`**: Total apartments; quantity free, reserved, and sold; potential income (sum of all); real income (sum of sold).
+* **For `Parking` spaces**: Total parking spaces; quantity free and sold; potential and real income.
+* **For `Storage` units**: Total storage units; quantity free and sold; potential and real income.
+
+The process is:
+
+1. Iterate through all buildings of the developer.
+2. For each building, use its counting methods (e.g., `countAvailableApartments()`).
+3. Accumulate the totals.
+4. Show a formatted summary.
+
+#### 2.5. DNI queries at developer level
+
+##### 2.5.1. `listPropertiesByDni(String dni)`
+
+Show all properties of a buyer across all buildings:
+
+1. Iterate through all buildings.
+2. For each building, search for apartments associated with the specified DNI.
+3. If any are found, call `building.listApartmentsByDni(dni)`.
+4. Accumulate the total number of apartments and the investment.
+5. Repeat the process for parking spaces.
+6. Repeat the process for storage units.
+7. Show a total summary with the global investment.
+
+##### 2.5.2. Auxiliary methods
+
+* `countParkingByDni(String dni)`: Sums the results from all buildings.
+* `countStorageByDni(String dni)`: Sums the results from all buildings.
+
+#### 2.6. Developer-level searches
+
+The `Developer` implements search methods that iterate through all buildings.
+
+##### 2.6.1. Apartment searches
+
+* `searchApartmentsBySurface(double minSurface, double maxSurface)`
+* `searchApartmentsByPrice(double minPrice, double maxPrice)`
+* `searchApartmentsByRooms(int minRooms, int maxRooms)`
+* `searchApartments(double minSurface, double maxSurface, double minPrice, double maxPrice, int minRooms, int maxRooms)`
+
+##### 2.6.2. Parking searches
+
+* `searchParkingBySurface(double minSurface, double maxSurface)`
+* `searchParkingByPrice(double minPrice, double maxPrice)`
+* `searchParkingBySize(int sizeFilter)`
+* `searchParking(double minSurface, double maxSurface, double minPrice, double maxPrice, int sizeFilter)`
+
+##### 2.6.3. Storage searches
+
+Analogous methods to parking searches.
+
+##### 2.6.4. Implementation pattern
+
+All these methods follow this pattern:
+
+1. Display search title.
+2. Verify if there are registered buildings.
+3. Iterate through all buildings.
+4. For each building, call the corresponding search method.
+
+### 3. User interface (`Main`)
+
+The `Main` class provides the user interface through a console-based menu system.
+
+#### 3.1. Static attributes
+
+* **scanner** (`Scanner`): Global scanner to read user input.
+* **developer** (`Developer`): Instance of the developer being managed.
+
+#### 3.2. `main(String[] args)` method
+
+**Entry point of the program**:
+
+1. Call `initialize()`.
+2. Call `mainMenu()`.
+
+##### 3.2.1. `initialize()` method
+
+Initialize the system by creating a new developer:
+
+1. Display a welcome message.
+2. Ask the user for the developer's name and create a new `Developer`.
+
+#### 3.3. Main menu structure
+
+##### 3.3.1. Menu options
+
+| Section | Option | Description |
+| :--- | :---: | :--- |
+| **`Apartment`** | 1 | View apartment status. |
+| | 2 | Sell or reserve apartment. |
+| | 3 | Join apartments. |
+| | 4 | Check available apartments. |
+| **`Garage`** | 5 | View garage status. |
+| | 6 | Sell parking space. |
+| | 7 | Check available parking spaces. |
+| **`Storage`** | 8 | View storage status. |
+| | 9 | Sell storage unit. |
+| | 10 | Join storage units. |
+| | 11 | Check available storage units. |
+| **General** | 12 | Manage buildings. |
+| | 13 | View building matrix. |
+| | 14 | Check properties by DNI. |
+| | 15 | Search apartments. |
+| | 16 | Search parking spaces. |
+| | 17 | Search storage units. |
+| | 18 | View statistics. |
+| | 0 | Exit. |
+
+##### 3.3.2. Main loop implementation
+
+* `do-while` loop that continues until the user selects 0.
+* Display the menu and read the option using `readInteger()`.
+* `switch` statement to execute the corresponding function.
+
+#### 3.4. Auxiliary input methods
+
+##### 3.4.1. `public static int readInteger()`
+
+Safely read an integer:
+
+1. Attempt to read an `int` using `scanner.nextInt()`.
+2. Clear the buffer with `scanner.nextLine()`.
+3. If an `InputMismatchException` occurs: show an error, clear the buffer, and return -1.
+
+##### 3.4.2. `public static double readDouble()`
+
+Similar to `readInteger()` but for decimal numbers.
+
+##### 3.4.3. `public static String readString()`
+
+Read a string and validate that it is not empty:
+
+1. Read a line using `scanner.nextLine()`.
+2. If empty (`trim().isEmpty()`): show an error and ask again.
+3. Return the valid string.
+
+#### 3.5. Main menu functions
+
+##### 3.5.1. `public static void manageBuildings()`
+
+Submenu with options to:
+
+* List existing buildings.
+* Create a new building (requesting all its parameters). Upon creation, the building automatically generates properties with random values.
+* **Important note**: The `Building` constructor automatically calls the random generation methods, so it is not necessary to include a menu option to generate random data.
+
+##### 3.5.2. `public static void sellReserveMenu()`
+
+Submenu that allows:
+
+* Selling an apartment.
+* Reserving an apartment.
+
+Process for selling:
+
+1. Select building.
+2. Select floor and door.
+3. Ask for the buyer's DNI.
+4. Select quality (`STANDARD`, `PLUS`, `DELUXE`).
+5. Call `developer.sellApartment(...)`.
+
+##### 3.5.3. `public static void joinApartments()`
+
+1. Select building.
+2. Select floor.
+3. Select two contiguous doors.
+4. Ask for DNI and quality.
+5. Call `building.joinApartments(...)`.
+
+##### 3.5.4. `public static void searchApartments()`
+
+Submenu with options:
+
+* Search by surface.
+* Search by price.
+* Search by rooms.
+* Combined search (all criteria).
+
+##### 3.5.5. `public static void checkPropertiesByDni()`
+
+1. Ask the user for a DNI.
+2. Call `developer.listPropertiesByDni(dni)`.
+
+### 4. Recommended implementation order
+
+#### 4.1. `Developer`: Basics
+
+* Declare attributes and constructor.
+* Implement `addBuilding()` with dynamic expansion.
+* Implement basic getters.
+* Implement `listBuildings()`.
+
+#### 4.2. `Developer`: Sales operations
+
+* Implement `sellApartment()`.
+* Implement `reserveApartment()`.
+* Implement `sellParking()`.
+* Implement `sellStorage()`.
+
+#### 4.3. `Developer`: Statistics
+
+* Implement `showGeneralStatistics()`.
+* Implement DNI queries.
+
+#### 4.4. `Developer`: Searches
+
+* Implement apartment, parking, and storage searches.
+
+#### 4.5. `Main`: Basic structure
+
+* Declare static attributes.
+* Implement `main()`, `initialize()`.
+* Implement auxiliary reading methods and the main menu loop.
+
+#### 4.6. `Main`: Functional modules
+
+* Implement `manageBuildings()`.
+* Implement `sellReserveMenu()`, `joinApartments()`, and search menus.
+* Implement statistics and DNI queries.
+
+### 5. Key concepts of this phase
+
+#### 5.1. Advanced concepts
+
+* **Dynamic arrays**: Management of collections that grow as needed.
+* **Multi-level delegation**: `Main` -> `Developer` -> `Building` -> Property.
+* **User interface**: Nested menu system with robust validation.
+
+#### 5.2. Applied best practices
+
+* **Separation of concerns**: Each class has a clear purpose.
+* **Code reusability**: Methods from basic classes are used across all levels.
+* **Exhaustive validation**: Index verification and input validation.
+
+### 6. Conclusion and overview
+
+This real estate developer management system demonstrates a well-organized layered architecture:
+
+* **Basic data layer**: `Apartment`, `Parking`, `Storage`.
+* **Aggregation layer**: `Building`.
+* **Global management layer**: `Developer`.
+* **Presentation layer**: `Main`.
+
+### 6.1. Extensibility
+
+The system allows for future extensions such as new property types, rental contracts, or a graphical user interface.
