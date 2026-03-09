@@ -8,7 +8,7 @@ vendor:
 programming_language: Java
 content:
   - Introduction to Java
-  - Classes, objects, and methods
+  - "Classes, objects, and methods"
   - Inheritance
   - Event-driven programming
   - Exceptions

@@ -285,7 +285,7 @@ public class Developer implements Serializable {
      */
     public void showGeneralStatistics() {
         System.out.println("\n========================================");
-        System.out.println("     GENERAL STATISTICS - " + this.name);
+        System.out.println("GENERAL STATISTICS - " + this.name);
         System.out.println("========================================");
 
         int totalApts = 0, freeApts = 0, reservedApts = 0, soldApts = 0;
@@ -300,50 +300,50 @@ public class Developer implements Serializable {
         for (int i = 0; i < this.numBuildings; i++) {
             Building b = this.buildings[i];
 
-            totalApts        += b.countTotalApartments();
-            freeApts         += b.countAvailableApartments();
-            reservedApts     += b.countReservedApartments();
-            soldApts         += b.countSoldApartments();
+            totalApts += b.countTotalApartments();
+            freeApts += b.countAvailableApartments();
+            reservedApts += b.countReservedApartments();
+            soldApts += b.countSoldApartments();
             potentialAptIncome += b.calculatePotentialIncome();
-            realAptIncome    += b.calculateRealApartmentIncome();
+            realAptIncome += b.calculateRealApartmentIncome();
 
-            totalParking        += b.countTotalParking();
-            freeParking         += b.countAvailableParking();
-            soldParking         += b.countSoldParking();
+            totalParking += b.countTotalParking();
+            freeParking += b.countAvailableParking();
+            soldParking += b.countSoldParking();
             potentialParkingIncome += b.calculatePotentialParkingIncome();
-            realParkingIncome   += b.calculateRealParkingIncome();
+            realParkingIncome += b.calculateRealParkingIncome();
 
-            totalStorage        += b.getNumStorageRooms();
-            freeStorage         += b.countAvailableStorage();
-            soldStorage         += b.countSoldStorage();
+            totalStorage += b.getNumStorageRooms();
+            freeStorage += b.countAvailableStorage();
+            soldStorage += b.countSoldStorage();
             potentialStorageIncome += b.calculatePotentialStorageIncome();
-            realStorageIncome   += b.calculateRealStorageIncome();
+            realStorageIncome += b.calculateRealStorageIncome();
         }
 
         System.out.println("\n--- APARTMENTS ---");
-        System.out.printf("  Total: %d  |  Free: %d  |  Reserved: %d  |  Sold: %d%n",
+        System.out.printf("Total: %d | Free: %d | Reserved: %d | Sold: %d%n",
                 totalApts, freeApts, reservedApts, soldApts);
-        System.out.printf("  Potential income: %,.2f €%n", potentialAptIncome);
-        System.out.printf("  Real income:      %,.2f €%n", realAptIncome);
+        System.out.printf("Potential income: %,.2f €%n", potentialAptIncome);
+        System.out.printf("Real income: %,.2f €%n", realAptIncome);
 
         System.out.println("\n--- PARKING SPACES ---");
-        System.out.printf("  Total: %d  |  Free: %d  |  Sold: %d%n",
+        System.out.printf("Total: %d | Free: %d | Sold: %d%n",
                 totalParking, freeParking, soldParking);
-        System.out.printf("  Potential income: %,.2f €%n", potentialParkingIncome);
-        System.out.printf("  Real income:      %,.2f €%n", realParkingIncome);
+        System.out.printf("Potential income: %,.2f €%n", potentialParkingIncome);
+        System.out.printf("Real income: %,.2f €%n", realParkingIncome);
 
         System.out.println("\n--- STORAGE UNITS ---");
-        System.out.printf("  Total: %d  |  Free: %d  |  Sold: %d%n",
+        System.out.printf("Total: %d | Free: %d | Sold: %d%n",
                 totalStorage, freeStorage, soldStorage);
-        System.out.printf("  Potential income: %,.2f €%n", potentialStorageIncome);
-        System.out.printf("  Real income:      %,.2f €%n", realStorageIncome);
+        System.out.printf("Potential income: %,.2f €%n", potentialStorageIncome);
+        System.out.printf("Real income: %,.2f €%n", realStorageIncome);
 
         double totalPotential = potentialAptIncome + potentialParkingIncome + potentialStorageIncome;
-        double totalReal      = realAptIncome + realParkingIncome + realStorageIncome;
+        double totalReal = realAptIncome + realParkingIncome + realStorageIncome;
 
         System.out.println("\n--- GLOBAL TOTAL ---");
-        System.out.printf("  Total potential income: %,.2f €%n", totalPotential);
-        System.out.printf("  Total real income:      %,.2f €%n", totalReal);
+        System.out.printf("Total potential income: %,.2f €%n", totalPotential);
+        System.out.printf("Total real income: %,.2f €%n", totalReal);
         System.out.println("========================================\n");
     }
 
@@ -358,7 +358,7 @@ public class Developer implements Serializable {
      */
     public void listPropertiesByDni(String dni) {
         System.out.println("\n========================================");
-        System.out.printf("  Properties for DNI: %s%n", dni);
+        System.out.printf("Properties for DNI: %s%n", dni);
         System.out.println("========================================");
 
         int totalApts = 0;
@@ -396,13 +396,13 @@ public class Developer implements Serializable {
         }
 
         if (totalApts + totalPark + totalStor == 0) {
-            System.out.println("  No properties found for DNI: " + dni);
+            System.out.println("No properties found for DNI: " + dni);
         } else {
             System.out.println("\n--- SUMMARY ---");
-            System.out.printf("  Apartments: %d  (%.2f €)%n", totalApts, totalAptInvestment);
-            System.out.printf("  Parking spaces: %d  (%.2f €)%n", totalPark, totalParkInvestment);
-            System.out.printf("  Storage units: %d  (%.2f €)%n", totalStor, totalStorInvestment);
-            System.out.printf("  TOTAL INVESTMENT: %.2f €%n",
+            System.out.printf("Apartments: %d  (%.2f €)%n", totalApts, totalAptInvestment);
+            System.out.printf("Parking spaces: %d  (%.2f €)%n", totalPark, totalParkInvestment);
+            System.out.printf("Storage units: %d  (%.2f €)%n", totalStor, totalStorInvestment);
+            System.out.printf("TOTAL INVESTMENT: %.2f €%n",
                     totalAptInvestment + totalParkInvestment + totalStorInvestment);
         }
         System.out.println("========================================\n");

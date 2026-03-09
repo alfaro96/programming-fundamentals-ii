@@ -1,6 +1,5 @@
 package com.realestate.management.model;
 
-import java.io.Serializable;
 import java.util.Random;
 
 /**
@@ -16,7 +15,7 @@ import java.util.Random;
  *
  * @author Juan Carlos Alfaro Jiménez
  */
-public class Building implements Serializable {
+public class Building {
 
     /** Serial version UID for object serialization. */
     private static final long serialVersionUID = 1L;
