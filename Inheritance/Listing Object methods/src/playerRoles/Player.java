@@ -72,6 +72,6 @@ public class Player {
         if (this == o) return true; // Both point to the same memory address
         if (o == null || this.getClass() != o.getClass()) return false; // Invalid memory address or not being from the same class
         Player player = (Player) o; // Safe casting, we know the input object is from the same class
-        return age == player.age && Objects.equals(name, player.name);
+        return age == player.age && name.equals(player.name);
     }
 }

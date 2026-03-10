@@ -10,9 +10,9 @@ content:
   - Introduction to Java
   - "Classes, objects, and methods"
   - Inheritance
-  - Event-driven programming
   - Exceptions
   - Collections
+  - Event-driven programming
 environment_settings:
   jvm_language_level: JDK_1_8
 additional_files:
@@ -21,4 +21,19 @@ additional_files:
   - name: README.md
   - name: LICENSE
   - name: gradle/wrapper/gradle-wrapper.properties
+  - name: "Classes, objects, and methods/Real estate development management system/doc/overview-summary.html"
+  - name: "Classes, objects, and methods/Real estate development management system/doc/package-search-index.js"
+  - name: "Classes, objects, and methods/Real estate development management system/doc/index.html"
+  - name: "Classes, objects, and methods/Real estate development management system/doc/member-search-index.js"
+  - name: "Classes, objects, and methods/Real estate development management system/doc/serialized-form.html"
+  - name: "Classes, objects, and methods/Real estate development management system/doc/tag-search-index.js"
+  - name: "Classes, objects, and methods/Real estate development management system/doc/allclasses-index.html"
+  - name: "Classes, objects, and methods/Real estate development management system/doc/overview-tree.html"
+  - name: "Classes, objects, and methods/Real estate development management system/doc/type-search-index.js"
+  - name: "Classes, objects, and methods/Real estate development management system/doc/constant-values.html"
+  - name: "Classes, objects, and methods/Real estate development management system/doc/module-search-index.js"
+  - name: "Classes, objects, and methods/Real estate development management system/doc/search.html"
+  - name: "Classes, objects, and methods/Real estate development management system/doc/help-doc.html"
+  - name: "Classes, objects, and methods/Real estate development management system/doc/element-list"
+  - name: "Classes, objects, and methods/Real estate development management system/doc/allpackages-index.html"
 yaml_version: 5
