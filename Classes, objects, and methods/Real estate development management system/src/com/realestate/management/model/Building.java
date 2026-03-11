@@ -125,10 +125,6 @@ public class Building {
         }
     }
 
-    // =========================================================================
-    // GETTERS AND SETTERS
-    // =========================================================================
-
     /**
      * Gets the name of the building.
      *
@@ -248,10 +244,6 @@ public class Building {
         }
         return null;
     }
-
-    // =========================================================================
-    // INDEX VALIDATION
-    // =========================================================================
 
     /**
      * Internal helper to validate apartment indices.
@@ -608,10 +600,6 @@ public class Building {
         return total;
     }
 
-    // =========================================================================
-    // DNI QUERIES
-    // =========================================================================
-
     /**
      * Counts the number of apartments associated with a specific buyer DNI.
      *
@@ -769,10 +757,6 @@ public class Building {
         }
     }
 
-    // =========================================================================
-    // APARTMENT SEARCHES
-    // =========================================================================
-
     /**
      * Searches for available apartments whose surface area falls within the given range.
      *
@@ -852,10 +836,6 @@ public class Building {
         }
     }
 
-    // =========================================================================
-    // PARKING SEARCHES
-    // =========================================================================
-
     /**
      * Searches for available parking spaces whose surface area falls within the given range.
      *
@@ -934,10 +914,6 @@ public class Building {
         }
     }
 
-    // =========================================================================
-    // STORAGE SEARCHES
-    // =========================================================================
-
     /**
      * Searches for available storage units whose surface area falls within the given range.
      *
@@ -1003,10 +979,6 @@ public class Building {
             }
         }
     }
-
-    // =========================================================================
-    // JOIN OPERATIONS
-    // =========================================================================
 
     /**
      * Verifies if two apartments on the same floor can be joined into a single unit.
