@@ -1,0 +1,41 @@
+type: edu
+files:
+  - name: src/com/realestate/management/model/Apartment.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 13529
+        placeholder_text: "/* TODO: Implement Apartment class. */"
+  - name: src/com/realestate/management/model/Building.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 40395
+        placeholder_text: "/* TODO: Implement Building class. */"
+  - name: src/com/realestate/management/model/Developer.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 25046
+        placeholder_text: "/* TODO: Implement Developer class. */"
+  - name: src/com/realestate/management/model/Parking.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 7722
+        placeholder_text: "/* TODO: Implement Parking class. */"
+  - name: src/com/realestate/management/model/Storage.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 7562
+        placeholder_text: "/* TODO: Implement Storage class. */"
+  - name: src/com/realestate/management/Main.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 25706
+        placeholder_text: "/* TODO: Implement Main class. */"
+  - name: test/Tests.java
+    visible: false
+    propagatable: false

@@ -1,6 +1,5 @@
 package com.realestate.management.model;
 
-import java.io.Serializable;
 import java.util.Arrays;
 
 /**
@@ -35,7 +34,7 @@ public class Developer {
     private int numBuildings;
 
     /**
-     * Creates a new {@link Developer} with the provided name and two default buildings.
+     * Creates a new {@link Developer} with the specified name and two default buildings.
      * <p>
      * The buildings array is initialized with a capacity of {@value #INITIAL_CAPACITY}.
      * Two buildings are created automatically upon construction with fixed parameters.

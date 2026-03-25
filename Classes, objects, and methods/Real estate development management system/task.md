@@ -595,7 +595,9 @@ The `buildings` array is managed dynamically:
 
 1. Assigns the developer's name.
 2. Initializes the array with capacity 3: `buildings = new Building[3]`.
-3. Creates two new buildings and places them in the array.
+3. Creates two new buildings with fixed parameters and places them in the array:
+   * `new Building("Building 1", 5, 6, 30, 30)`
+   * `new Building("Building 2", 3, 2, 12, 12)`
 4. Sets `numBuildings = 2`.
 
 ##### 2.2.2. `addBuilding(Building building)`
@@ -826,6 +828,8 @@ Submenu with options:
 * Search by rooms.
 * Combined search (all criteria).
 
+For each option, ask for the necessary parameters and call the corresponding `Developer` method.
+
 ##### 3.5.5. `public static void checkPropertiesByDni()`
 
 1. Ask the user for a DNI.
@@ -854,19 +858,38 @@ Submenu with options:
 
 #### 4.4. `Developer`: Searches
 
-* Implement apartment, parking, and storage searches.
+* Implement apartment searches.
+* Implement parking searches.
+* Implement storage searches.
 
 #### 4.5. `Main`: Basic structure
 
 * Declare static attributes.
 * Implement `main()`, `initialize()`.
-* Implement auxiliary reading methods and the main menu loop.
+* Implement auxiliary reading methods.
+* Implement the main menu structure.
 
-#### 4.6. `Main`: Functional modules
+#### 4.6. `Main`: Building management
 
 * Implement `manageBuildings()`.
-* Implement `sellReserveMenu()`, `joinApartments()`, and search menus.
-* Implement statistics and DNI queries.
+* Implement visualization functions.
+
+#### 4.7. `Main`: Sales operations
+
+* Implement `sellReserveMenu()`.
+* Implement `sellParking()`.
+* Implement `sellStorage()`.
+
+#### 4.8. `Main`: Complex operations
+
+* Implement `joinApartments()`.
+* Implement `joinStorage()`.
+
+#### 4.9. `Main`: Searches and queries
+
+* Implement search menus.
+* Implement `checkPropertiesByDni()`.
+* Implement view statistics.
 
 ### 5. Key concepts of this phase
 
@@ -880,7 +903,8 @@ Submenu with options:
 
 * **Separation of concerns**: Each class has a clear purpose.
 * **Code reusability**: Methods from basic classes are used across all levels.
-* **Exhaustive validation**: Index verification and input validation.
+* **Exhaustive validation**: Index verification, null pointer checks, and input validation.
+* **Informative messages**: Clear feedback to the user after each operation.
 
 ### 6. Conclusion and overview
 
@@ -893,4 +917,10 @@ This real estate developer management system demonstrates a well-organized layer
 
 ### 6.1. Extensibility
 
-The system allows for future extensions such as new property types, rental contracts, or a graphical user interface.
+The system is designed to allow for future extensions such as:
+
+* New property types (commercial spaces, offices).
+* Management of rental contracts.
+* Reservation system with deadlines.
+* Statistical reports.
+* Graphical user interface.

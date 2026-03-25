@@ -43,13 +43,18 @@ public class Main {
 
     /**
      * Initializes the system by creating a new developer.
+     * <p>
+     * Asks the user for the developer's name and creates a new {@link Developer} instance.
+     * </p>
      */
     private static void initialize() {
         System.out.println("============================================");
         System.out.println("   REAL ESTATE DEVELOPMENT MANAGEMENT");
         System.out.println("============================================");
 
-        developer = new Developer("");
+        System.out.print("Enter the developer's name: ");
+        String name = readString();
+        developer = new Developer(name);
         System.out.println("Welcome, " + developer.getName() + "! Two default buildings have been created.");
     }
 
@@ -570,10 +575,10 @@ public class Main {
             case 4:
                 System.out.print("Minimum surface (m²): "); double cMinSurf = readDouble();
                 System.out.print("Maximum surface (m²): "); double cMaxSurf = readDouble();
-                System.out.print("Minimum price (€): ");    double cMinPrice = readDouble();
-                System.out.print("Maximum price (€): ");    double cMaxPrice = readDouble();
-                System.out.print("Minimum rooms: ");        int cMinRooms = readInteger();
-                System.out.print("Maximum rooms: ");        int cMaxRooms = readInteger();
+                System.out.print("Minimum price (€): "); double cMinPrice = readDouble();
+                System.out.print("Maximum price (€): "); double cMaxPrice = readDouble();
+                System.out.print("Minimum rooms: "); int cMinRooms = readInteger();
+                System.out.print("Maximum rooms: "); int cMaxRooms = readInteger();
                 developer.searchApartments(cMinSurf, cMaxSurf, cMinPrice, cMaxPrice, cMinRooms, cMaxRooms);
                 break;
             default:
@@ -613,8 +618,8 @@ public class Main {
             case 4:
                 System.out.print("Minimum surface (m²): "); double cMinSurf = readDouble();
                 System.out.print("Maximum surface (m²): "); double cMaxSurf = readDouble();
-                System.out.print("Minimum price (€): ");    double cMinPrice = readDouble();
-                System.out.print("Maximum price (€): ");    double cMaxPrice = readDouble();
+                System.out.print("Minimum price (€): "); double cMinPrice = readDouble();
+                System.out.print("Maximum price (€): "); double cMaxPrice = readDouble();
                 developer.searchParking(cMinSurf, cMaxSurf, cMinPrice, cMaxPrice, readSizeFilter());
                 break;
             default:
@@ -654,8 +659,8 @@ public class Main {
             case 4:
                 System.out.print("Minimum surface (m²): "); double cMinSurf = readDouble();
                 System.out.print("Maximum surface (m²): "); double cMaxSurf = readDouble();
-                System.out.print("Minimum price (€): ");    double cMinPrice = readDouble();
-                System.out.print("Maximum price (€): ");    double cMaxPrice = readDouble();
+                System.out.print("Minimum price (€): "); double cMinPrice = readDouble();
+                System.out.print("Maximum price (€): "); double cMaxPrice = readDouble();
                 developer.searchStorage(cMinSurf, cMaxSurf, cMinPrice, cMaxPrice, readSizeFilter());
                 break;
             default:
