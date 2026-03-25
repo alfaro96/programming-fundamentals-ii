@@ -42,23 +42,21 @@ public class Main {
     }
 
     /**
-     * Initializes the system by either loading existing data or creating a new developer.
+     * Initializes the system by creating a new developer.
      */
     private static void initialize() {
         System.out.println("============================================");
         System.out.println("   REAL ESTATE DEVELOPMENT MANAGEMENT");
         System.out.println("============================================");
 
-        System.out.print("Enter the developer's name: ");
-        String name = readString();
-        developer = new Developer(name);
+        developer = new Developer("");
         System.out.println("Welcome, " + developer.getName() + "! Two default buildings have been created.");
     }
 
     /**
      * Displays and drives the main menu loop.
      * <p>
-     * Iterates until the user selects option {@code 0}. Before exiting, offers to save data.
+     * Iterates until the user selects option {@code 0}.
      * </p>
      */
     private static void mainMenu() {
@@ -434,8 +432,8 @@ public class Main {
     /**
      * Guides the user through joining two contiguous storage units.
      * <p>
-     * Merging combines two adjacent storage units into one by summing their surface and price.
-     * Both units must be available. The resulting unit replaces the first slot.
+     * Delegates fully to {@link Building#joinStorage}, which handles the merge
+     * and left-shift internally.
      * </p>
      */
     private static void joinStorage() {
@@ -456,61 +454,10 @@ public class Main {
         System.out.print("Enter second storage unit number (must be adjacent): ");
         int index2 = readInteger() - 1;
 
-        // Validate indices
-        if (Math.abs(index1 - index2) != 1) {
-            System.err.println("Error: Storage units must be adjacent to be joined.");
-            return;
-        }
-
-        // Ensure index1 < index2
-        if (index1 > index2) {
-            int temp = index1; index1 = index2; index2 = temp;
-        }
-
-        com.realestate.management.model.Storage s1 = building.getStorage(index1);
-        com.realestate.management.model.Storage s2 = building.getStorage(index2);
-
-        if (s1 == null || s2 == null) {
-            System.err.println("Error: One or both storage units do not exist.");
-            return;
-        }
-
-        if (!s1.isAvailable() || !s2.isAvailable()) {
-            System.err.println("Error: Both storage units must be available to join them.");
-            return;
-        }
-
         System.out.print("Enter buyer's DNI: ");
         String dni = readString();
 
-        // Merge: combine price and surface, sell the first unit
-        double newPrice = s1.getPrice() + s2.getPrice();
-        double newSurface = s1.getSquareMeters() + s2.getSquareMeters();
-
-        s1.setPrice(newPrice);
-        s1.setSquareMeters(newSurface);
-        s1.sell(dni);
-
-        // Shift remaining storage units left to fill the gap
-        for (int k = index2; k < building.getNumStorageRooms() - 1; k++) {
-            com.realestate.management.model.Storage next = building.getStorage(k + 1);
-            com.realestate.management.model.Storage current = building.getStorage(k);
-            current.setPrice(next.getPrice());
-            current.setSquareMeters(next.getSquareMeters());
-            current.setStatus(next.getStatus());
-            current.setBuyerDni(next.getBuyerDni());
-        }
-
-        // Reset the last storage unit
-        com.realestate.management.model.Storage last = building.getStorage(building.getNumStorageRooms() - 1);
-        if (last != null) {
-            last.release();
-            last.setPrice(0);
-            last.setSquareMeters(0);
-        }
-
-        System.out.println("Success: Storage units T" + (index1 + 1) + " and T" + (index2 + 1) + " joined.");
-        System.out.println("Result: " + s1.getDetails());
+        building.joinStorage(index1, index2, dni);
     }
 
     /**
@@ -606,45 +553,29 @@ public class Main {
 
         switch (option) {
             case 1:
-                System.out.print("Minimum surface (m²): ");
-                double minSurf = readDouble();
-                System.out.print("Maximum surface (m²): ");
-                double maxSurf = readDouble();
+                System.out.print("Minimum surface (m²): "); double minSurf = readDouble();
+                System.out.print("Maximum surface (m²): "); double maxSurf = readDouble();
                 developer.searchApartmentsBySurface(minSurf, maxSurf);
                 break;
-
             case 2:
-                System.out.print("Minimum price (€): ");
-                double minPrice = readDouble();
-                System.out.print("Maximum price (€): ");
-                double maxPrice = readDouble();
+                System.out.print("Minimum price (€): "); double minPrice = readDouble();
+                System.out.print("Maximum price (€): "); double maxPrice = readDouble();
                 developer.searchApartmentsByPrice(minPrice, maxPrice);
                 break;
-
             case 3:
-                System.out.print("Minimum rooms: ");
-                int minRooms = readInteger();
-                System.out.print("Maximum rooms: ");
-                int maxRooms = readInteger();
+                System.out.print("Minimum rooms: "); int minRooms = readInteger();
+                System.out.print("Maximum rooms: "); int maxRooms = readInteger();
                 developer.searchApartmentsByRooms(minRooms, maxRooms);
                 break;
-
             case 4:
-                System.out.print("Minimum surface (m²): ");
-                double cMinSurf = readDouble();
-                System.out.print("Maximum surface (m²): ");
-                double cMaxSurf = readDouble();
-                System.out.print("Minimum price (€): ");
-                double cMinPrice = readDouble();
-                System.out.print("Maximum price (€): ");
-                double cMaxPrice = readDouble();
-                System.out.print("Minimum rooms: ");
-                int cMinRooms = readInteger();
-                System.out.print("Maximum rooms: ");
-                int cMaxRooms = readInteger();
+                System.out.print("Minimum surface (m²): "); double cMinSurf = readDouble();
+                System.out.print("Maximum surface (m²): "); double cMaxSurf = readDouble();
+                System.out.print("Minimum price (€): ");    double cMinPrice = readDouble();
+                System.out.print("Maximum price (€): ");    double cMaxPrice = readDouble();
+                System.out.print("Minimum rooms: ");        int cMinRooms = readInteger();
+                System.out.print("Maximum rooms: ");        int cMaxRooms = readInteger();
                 developer.searchApartments(cMinSurf, cMaxSurf, cMinPrice, cMaxPrice, cMinRooms, cMaxRooms);
                 break;
-
             default:
                 System.out.println("Invalid option.");
         }
@@ -667,39 +598,25 @@ public class Main {
 
         switch (option) {
             case 1:
-                System.out.print("Minimum surface (m²): ");
-                double minSurf = readDouble();
-                System.out.print("Maximum surface (m²): ");
-                double maxSurf = readDouble();
+                System.out.print("Minimum surface (m²): "); double minSurf = readDouble();
+                System.out.print("Maximum surface (m²): "); double maxSurf = readDouble();
                 developer.searchParkingBySurface(minSurf, maxSurf);
                 break;
-
             case 2:
-                System.out.print("Minimum price (€): ");
-                double minPrice = readDouble();
-                System.out.print("Maximum price (€): ");
-                double maxPrice = readDouble();
+                System.out.print("Minimum price (€): "); double minPrice = readDouble();
+                System.out.print("Maximum price (€): "); double maxPrice = readDouble();
                 developer.searchParkingByPrice(minPrice, maxPrice);
                 break;
-
             case 3:
-                int sizeFilter = readSizeFilter();
-                developer.searchParkingBySize(sizeFilter);
+                developer.searchParkingBySize(readSizeFilter());
                 break;
-
             case 4:
-                System.out.print("Minimum surface (m²): ");
-                double cMinSurf = readDouble();
-                System.out.print("Maximum surface (m²): ");
-                double cMaxSurf = readDouble();
-                System.out.print("Minimum price (€): ");
-                double cMinPrice = readDouble();
-                System.out.print("Maximum price (€): ");
-                double cMaxPrice = readDouble();
-                int cSizeFilter = readSizeFilter();
-                developer.searchParking(cMinSurf, cMaxSurf, cMinPrice, cMaxPrice, cSizeFilter);
+                System.out.print("Minimum surface (m²): "); double cMinSurf = readDouble();
+                System.out.print("Maximum surface (m²): "); double cMaxSurf = readDouble();
+                System.out.print("Minimum price (€): ");    double cMinPrice = readDouble();
+                System.out.print("Maximum price (€): ");    double cMaxPrice = readDouble();
+                developer.searchParking(cMinSurf, cMaxSurf, cMinPrice, cMaxPrice, readSizeFilter());
                 break;
-
             default:
                 System.out.println("Invalid option.");
         }
@@ -722,39 +639,25 @@ public class Main {
 
         switch (option) {
             case 1:
-                System.out.print("Minimum surface (m²): ");
-                double minSurf = readDouble();
-                System.out.print("Maximum surface (m²): ");
-                double maxSurf = readDouble();
+                System.out.print("Minimum surface (m²): "); double minSurf = readDouble();
+                System.out.print("Maximum surface (m²): "); double maxSurf = readDouble();
                 developer.searchStorageBySurface(minSurf, maxSurf);
                 break;
-
             case 2:
-                System.out.print("Minimum price (€): ");
-                double minPrice = readDouble();
-                System.out.print("Maximum price (€): ");
-                double maxPrice = readDouble();
+                System.out.print("Minimum price (€): "); double minPrice = readDouble();
+                System.out.print("Maximum price (€): "); double maxPrice = readDouble();
                 developer.searchStorageByPrice(minPrice, maxPrice);
                 break;
-
             case 3:
-                int sizeFilter = readSizeFilter();
-                developer.searchStorageBySize(sizeFilter);
+                developer.searchStorageBySize(readSizeFilter());
                 break;
-
             case 4:
-                System.out.print("Minimum surface (m²): ");
-                double cMinSurf = readDouble();
-                System.out.print("Maximum surface (m²): ");
-                double cMaxSurf = readDouble();
-                System.out.print("Minimum price (€): ");
-                double cMinPrice = readDouble();
-                System.out.print("Maximum price (€): ");
-                double cMaxPrice = readDouble();
-                int cSizeFilter = readSizeFilter();
-                developer.searchStorage(cMinSurf, cMaxSurf, cMinPrice, cMaxPrice, cSizeFilter);
+                System.out.print("Minimum surface (m²): "); double cMinSurf = readDouble();
+                System.out.print("Maximum surface (m²): "); double cMaxSurf = readDouble();
+                System.out.print("Minimum price (€): ");    double cMinPrice = readDouble();
+                System.out.print("Maximum price (€): ");    double cMaxPrice = readDouble();
+                developer.searchStorage(cMinSurf, cMaxSurf, cMinPrice, cMaxPrice, readSizeFilter());
                 break;
-
             default:
                 System.out.println("Invalid option.");
         }

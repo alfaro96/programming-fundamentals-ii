@@ -13,10 +13,7 @@ import java.util.Arrays;
  *
  * @author Juan Carlos Alfaro Jiménez
  */
-public class Developer implements Serializable {
-
-    /** Serial version UID for object serialization. */
-    private static final long serialVersionUID = 1L;
+public class Developer {
 
     /** Initial capacity of the buildings array. */
     private static final int INITIAL_CAPACITY = 3;
@@ -38,10 +35,10 @@ public class Developer implements Serializable {
     private int numBuildings;
 
     /**
-     * Creates a new {@link Developer} with the specified name and two default buildings.
+     * Creates a new {@link Developer} with the provided name and two default buildings.
      * <p>
      * The buildings array is initialized with a capacity of {@value #INITIAL_CAPACITY}.
-     * Two buildings are created automatically upon construction.
+     * Two buildings are created automatically upon construction with fixed parameters.
      * </p>
      *
      * @param name The name of the real estate developer.
@@ -49,8 +46,8 @@ public class Developer implements Serializable {
     public Developer(String name) {
         this.name = name;
         this.buildings = new Building[INITIAL_CAPACITY];
-        this.buildings[0] = new Building("Tower A", 5, 4, 8, 6);
-        this.buildings[1] = new Building("Tower B", 4, 3, 6, 4);
+        this.buildings[0] = new Building("Building 1", 5, 6, 30, 30);
+        this.buildings[1] = new Building("Building 2", 3, 2, 12, 12);
         this.numBuildings = 2;
     }
 
@@ -300,24 +297,24 @@ public class Developer implements Serializable {
         for (int i = 0; i < this.numBuildings; i++) {
             Building b = this.buildings[i];
 
-            totalApts += b.countTotalApartments();
+            totalApts += b.getTotalApartments();
             freeApts += b.countAvailableApartments();
             reservedApts += b.countReservedApartments();
             soldApts += b.countSoldApartments();
             potentialAptIncome += b.calculatePotentialIncome();
-            realAptIncome += b.calculateRealApartmentIncome();
+            realAptIncome += b.calculateSoldIncome();
 
             totalParking += b.countTotalParking();
             freeParking += b.countAvailableParking();
             soldParking += b.countSoldParking();
             potentialParkingIncome += b.calculatePotentialParkingIncome();
-            realParkingIncome += b.calculateRealParkingIncome();
+            realParkingIncome += b.calculateSoldParkingIncome();
 
             totalStorage += b.getNumStorageRooms();
             freeStorage += b.countAvailableStorage();
             soldStorage += b.countSoldStorage();
             potentialStorageIncome += b.calculatePotentialStorageIncome();
-            realStorageIncome += b.calculateRealStorageIncome();
+            realStorageIncome += b.calculateSoldStorageIncome();
         }
 
         System.out.println("\n--- APARTMENTS ---");
@@ -444,10 +441,7 @@ public class Developer implements Serializable {
      */
     public void searchApartmentsBySurface(double minSurface, double maxSurface) {
         System.out.printf("%n--- Apartments by surface: [%.1f - %.1f m²] ---%n", minSurface, maxSurface);
-        if (this.numBuildings == 0) {
-            System.out.println("No buildings registered.");
-            return;
-        }
+        if (this.numBuildings == 0) { System.out.println("No buildings registered."); return; }
         for (int i = 0; i < this.numBuildings; i++) {
             this.buildings[i].searchApartmentsBySurface(minSurface, maxSurface);
         }
@@ -461,10 +455,7 @@ public class Developer implements Serializable {
      */
     public void searchApartmentsByPrice(double minPrice, double maxPrice) {
         System.out.printf("%n--- Apartments by price: [%.2f € - %.2f €] ---%n", minPrice, maxPrice);
-        if (this.numBuildings == 0) {
-            System.out.println("No buildings registered.");
-            return;
-        }
+        if (this.numBuildings == 0) { System.out.println("No buildings registered."); return; }
         for (int i = 0; i < this.numBuildings; i++) {
             this.buildings[i].searchApartmentsByPrice(minPrice, maxPrice);
         }
@@ -478,10 +469,7 @@ public class Developer implements Serializable {
      */
     public void searchApartmentsByRooms(int minRooms, int maxRooms) {
         System.out.printf("%n--- Apartments by rooms: [%d - %d] ---%n", minRooms, maxRooms);
-        if (this.numBuildings == 0) {
-            System.out.println("No buildings registered.");
-            return;
-        }
+        if (this.numBuildings == 0) { System.out.println("No buildings registered."); return; }
         for (int i = 0; i < this.numBuildings; i++) {
             this.buildings[i].searchApartmentsByRooms(minRooms, maxRooms);
         }
@@ -499,10 +487,7 @@ public class Developer implements Serializable {
      */
     public void searchApartments(double minSurface, double maxSurface, double minPrice, double maxPrice, int minRooms, int maxRooms) {
         System.out.printf("%n--- Combined apartment search ---%n");
-        if (this.numBuildings == 0) {
-            System.out.println("No buildings registered.");
-            return;
-        }
+        if (this.numBuildings == 0) { System.out.println("No buildings registered."); return; }
         for (int i = 0; i < this.numBuildings; i++) {
             this.buildings[i].searchApartments(minSurface, maxSurface, minPrice, maxPrice, minRooms, maxRooms);
         }
@@ -516,10 +501,7 @@ public class Developer implements Serializable {
      */
     public void searchParkingBySurface(double minSurface, double maxSurface) {
         System.out.printf("%n--- Parking by surface: [%.1f - %.1f m²] ---%n", minSurface, maxSurface);
-        if (this.numBuildings == 0) {
-            System.out.println("No buildings registered.");
-            return;
-        }
+        if (this.numBuildings == 0) { System.out.println("No buildings registered."); return; }
         for (int i = 0; i < this.numBuildings; i++) {
             this.buildings[i].searchParkingBySurface(minSurface, maxSurface);
         }
@@ -533,10 +515,7 @@ public class Developer implements Serializable {
      */
     public void searchParkingByPrice(double minPrice, double maxPrice) {
         System.out.printf("%n--- Parking by price: [%.2f € - %.2f €] ---%n", minPrice, maxPrice);
-        if (this.numBuildings == 0) {
-            System.out.println("No buildings registered.");
-            return;
-        }
+        if (this.numBuildings == 0) { System.out.println("No buildings registered."); return; }
         for (int i = 0; i < this.numBuildings; i++) {
             this.buildings[i].searchParkingByPrice(minPrice, maxPrice);
         }
@@ -550,10 +529,7 @@ public class Developer implements Serializable {
      */
     public void searchParkingBySize(int sizeFilter) {
         System.out.printf("%n--- Parking by size filter [%d] ---%n", sizeFilter);
-        if (this.numBuildings == 0) {
-            System.out.println("No buildings registered.");
-            return;
-        }
+        if (this.numBuildings == 0) { System.out.println("No buildings registered."); return; }
         for (int i = 0; i < this.numBuildings; i++) {
             this.buildings[i].searchParkingBySize(sizeFilter);
         }
@@ -570,10 +546,7 @@ public class Developer implements Serializable {
      */
     public void searchParking(double minSurface, double maxSurface, double minPrice, double maxPrice, int sizeFilter) {
         System.out.printf("%n--- Combined parking search ---%n");
-        if (this.numBuildings == 0) {
-            System.out.println("No buildings registered.");
-            return;
-        }
+        if (this.numBuildings == 0) { System.out.println("No buildings registered."); return; }
         for (int i = 0; i < this.numBuildings; i++) {
             this.buildings[i].searchParking(minSurface, maxSurface, minPrice, maxPrice, sizeFilter);
         }
@@ -587,10 +560,7 @@ public class Developer implements Serializable {
      */
     public void searchStorageBySurface(double minSurface, double maxSurface) {
         System.out.printf("%n--- Storage by surface: [%.1f - %.1f m²] ---%n", minSurface, maxSurface);
-        if (this.numBuildings == 0) {
-            System.out.println("No buildings registered.");
-            return;
-        }
+        if (this.numBuildings == 0) { System.out.println("No buildings registered."); return; }
         for (int i = 0; i < this.numBuildings; i++) {
             this.buildings[i].searchStorageBySurface(minSurface, maxSurface);
         }
@@ -604,10 +574,7 @@ public class Developer implements Serializable {
      */
     public void searchStorageByPrice(double minPrice, double maxPrice) {
         System.out.printf("%n--- Storage by price: [%.2f € - %.2f €] ---%n", minPrice, maxPrice);
-        if (this.numBuildings == 0) {
-            System.out.println("No buildings registered.");
-            return;
-        }
+        if (this.numBuildings == 0) { System.out.println("No buildings registered."); return; }
         for (int i = 0; i < this.numBuildings; i++) {
             this.buildings[i].searchStorageByPrice(minPrice, maxPrice);
         }
@@ -621,10 +588,7 @@ public class Developer implements Serializable {
      */
     public void searchStorageBySize(int sizeFilter) {
         System.out.printf("%n--- Storage by size filter [%d] ---%n", sizeFilter);
-        if (this.numBuildings == 0) {
-            System.out.println("No buildings registered.");
-            return;
-        }
+        if (this.numBuildings == 0) { System.out.println("No buildings registered."); return; }
         for (int i = 0; i < this.numBuildings; i++) {
             this.buildings[i].searchStorageBySize(sizeFilter);
         }
@@ -641,10 +605,7 @@ public class Developer implements Serializable {
      */
     public void searchStorage(double minSurface, double maxSurface, double minPrice, double maxPrice, int sizeFilter) {
         System.out.printf("%n--- Combined storage search ---%n");
-        if (this.numBuildings == 0) {
-            System.out.println("No buildings registered.");
-            return;
-        }
+        if (this.numBuildings == 0) { System.out.println("No buildings registered."); return; }
         for (int i = 0; i < this.numBuildings; i++) {
             this.buildings[i].searchStorage(minSurface, maxSurface, minPrice, maxPrice, sizeFilter);
         }

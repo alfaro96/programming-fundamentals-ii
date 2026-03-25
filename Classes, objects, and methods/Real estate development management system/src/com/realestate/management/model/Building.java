@@ -17,9 +17,6 @@ import java.util.Random;
  */
 public class Building {
 
-    /** Serial version UID for object serialization. */
-    private static final long serialVersionUID = 1L;
-
     /** Name of the building. */
     private String name;
 
@@ -46,6 +43,12 @@ public class Building {
 
     /** Constant: The garage always has exactly 2 floors (Basement -1 and -2). */
     public static final int GARAGE_FLOORS = 2;
+
+    /** Seed for the random number generator, ensuring reproducible results. */
+    private static final long SEED = 12345L;
+
+    /** Shared seeded random number generator for all random generation methods. */
+    private static final Random rand = new Random(SEED);
 
     /**
      * Constructs a new {@link Building} and initializes all properties with random values.
@@ -85,13 +88,12 @@ public class Building {
      * </ul>
      */
     private void generateRandomApartments() {
-        Random random = new Random();
         for (int i = 0; i < this.numFloors; i++) {
             for (int j = 0; j < this.apartmentsPerFloor; j++) {
                 int floorNum = i + 1;
-                double price = 80000 + (floorNum * 10000) + random.nextInt(120001);
-                double surface = 40 + random.nextInt(141);
-                int rooms = 1 + random.nextInt(5);
+                double price = 80000 + (floorNum * 10000) + rand.nextInt(120001);
+                double surface = 40 + rand.nextInt(141);
+                int rooms = 1 + rand.nextInt(5);
                 this.apartments[i][j] = new Apartment(price, surface, rooms);
             }
         }
@@ -102,11 +104,10 @@ public class Building {
      * Ranges: Price (8k-30k), Surface (8-20 m²).
      */
     private void generateRandomGarage() {
-        Random random = new Random();
         for (int i = 0; i < Building.GARAGE_FLOORS; i++) {
             for (int j = 0; j < this.spotsPerGarageFloor; j++) {
-                double price = 8000 + random.nextInt(22001);
-                double surface = 8 + random.nextInt(13);
+                double price = 8000 + rand.nextInt(22001);
+                double surface = 8 + rand.nextInt(13);
                 this.garage[i][j] = new Parking(price, surface);
             }
         }
@@ -117,10 +118,9 @@ public class Building {
      * Ranges: Price (1.5k-8k), Surface (3-15 m²).
      */
     private void generateRandomStorage() {
-        Random random = new Random();
         for (int i = 0; i < this.numStorageRooms; i++) {
-            double price = 1500 + random.nextInt(6501);
-            double surface = 3 + random.nextInt(13);
+            double price = 1500 + rand.nextInt(6501);
+            double surface = 3 + rand.nextInt(13);
             this.storageRooms[i] = new Storage(price, surface);
         }
     }
@@ -412,7 +412,7 @@ public class Building {
      *
      * @return The total count of existing {@link Apartment} objects.
      */
-    public int countTotalApartments() {
+    public int getTotalApartments() {
         int count = 0;
         for (int i = 0; i < this.numFloors; i++) {
             for (int j = 0; j < this.apartmentsPerFloor; j++) {
@@ -452,7 +452,7 @@ public class Building {
      *
      * @return The total sum of prices for sold apartments.
      */
-    public double calculateRealApartmentIncome() {
+    public double calculateSoldIncome() {
         double total = 0;
         for (int i = 0; i < this.numFloors; i++) {
             for (int j = 0; j < this.apartmentsPerFloor; j++) {
@@ -528,7 +528,7 @@ public class Building {
      *
      * @return The sum of prices of sold {@link Parking} objects.
      */
-    public double calculateRealParkingIncome() {
+    public double calculateSoldParkingIncome() {
         double total = 0;
         for (int i = 0; i < Building.GARAGE_FLOORS; i++) {
             for (int j = 0; j < this.spotsPerGarageFloor; j++) {
@@ -589,7 +589,7 @@ public class Building {
      *
      * @return The sum of prices of sold {@link Storage} objects.
      */
-    public double calculateRealStorageIncome() {
+    public double calculateSoldStorageIncome() {
         double total = 0;
         for (int i = 0; i < this.numStorageRooms; i++) {
             Storage s = this.storageRooms[i];
@@ -611,7 +611,7 @@ public class Building {
         for (int i = 0; i < this.numFloors; i++) {
             for (int j = 0; j < this.apartmentsPerFloor; j++) {
                 Apartment apt = this.apartments[i][j];
-                if (apt != null && dni.equals(apt.getBuyerDni())) {
+                if (apt != null && dni.equalsIgnoreCase(apt.getBuyerDni())) {
                     count++;
                 }
             }
@@ -630,7 +630,7 @@ public class Building {
         for (int i = 0; i < this.numFloors; i++) {
             for (int j = 0; j < this.apartmentsPerFloor; j++) {
                 Apartment apt = this.apartments[i][j];
-                if (apt != null && dni.equals(apt.getBuyerDni())) {
+                if (apt != null && dni.equalsIgnoreCase(apt.getBuyerDni())) {
                     total += apt.getPrice();
                 }
             }
@@ -647,7 +647,7 @@ public class Building {
         for (int i = 0; i < this.numFloors; i++) {
             for (int j = 0; j < this.apartmentsPerFloor; j++) {
                 Apartment apt = this.apartments[i][j];
-                if (apt != null && dni.equals(apt.getBuyerDni())) {
+                if (apt != null && dni.equalsIgnoreCase(apt.getBuyerDni())) {
                     System.out.printf("  [%s] Floor %d, Door %d: %s%n",
                             this.name, i + 1, j + 1, apt.getDetails());
                 }
@@ -665,7 +665,7 @@ public class Building {
         int count = 0;
         for (int i = 0; i < Building.GARAGE_FLOORS; i++) {
             for (int j = 0; j < this.spotsPerGarageFloor; j++) {
-                if (dni.equals(this.garage[i][j].getBuyerDni())) {
+                if (dni.equalsIgnoreCase(this.garage[i][j].getBuyerDni())) {
                     count++;
                 }
             }
@@ -684,7 +684,7 @@ public class Building {
         for (int i = 0; i < Building.GARAGE_FLOORS; i++) {
             for (int j = 0; j < this.spotsPerGarageFloor; j++) {
                 Parking p = this.garage[i][j];
-                if (dni.equals(p.getBuyerDni())) {
+                if (dni.equalsIgnoreCase(p.getBuyerDni())) {
                     total += p.getPrice();
                 }
             }
@@ -701,7 +701,7 @@ public class Building {
         for (int i = 0; i < Building.GARAGE_FLOORS; i++) {
             for (int j = 0; j < this.spotsPerGarageFloor; j++) {
                 Parking p = this.garage[i][j];
-                if (dni.equals(p.getBuyerDni())) {
+                if (dni.equalsIgnoreCase(p.getBuyerDni())) {
                     System.out.printf("  [%s] Basement %d, Spot %d: %s%n",
                             this.name, -(i + 1), j + 1, p.getDetails());
                 }
@@ -718,7 +718,7 @@ public class Building {
     public int countStorageByDni(String dni) {
         int count = 0;
         for (int i = 0; i < this.numStorageRooms; i++) {
-            if (dni.equals(this.storageRooms[i].getBuyerDni())) {
+            if (dni.equalsIgnoreCase(this.storageRooms[i].getBuyerDni())) {
                 count++;
             }
         }
@@ -735,7 +735,7 @@ public class Building {
         double total = 0;
         for (int i = 0; i < this.numStorageRooms; i++) {
             Storage s = this.storageRooms[i];
-            if (dni.equals(s.getBuyerDni())) {
+            if (dni.equalsIgnoreCase(s.getBuyerDni())) {
                 total += s.getPrice();
             }
         }
@@ -750,7 +750,7 @@ public class Building {
     public void listStorageByDni(String dni) {
         for (int i = 0; i < this.numStorageRooms; i++) {
             Storage s = this.storageRooms[i];
-            if (dni.equals(s.getBuyerDni())) {
+            if (dni.equalsIgnoreCase(s.getBuyerDni())) {
                 System.out.printf("  [%s] Storage T%d: %s%n",
                         this.name, i + 1, s.getDetails());
             }
@@ -1048,6 +1048,74 @@ public class Building {
         this.apartments[floor][this.apartmentsPerFloor - 1] = null;
 
         System.out.println("Success: Joined apartments at floor " + (floor + 1));
+        return true;
+    }
+
+    /**
+     * Verifies if two storage units can be merged into a single unit.
+     * <p>
+     * Conditions:
+     * <ol>
+     * <li>Both indices must be within valid bounds.</li>
+     * <li>The indices must be strictly contiguous: |index1 - index2| == 1.</li>
+     * <li>Both {@link Storage} objects must exist (not {@code null}).</li>
+     * <li>Both must be currently {@link Storage.Status#FREE} (available).</li>
+     * </ol>
+     *
+     * @param index1 Index of the first storage unit.
+     * @param index2 Index of the second storage unit.
+     * @return {@code true} if all conditions for merging are met, {@code false} otherwise.
+     */
+    public boolean canJoinStorage(int index1, int index2) {
+        if (index1 < 0 || index1 >= this.numStorageRooms) return false;
+        if (index2 < 0 || index2 >= this.numStorageRooms) return false;
+        if (Math.abs(index1 - index2) != 1) return false;
+
+        Storage s1 = this.storageRooms[index1];
+        Storage s2 = this.storageRooms[index2];
+
+        return s1 != null && s2 != null && s1.isAvailable() && s2.isAvailable();
+    }
+
+    /**
+     * Merges two contiguous storage units into one larger unit and sells it immediately.
+     * <p>
+     * The new unit's price and surface are the sum of both originals.
+     * After the merge, the second slot is removed and the array shifts left.
+     * </p>
+     *
+     * @param index1 Index of the first storage unit.
+     * @param index2 Index of the second storage unit.
+     * @param dni Buyer's DNI.
+     * @return {@code true} if the merge was successful.
+     */
+    public boolean joinStorage(int index1, int index2, String dni) {
+        if (index1 > index2) {
+            int temp = index1; index1 = index2; index2 = temp;
+        }
+
+        if (!canJoinStorage(index1, index2)) {
+            System.err.println("Error: Cannot join storage units at " + index1 + "/" + index2);
+            return false;
+        }
+
+        Storage s1 = this.storageRooms[index1];
+        Storage s2 = this.storageRooms[index2];
+
+        double newPrice = s1.getPrice() + s2.getPrice();
+        double newSurface = s1.getSquareMeters() + s2.getSquareMeters();
+
+        Storage mergedStorage = new Storage(newPrice, newSurface);
+        mergedStorage.sell(dni);
+
+        this.storageRooms[index1] = mergedStorage;
+
+        for (int k = index2; k < this.numStorageRooms - 1; k++) {
+            this.storageRooms[k] = this.storageRooms[k + 1];
+        }
+        this.storageRooms[this.numStorageRooms - 1] = null;
+
+        System.out.println("Success: Joined storage units at indices " + (index1 + 1) + " and " + (index2 + 1));
         return true;
     }
 

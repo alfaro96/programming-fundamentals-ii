@@ -1,3 +1,4 @@
+import playerRoles.FieldPlayer;
 import playerRoles.Player;
 import playerRoles.Forward;
 
