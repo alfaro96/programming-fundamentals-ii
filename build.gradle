@@ -44,8 +44,6 @@ subprojects {
 
     if (project.hasProperty("educationalRun") && "true".equalsIgnoreCase(project.getProperty("educationalRun"))) {
         def runOutput = new ByteArrayOutputStream()
-
-        // CAMBIO 2: 'setStandardOutput()' está obsoleto. Se debe asignar como propiedad.
         tasks.run.standardOutput = runOutput
         tasks.run.doLast { printOutput(runOutput) }
     }
