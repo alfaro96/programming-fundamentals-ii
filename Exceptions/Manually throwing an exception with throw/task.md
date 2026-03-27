@@ -1,23 +1,30 @@
-# Manually throwing an exception with `throw`
+# Throwing Exceptions Manually
 
-This example **demonstrates** how to **manually raise** an **exception** using the `throw` keyword.
+This example **demonstrates** how to actively protect your code by creating and launching custom error objects using the `throw` keyword.
 
 ---
 
 ## What does it do?
 
-The code **defines** a `divide` **method** that **checks if** the **divisor** is **zero**. **If so**, it **uses** the `throw` keyword **to** manually **raise** an `ArithmeticException` with a custom message. This **shows how** you can **detect invalid input and throw exceptions intentionally** to signal problems.
+The program **expands** our `Forward` class by adding a method to update the player's energy level. However, energy cannot be negative in our simulation!
+
+* It **evaluates** the input value. If the value is invalid (e.g., `-15`), the code refuses to continue.
+* It **instantiates** a new `IllegalArgumentException` object, passing a highly specific error message to its constructor.
+* It uses the **`throw`** keyword to physically launch this object, immediately disrupting the program's flow.
+* The `Main` class **catches** this specific object and prints the custom message we defined.
 
 ---
 
 ## Key concepts
 
-* The `throw` keyword is **used to create and raise** an **exception object**.
-* It must be followed by an instance of a subclass of `Throwable`, like `ArithmeticException`.
-* `throw` is used **inside** a **method body**, not in the method declaration.
+* **Forcing a failure:** Sometimes, Java doesn't know an error occurred (like a negative energy level), so we must manually trigger an exception during the program's execution.
+* **The `throw` keyword:** Placed inside a method body to physically launch the error and stop the current execution.
+* **Instantiating the error:** Because exceptions are objects, we must create a new instance to throw it (using the `new` keyword).
+* **Descriptive messages:** The exception instance typically receives a string argument in its constructor to define the exact error message we want to display.
 
 ---
 
-## View the file
+## View the files
 
-[Main.java](file://Exceptions/Manually%20throwing%20an%20exception%20with%20throw/src/Main.java)
+* [Forward.java](file://src/playerRoles/Forward.java)
+* [Main.java](file://src/Main.java)

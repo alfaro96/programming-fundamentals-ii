@@ -1,36 +1,34 @@
+import playerRoles.Forward;
+
 /**
- * Demonstrates how to use the {@code throw} keyword to manually raise an exception.
+ * The main entry point for the football simulation application.
  * <p>
- * This example checks if a divisor is zero and throws an {@link ArithmeticException}
- * with a custom message if so.
- * </p>
- *
- * @author Juan Carlos Alfaro Jiménez
- * @version 1.0
- * @see ArithmeticException
+ * This class attempts to provide invalid data to the {@link Forward} class
+ * and catches the manually thrown exception object.
  */
 public class Main {
 
     /**
-     * Divides two integers. If the divisor is zero, an {@link ArithmeticException} is thrown manually.
+     * Starts the application and handles the custom error message.
      *
-     * @param a the dividend
-     * @param b the divisor
-     */
-    public static void divide(int a, int b) {
-        if (b == 0) {
-            throw new ArithmeticException("Cannot divide by zero.");
-        }
-        System.out.println("Result: " + (a / b));
-    }
-
-    /**
-     * Main method to test the divide operation with valid and invalid input.
-     *
-     * @param args Command-line arguments (not used)
+     * @param args command-line arguments (not used)
      */
     public static void main(String[] args) {
-        divide(10, 2); // Safe division
-        divide(5, 0); // Will throw an exception
+        Forward myForward = new Forward();
+
+        System.out.println("Main: Updating player stats after the match.");
+
+        try {
+            // We intentionally pass a negative value to trigger our manual throw
+            myForward.setEnergyLevel(-15);
+
+        } catch (IllegalArgumentException e) {
+            // We catch the object we created in the Forward class
+            // and use e.getMessage() to extract the custom String we passed to it.
+            System.out.println("Main [ERROR CAUGHT]: " + e.getMessage());
+            System.out.println("Main: Reverting to safe default values.");
+        }
+
+        System.out.println("Main: Player evaluation complete.");
     }
 }

@@ -2,13 +2,9 @@ type: theory
 files:
   - name: src/Main.java
     visible: true
-  - name: src/exceptions/ListFullException.java
+  - name: src/exceptions/PlayerInjuredException.java
     visible: true
-  - name: src/exceptions/EmptyListException.java
+  - name: src/exceptions/TransferDeclinedException.java
     visible: true
-  - name: src/exceptions/ElementNotFoundException.java
-    visible: true
-  - name: src/prioritylist/PriorityList.java
-    visible: true
-  - name: src/prioritylist/Record.java
+  - name: src/playerRoles/Forward.java
     visible: true

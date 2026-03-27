@@ -1,7 +1,9 @@
 content:
-  - Divide by zero with try and catch
-  - Closing resources with finally
-  - File output with throws
+  - Declaring potentially dangerous code
+  - Taking control with try and catch
+  - Delegating responsibility with throws
+  - Understanding checked versus unchecked exceptions
   - Manually throwing an exception with throw
-  - Exception propagation across multiple methods
+  - Guaranteeing execution with finally
+  - Handling multiple exceptions
   - Handling custom exceptions in a priority list

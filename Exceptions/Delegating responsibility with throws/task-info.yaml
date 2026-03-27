@@ -4,3 +4,5 @@ files:
     visible: true
   - name: src/playerRoles/Forward.java
     visible: true
+  - name: src/playerRoles/Player.java
+    visible: true

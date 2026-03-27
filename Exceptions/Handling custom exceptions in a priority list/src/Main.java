@@ -1,65 +1,46 @@
-import exceptions.*;
-import prioritylist.Record;
-import prioritylist.PriorityList;
+import playerRoles.Forward;
+import exceptions.PlayerInjuredException;
+import exceptions.TransferDeclinedException;
 
 /**
- * Demonstrates the usage of the {@link PriorityList} class and custom exception handling in Java.
+ * The main entry point for the football simulation application.
  * <p>
- * This example shows how to:
- * </p>
- * <ul>
- *     <li>Add elements to a priority-based list and handle the {@link ListFullException} if the list is full</li>
- *     <li>Remove a specific record, which may trigger an {@link ElementNotFoundException}</li>
- *     <li>Remove elements from the list until empty, handling {@link EmptyListException}</li>
- * </ul>
- * <p>
- * It highlights the distinction between checked exceptions, which must be handled or declared;
- * and unchecked exceptions, which may be ignored by the compiler, but still cause runtime errors.
- * </p>
- *
- * @author Juan Carlos Alfaro Jiménez
- * @version 1.0
+ * This class orchestrates the simulation by interacting with the {@link Forward}
+ * class and explicitly handling our custom domain exceptions:
+ * {@link PlayerInjuredException} and {@link TransferDeclinedException}.
  */
 public class Main {
 
     /**
-     * Entry point of the program. Demonstrates how custom exceptions work
-     * by adding and removing records from a {@link PriorityList}.
-     * <ul>
-     *      <li>Catches {@link ListFullException} when the list is at capacity.</li>
-     *      <li> Catches {@link EmptyListException} when trying to remove from an empty list.</li>
-     *      <li> Does not catch {@link ElementNotFoundException} since it is unchecked.</li>
-     * </p>
+     * Starts the application, instantiates a player, and demonstrates
+     * the handling of both checked and unchecked custom exceptions.
+     * <p>
+     * It uses {@code try} and {@code catch} blocks to intercept the errors and uses
+     * {@code e.toString()} to display the exact nature of the failure.
      *
-     * @param args Command-line arguments (not used)
+     * @param args command-line arguments (not used in this simulation)
      */
     public static void main(String[] args) {
-        PriorityList list = new PriorityList(10);
+        Forward myForward = new Forward();
 
-        // Add records and handle possible checked exceptions
+        System.out.println("Scenario 1: Unchecked custom exception");
         try {
-            list.add(new Record(3, "R1"));
-            list.add(new Record(3, "R2"));
-            list.add(new Record(5, "R3"));
-            list.add(new Record(2, "R4"));
-            list.add(new Record(4, "R5"));
-        } catch (ListFullException e) {
-            System.out.println(e);
+            // Attempting to play a match. This invokes a method that
+            // naturally throws an unchecked PlayerInjuredException.
+            myForward.playMatch();
+        } catch (PlayerInjuredException e) {
+            // Invoking toString() prints the class name and the custom message!
+            System.out.println("Main [CAUGHT]: " + e.toString());
         }
 
-        // Remove a specific record, which is an unchecked exception, so not required to catch
-        list.remove(new Record(7, "R2"));
-
-        // Remove elements and handle possible checked exceptions
+        System.out.println("\nScenario 2: Checked custom exception");
         try {
-            list.remove();
-            list.remove();
-            list.remove();
-            list.remove();
-            list.remove();
-            list.remove();
-        } catch (EmptyListException e) {
-            System.out.println(e);
+            // The compiler FORCES us to use try and catch here because
+            // requestTransfer(...) explicitly declares a checked exception.
+            myForward.requestTransfer("Real Madrid");
+        } catch (TransferDeclinedException e) {
+            // Invoking toString() prints the class name and the custom message!
+            System.out.println("Main [CAUGHT]: " + e.toString());
         }
     }
 }

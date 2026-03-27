@@ -1,35 +1,34 @@
-# Handling custom exceptions in a priority list
+# Creating Custom Exceptions
 
-This example **demonstrates** how to define and use **custom exceptions** to improve clarity and error handling in your application.
+This example **demonstrates** how to create your own domain-specific exception objects by extending Java's base exception classes.
 
 ---
 
 ## What does it do?
 
-The code **defines** a `PriorityList` class **where elements** are **added and removed based on** their **priority**. It **uses custom exceptions** to **handle error conditions** in a **clearer and** more **meaningful way**:
+The program **introduces** two brand-new exception classes specific to our football simulation:
 
-* `ListFullException`: **thrown** when **adding** to a **full list**
-* `EmptyListException`: **thrown** when trying to **remove** from an **empty list**
-* `ElementNotFoundException`: **thrown** when **removing** a **non-existent item** (unchecked)
+1.  **`PlayerInjuredException`**: Extends `RuntimeException`. It represents an unexpected event (unchecked).
+2.  **`TransferDeclinedException`**: Extends `Exception`. It represents a formal business rule failure that must be handled (checked).
 
-The `Main` class shows how these exceptions are thrown and caught during usage.
+The `Forward` class **uses** these new objects to signal problems. When an error occurs, it instantiates the custom exception and passes a specific message to its constructor (`super()`).
+Finally, the `Main` class **catches** these custom errors and uses `toString()` to print both the name of the custom exception and the message we provided.
 
 ---
 
 ## Key concepts
 
-* **Custom exceptions** make your **code more descriptive and easier** to **debug**.
-* **Extend** `Exception` for **checked exceptions** and `RuntimeException` for **unchecked exceptions**.
-* **Catch checked exceptions** using `try` and `catch` block.
-* **Unchecked exceptions do not require** `throws` **or** a `try` and `catch` block, **but may** still cause **runtime errors**.
+* **Domain objects**: Since exceptions are objects, we can build custom ones for specific application errors, making our code much easier to read and debug.
+* **Checked versus unchecked**:
+  * Use `extends Exception` to enforce mandatory handling (`TransferDeclinedException`).
+  * Use `extends RuntimeException` for optional handling (`PlayerInjuredException`).
+* **Custom messages**: By passing a string to `super()` in your custom constructor, you store an error message. Invoking `toString()` on the caught exception will print the exception's exact class name alongside this message.
 
 ---
 
 ## View the files
 
-- [Main.java](file://Exceptions/Handling%20custom%20exceptions%20in%20a%20priority%20list/src/Main.java)
-- [PriorityList.java](file://Exceptions/Handling%20custom%20exceptions%20in%20a%20priority%20list/src/prioritylist/PriorityList.java)
-- [Record.java](file://Exceptions/Handling%20custom%20exceptions%20in%20a%20priority%20list/src/prioritylist/Record.java)
-- [ListFullException.java](file://Exceptions/Handling%20custom%20exceptions%20in%20a%20priority%20list/src/exceptions/ListFullException.java)
-- [EmptyListException.java](file://Exceptions/Handling%20custom%20exceptions%20in%20a%20priority%20list/src/exceptions/EmptyListException.java)
-- [ElementNotFoundException.java](file://Exceptions/Handling%20custom%20exceptions%20in%20a%20priority%20list/src/exceptions/ElementNotFoundException.java)
+* [PlayerInjuredException.java](file://src/exceptions/PlayerInjuredException.java)
+* [TransferDeclinedException.java](file://src/exceptions/TransferDeclinedException.java)
+* [Forward.java](file://src/playerRoles/Forward.java)
+* [Main.java](file://src/Main.java)
