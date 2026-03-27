@@ -1,0 +1,59 @@
+type: edu
+files:
+  - name: test/Tests.java
+    visible: false
+    propagatable: false
+  - name: src/antiques/Furniture.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 1626
+        placeholder_text: "/* TODO: Implement Furniture class. */"
+  - name: src/antiques/Painting.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 1617
+        placeholder_text: "/* TODO: Implement Painting class. */"
+  - name: src/antiques/Antique.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 2539
+        placeholder_text: "/* TODO: Implement Antique class. */"
+  - name: src/antiques/Collection.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 6035
+        placeholder_text: "/* TODO: Implement Collection class. */"
+  - name: src/exceptions/InvalidPriceException.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 785
+        placeholder_text: "/* TODO: Implement InvalidPriceException class. */"
+  - name: src/exceptions/YearOutOfRangeException.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 1164
+        placeholder_text: "/* TODO: Implement YearOutOfRangeException class. */"
+  - name: src/exceptions/CollectionFullException.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 824
+        placeholder_text: "/* TODO: Implement CollectionFullException class. */"
+  - name: src/exceptions/FurnitureNotFoundException.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 846
+        placeholder_text: "/* TODO: Implement FurnitureNotFoundException class. */"
+  - name: src/Main.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 8942
+        placeholder_text: "/* TODO: Implement Main class. */"
