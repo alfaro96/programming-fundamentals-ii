@@ -1,4 +1,4 @@
-# Passing the Exception up the Chain
+# Delegating responsibility with `throws`
 
 This example **demonstrates** how to delegate the responsibility of handling an exception using the `throws` keyword across multiple classes.
 

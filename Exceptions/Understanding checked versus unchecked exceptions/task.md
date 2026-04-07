@@ -1,4 +1,4 @@
-# Understanding Checked vs. Unchecked Exceptions
+# Understanding checked and unchecked exceptions
 
 This example **demonstrates** the difference between an exception the compiler forces you to handle (checked) and one it ignores until the program runs (unchecked).
 

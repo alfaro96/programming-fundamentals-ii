@@ -1,4 +1,4 @@
-# Creating Custom Exceptions
+# Creating custom exceptions
 
 This example **demonstrates** how to create your own domain-specific exception objects by extending Java's base exception classes.
 

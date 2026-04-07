@@ -1,4 +1,4 @@
-# Throwing Exceptions Manually
+# Throwing exceptions manually
 
 This example **demonstrates** how to actively protect your code by creating and launching custom error objects using the `throw` keyword.
 

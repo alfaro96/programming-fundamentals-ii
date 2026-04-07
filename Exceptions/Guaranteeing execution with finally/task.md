@@ -1,4 +1,4 @@
-# Closing resources with finally
+# Guaranteeing execution with `finally`
 
 This example **demonstrates** how to guarantee the execution of critical cleanup code using the `finally` block, regardless of whether an exception occurs.
 
