@@ -1,0 +1,23 @@
+type: edu
+files:
+  - name: src/Main.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 2467
+        placeholder_text: "/* TODO: Implement Main class. */"
+  - name: test/Tests.java
+    visible: false
+    propagatable: false
+  - name: src/Dog.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 856
+        placeholder_text: "/* TODO: Implement Dog class. */"
+  - name: src/Cat.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 856
+        placeholder_text: "/* TODO: Implement Cat class. */"

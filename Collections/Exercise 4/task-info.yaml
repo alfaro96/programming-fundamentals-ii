@@ -1,0 +1,13 @@
+type: edu
+files:
+  - name: src/Main.java
+    visible: true
+  - name: test/Tests.java
+    visible: false
+    propagatable: false
+  - name: src/Pet.java
+    visible: true
+  - name: src/Dog.java
+    visible: true
+  - name: src/Cat.java
+    visible: true

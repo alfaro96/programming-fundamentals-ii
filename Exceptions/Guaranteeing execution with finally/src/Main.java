@@ -41,7 +41,6 @@ public class Main {
             reporter.closeConnection();
         }
 
-
         System.out.println("Main: Program terminated gracefully.");
     }
 }

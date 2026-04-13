@@ -1,0 +1,7 @@
+# Exercise 5
+
+1. Add a static method named **`processElements`** to your main class. This method must accept a single parameter: an **`ArrayList`** restricted by an upper bound wildcard, meaning it can accept lists of **`Pet`** or any of its subclasses. Inside the method, iterate through the list and safely invoke the **`speak()`** method on each element.
+2. Instantiate separate, strongly-typed generic lists for **`Dog`** and **`Cat`** objects. Populate them, and pass each list to your **`processElements`** method to verify that your wildcard implementation handles both collections correctly.
+3. Attempt to pass an **`ArrayList<String>`** and a completely raw (non-generic) **`ArrayList`** to the **`processElements`** method. Observe, analyze, and document the compiler's reaction or the runtime behavior for each case.
+4. Research the concept of lower bounded wildcards in Java generics (specifically the syntax using **`? super`**).
+5. Create an overloaded version of **`processElements`** (or a new method) that accepts an **`ArrayList`** restricted by a lower bound wildcard, so it accepts lists of **`Pet`** or any of its superclasses. Iterate through this list (think carefully about what base type you must use to guarantee a safe extraction from such a list) and print each object to the console. Test it and explain why iterating over a lower bounded list differs from an upper bounded one.

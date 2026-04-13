@@ -1,0 +1,8 @@
+Step 3 - Initial list: [Red, Green, Orange, White, Black]
+Step 4 - After inserting Pink at 0: [Pink, Red, Green, Orange, White, Black]
+Step 6 - After adding Purple at the end: [Pink, Red, Green, Blue, White, Black, Purple]
+Step 7 - Elements at even positions: Pink, Green, White, Purple
+Step 8 - After removing element at position 4: [Pink, Red, Green, Blue, Black, Purple]
+Step 9 - Sorted list: [Black, Blue, Green, Pink, Purple, Red]
+Step 10 - After adding an integer: [Black, Blue, Green, Pink, Purple, Red, 100]
+Step 11 - Length of string at position 3 ('Pink'): 4

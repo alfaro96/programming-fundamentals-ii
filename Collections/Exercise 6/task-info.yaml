@@ -1,0 +1,26 @@
+type: theory
+files:
+  - name: src/Pet.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 1209
+        placeholder_text: "/* TODO: Implement Pet class. */"
+  - name: src/Dog.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 877
+        placeholder_text: "/* TODO: Implement Dog class. */"
+  - name: src/Cat.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 877
+        placeholder_text: "/* TODO: Implement Cat class. */"
+  - name: src/Main.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 4406
+        placeholder_text: "/* TODO: Implement Main class. */"

@@ -1,8 +1,13 @@
 content:
-  - Managing team players with a resizable array
-  - Storing specific player types with generics
-  - Printing player details in a method
-  - Printing player details with wildcards
-  - Using an iterator to traverse a list
-  - Modifying a list during iteration
-  - Safely modifying a list with an iterator
+  - Understanding resizable arrays
+  - Exercise 1
+  - Enforcing type safety with generics
+  - Exercise 2
+  - Exercise 3
+  - Exercise 4
+  - Solving generic invariance with wildcards
+  - Exercise 5
+  - Understanding the Iterator interface
+  - Solving concurrent modification issues
+  - Exercise 6
+  - Sorting collections with Comparable

@@ -8,11 +8,10 @@ vendor:
 programming_language: Java
 content:
   - Introduction to Java
-  - "Classes, objects, and methods"
+  - Classes, objects, and methods
   - Inheritance
   - Exceptions
   - Collections
-  - Event-driven programming
 environment_settings:
   jvm_language_level: JDK_1_8
 additional_files:
