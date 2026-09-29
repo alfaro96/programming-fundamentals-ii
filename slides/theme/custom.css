@@ -168,10 +168,10 @@
   --script-size: 0.7em; /* superscripts and subscripts, em of their line */
 
   /* Drawing buttons (theme/draw.js): outside the scaled slide, so sizes are rem, a touch target on a tablet */
-  --draw-button-size: 2.5rem;
+  --draw-button-size: 3rem;
   --draw-inset: 0.5rem; /* from the bottom left corner of the window */
   --draw-gap: 0.4rem; /* between the two buttons */
-  --draw-idle-opacity: 0.5; /* out of the way while nobody draws */
+  --draw-idle-opacity: 0.85; /* a little quieter while nobody draws */
 
   /* Site index page (scripts/site-index.mjs): an ordinary web page, so sizes are rem of the browser's text */
   --site-width: 64rem; /* widest the content gets */
