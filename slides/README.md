@@ -71,6 +71,7 @@ Programming Fundamentals II/  ← repository root
     ├── content/              ← one .md file per unit (unit_1-*.md, unit_2-*.md...) and assets/, their images
     ├── theme/custom.css      ← ALL visual styling, in a single file
     ├── theme/*.js            ← cover, contents, print handout and drawing helpers
+    ├── theme/reveal.html     ← the page around the slides: reveal-md's template, ready for tablets
     ├── theme/vendor/         ← third-party plugins, copied as they are (the chalkboard, for drawing)
     ├── templates/            ← one markdown mold per slide type
     ├── scripts/              ← PDF export, GitHub Pages site, screenshots and the settings reader

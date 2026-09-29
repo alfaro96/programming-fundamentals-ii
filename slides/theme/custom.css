@@ -167,11 +167,12 @@
   --list-indent: 1.2em; /* room for the marker; reveal's reset zeroes list padding */
   --script-size: 0.7em; /* superscripts and subscripts, em of their line */
 
-  /* Drawing buttons (theme/draw.js): outside the scaled slide, so sizes are rem, a touch target on a tablet */
-  --draw-button-size: 3rem;
-  --draw-inset-x: 0.5rem; /* from the left edge of the window */
-  --draw-inset-y: 2.5rem; /* from the bottom, clear of a tablet browser's toolbar */
-  --draw-gap: 0.4rem; /* between the two buttons */
+  /* Drawing buttons (theme/draw.js): a row matching reveal's arrows on the other side, in the same units */
+  --draw-unit: 10px; /* the font size reveal gives its .controls, which every em below is of */
+  --draw-row: 3.2em; /* how high reveal sets its left and right arrows */
+  --draw-button-size: 3.6em; /* the size of each of those arrows */
+  --draw-gap: 1em; /* between the two buttons */
+  --draw-icon-size: 2em;
   --draw-idle-opacity: 0.85; /* a little quieter while nobody draws */
 
   /* Site index page (scripts/site-index.mjs): an ordinary web page, so sizes are rem of the browser's text */
@@ -1136,6 +1137,11 @@ html.print-handout .reveal pre:has(code.fragment) .hljs.has-highlights tr.highli
   color: var(--color-accent-2);
 }
 
+/* reveal's arrows, and the drawing buttons with them, keep clear of the screen edges a tablet reserves (theme/reveal.html asks for them); on a computer those are 0 */
+.reveal-viewport {
+  --r-controls-spacing: max(0.8em, env(safe-area-inset-bottom, 0px), env(safe-area-inset-left, 0px), env(safe-area-inset-right, 0px));
+}
+
 /* Slide number: just the figure, in the body font and the subtitle gray */
 .reveal .slide-number {
   background: none;
@@ -1390,20 +1396,22 @@ html.reveal-print .reveal .slide-number-pdf {
 
 .reveal .draw-tools {
   position: absolute;
-  bottom: calc(var(--draw-inset-y) + env(safe-area-inset-bottom, 0px));
-  left: calc(var(--draw-inset-x) + env(safe-area-inset-left, 0px));
+  bottom: calc(var(--r-controls-spacing) + var(--draw-row));
+  left: var(--r-controls-spacing);
   z-index: 30;
   display: flex;
-  flex-direction: column;
   gap: var(--draw-gap);
+  font-size: var(--draw-unit);
 }
 
 .reveal .draw-tools button {
   display: grid;
+  box-sizing: border-box;
+  font-size: inherit;
   place-items: center;
   width: var(--draw-button-size);
   height: var(--draw-button-size);
-  padding: 20%;
+  padding: 0;
   border: var(--rule-hairline) solid currentColor;
   border-radius: 50%;
   background: var(--color-bg);
@@ -1424,8 +1432,8 @@ html.reveal-print .reveal .slide-number-pdf {
 }
 
 .reveal .draw-tools svg {
-  width: 100%;
-  height: 100%;
+  width: var(--draw-icon-size);
+  height: var(--draw-icon-size);
 }
 
 #notescanvas div.palette,
@@ -1433,6 +1441,12 @@ html.reveal-print .reveal .slide-number-pdf {
   border-color: var(--color-card-edge);
   background: var(--color-bg);
   box-shadow: var(--card-shadow);
+}
+
+/* A finger on the canvases only draws: no scrolling, zooming or other browser gesture */
+#notescanvas canvas,
+#chalkboard canvas {
+  touch-action: none;
 }
 
 /* The plugin draws each color as a Font Awesome square: without that font, the square is drawn here */

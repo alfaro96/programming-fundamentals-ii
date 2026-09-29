@@ -13,6 +13,7 @@ This is the `slides/` project of a repository that also holds `code/`, the JetBr
 * Within each file, slides are separated by `---` (horizontal) and `--` (vertical, for a sub-slide within the same point, e.g. question + solution).
 * `theme/custom.css`: ALL visual styling (colors, background, typography, code block styling) lives here as CSS variables in `:root`. Never put loose styling inside a slide `.md` file; if the instructor asks for a visual change, edit only this file.
 * `theme/*.js`: what the slides build at runtime: the cover, the contents slides, the print handout and the drawing buttons (`theme/draw.js`, which sets up the chalkboard plugin).
+* `theme/reveal.html`: the page around the slides, reveal-md's own template with a single change, `viewport-fit=cover`, so the arrows and the drawing buttons keep clear of a tablet's screen edges. Its first comment names the reveal-md version it was copied from: if reveal-md changes its template, copy the new one and make that change again.
 * `theme/vendor/`: third-party plugins copied as they are, with their license; never edit them, adjust them from `theme/draw.js` and `theme/custom.css`.
 * `templates/`: one mold per common slide type in this course. Use them as a starting point and adapt the content; don't copy them literally with placeholders left in.
 
