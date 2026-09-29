@@ -22,15 +22,14 @@ const icon = (paths) => `<svg class="site-icon" viewBox="0 0 24 24" aria-hidden=
 const icons = {
   slides: icon('<rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>'),
   class: icon('<path d="m12 2-10 5 10 5 10-5-10-5z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/>'),
-  print: icon('<path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/>'),
-  code: icon('<path d="m16 18 6-6-6-6M8 6l-6 6 6 6"/>')
+  print: icon('<path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/>')
 };
 
 // What each link gives, shown once above the units
 const versions = [
   ["slides", "Slides", "In the browser, step by step, as in class"],
-  ["class", "class PDF", "One page per step, as shown in class"],
-  ["print", "print PDF", "One page per slide, every step visible, to print"]
+  ["class", "Class PDF", "One page per step, as shown in class"],
+  ["print", "Print PDF", "One page per slide, every step visible, to print"]
 ];
 
 // The unit_N prefix of the file names gives the order
@@ -60,14 +59,11 @@ ${sections.map((s, i) => `            <li><span>${i + 1}</span>${escape(s)}</li>
           </ol>
           <nav class="site-unit-links" aria-label="Unit ${escape(number)}">
             <a class="site-link site-link-main" href="${base}.html">${icons.slides}Slides</a>
-            <a class="site-link" href="pdf/class/${base}.pdf">${icons.class}class PDF</a>
-            <a class="site-link" href="pdf/print/${base}.pdf">${icons.print}print PDF</a>
+            <a class="site-link" href="pdf/class/${base}.pdf">${icons.class}Class PDF</a>
+            <a class="site-link" href="pdf/print/${base}.pdf">${icons.print}Print PDF</a>
           </nav>
         </div>
       </li>`;
-
-// On GitHub Actions, a link back to the repository
-const repository = process.env.GITHUB_REPOSITORY ? `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}` : "";
 
 await writeFile(
   path.join(site, "index.html"),
@@ -96,9 +92,6 @@ ${versions.map(([key, name, text]) => `        <li>${icons[key]}<p><strong>${nam
       <ol class="site-units">${units.map(card).join("")}
       </ol>
     </main>
-    <footer class="site-footer site-wrap">
-      ${repository ? `<a href="${repository}">${icons.code}Source on GitHub</a>` : ""}
-    </footer>
   </body>
 </html>
 `

@@ -167,6 +167,12 @@
   --list-indent: 1.2em; /* room for the marker; reveal's reset zeroes list padding */
   --script-size: 0.7em; /* superscripts and subscripts, em of their line */
 
+  /* Drawing buttons (theme/draw.js): outside the scaled slide, so sizes are rem, a touch target on a tablet */
+  --draw-button-size: 2.5rem;
+  --draw-inset: 0.5rem; /* from the bottom left corner of the window */
+  --draw-gap: 0.4rem; /* between the two buttons */
+  --draw-idle-opacity: 0.5; /* out of the way while nobody draws */
+
   /* Site index page (scripts/site-index.mjs): an ordinary web page, so sizes are rem of the browser's text */
   --site-width: 64rem; /* widest the content gets */
   --site-gutter: 1.25rem; /* side air, phones included */
@@ -1245,6 +1251,7 @@ html.reveal-print .reveal .slide-number-pdf {
   display: grid;
   gap: var(--site-gap);
   margin: 0;
+  margin-bottom: calc(2 * var(--site-gap));
   padding: 0;
   list-style: none;
 }
@@ -1358,23 +1365,6 @@ html.reveal-print .reveal .slide-number-pdf {
   background: var(--color-accent-2);
 }
 
-.site-footer {
-  padding-block: calc(2 * var(--site-gap));
-  color: var(--color-muted);
-}
-
-.site-footer a {
-  display: inline-flex;
-  gap: 0.5em;
-  align-items: center;
-  color: inherit;
-  text-decoration: none;
-}
-
-.site-footer a:hover {
-  color: var(--color-accent-2);
-}
-
 /* Phones: one column, the number above the title and the links full width */
 @media (max-width: 40rem) {
   .site-versions,
@@ -1393,4 +1383,69 @@ html.reveal-print .reveal .slide-number-pdf {
   .site-link {
     justify-content: center;
   }
+}
+
+/* Drawing: the buttons of theme/draw.js, above the plugin's canvases, and the plugin's color palette in the theme's colors */
+
+.reveal .draw-tools {
+  position: absolute;
+  bottom: var(--draw-inset);
+  left: var(--draw-inset);
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  gap: var(--draw-gap);
+}
+
+.reveal .draw-tools button {
+  display: grid;
+  place-items: center;
+  width: var(--draw-button-size);
+  height: var(--draw-button-size);
+  padding: 20%;
+  border: var(--rule-hairline) solid currentColor;
+  border-radius: 50%;
+  background: var(--color-bg);
+  color: var(--color-accent-2);
+  opacity: var(--draw-idle-opacity);
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.reveal .draw-tools button:hover,
+.reveal .draw-tools button[aria-pressed="true"] {
+  opacity: 1;
+}
+
+.reveal .draw-tools button[aria-pressed="true"] {
+  background: var(--color-accent-2);
+  color: var(--color-bg);
+}
+
+.reveal .draw-tools svg {
+  width: 100%;
+  height: 100%;
+}
+
+#notescanvas div.palette,
+#chalkboard div.palette {
+  border-color: var(--color-card-edge);
+  background: var(--color-bg);
+  box-shadow: var(--card-shadow);
+}
+
+/* The plugin draws each color as a Font Awesome square: without that font, the square is drawn here */
+#notescanvas div.palette .fa-square,
+#chalkboard div.palette .fa-square {
+  display: block;
+  width: 1em;
+  height: 1em;
+  border-radius: 0.2em;
+  background: currentColor;
+  cursor: pointer;
+}
+
+#notescanvas div.palette li[data-eraser],
+#chalkboard div.palette li[data-eraser] {
+  cursor: pointer;
 }

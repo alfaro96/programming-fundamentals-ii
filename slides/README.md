@@ -22,6 +22,10 @@ npm run dev
 
 Starts a local dev server with hot reload: any change saved in `content/` or `theme/custom.css` updates automatically.
 
+## Drawing on the slides
+
+The two round buttons at the bottom left open a pen to draw over the slide and a whiteboard (also the C and B keys), so it works on a tablet with no keyboard. While either is open, a palette on the left picks the color or the eraser. What is drawn stays on its slide until the page is reloaded, and never reaches the PDFs.
+
 ## Settings
 
 `reveal-md.json5` holds the deck settings, each with a comment saying what it is for: the canvas size (which the slides, the PDF pages and the screenshots all take), the reveal.js options, the scripts in `theme/` and the images folder. It is read only once, when `npm run dev` starts, so restart it after changing anything there. The scripts read it too, through `scripts/config.mjs`, so keep it as JSON plus `//` comments, with no trailing commas.
@@ -66,7 +70,8 @@ Programming Fundamentals II/  ← repository root
     ├── .claude/commands/     ← /new-slide, /new-unit, etc.
     ├── content/              ← one .md file per unit (unit_1-*.md, unit_2-*.md...) and assets/, their images
     ├── theme/custom.css      ← ALL visual styling, in a single file
-    ├── theme/*.js            ← cover, contents and print handout helpers
+    ├── theme/*.js            ← cover, contents, print handout and drawing helpers
+    ├── theme/vendor/         ← third-party plugins, copied as they are (the chalkboard, for drawing)
     ├── templates/            ← one markdown mold per slide type
     ├── scripts/              ← PDF export, GitHub Pages site, screenshots and the settings reader
     └── production/           ← generated: class/, print/, web/, site/ and preview/

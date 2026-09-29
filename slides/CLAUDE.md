@@ -12,6 +12,8 @@ This is the `slides/` project of a repository that also holds `code/`, the JetBr
 * `content/assets/`: images, one subfolder per unit named as its file (`content/assets/unit_1-introduction_java/`), referenced from the slides as `assets/unit_1-introduction_java/image.png`. Anything shared by every unit goes straight in `content/assets/`. Keep the folder even when empty (`.gitkeep`): `reveal-md.json5` copies it and the build fails without it.
 * Within each file, slides are separated by `---` (horizontal) and `--` (vertical, for a sub-slide within the same point, e.g. question + solution).
 * `theme/custom.css`: ALL visual styling (colors, background, typography, code block styling) lives here as CSS variables in `:root`. Never put loose styling inside a slide `.md` file; if the instructor asks for a visual change, edit only this file.
+* `theme/*.js`: what the slides build at runtime: the cover, the contents slides, the print handout and the drawing buttons (`theme/draw.js`, which sets up the chalkboard plugin).
+* `theme/vendor/`: third-party plugins copied as they are, with their license; never edit them, adjust them from `theme/draw.js` and `theme/custom.css`.
 * `templates/`: one mold per common slide type in this course. Use them as a starting point and adapt the content; don't copy them literally with placeholders left in.
 
 ## Current visual style

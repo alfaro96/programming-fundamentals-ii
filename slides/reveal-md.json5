@@ -25,8 +25,11 @@
     "margin": 0
   },
 
-  // Loaded in every unit, in this order: cover.js defines what the others read
-  "scripts": "theme/cover.js,theme/contents.js,theme/handout.js",
+  // Loaded in every unit, in this order: cover.js defines what the others read, and draw.js sets up the chalkboard plugin loaded just before it
+  "scripts": "theme/cover.js,theme/contents.js,theme/handout.js,theme/vendor/chalkboard/plugin.js,theme/draw.js",
+
+  // Extra stylesheets: the chalkboard plugin's own, which theme/custom.css adjusts
+  "css": "theme/vendor/chalkboard/style.css",
 
   // Copied into every export: the images of the units
   "staticDirs": "content/assets"
