@@ -14,14 +14,14 @@ Through Java, students learn to structure larger applications and apply reusable
 
 ## About this project
 
-A Gradle project in JetBrains Academy format, with one lesson per unit. Each lesson follows its unit's slides, in the same order and with the same names. It contains:
+A Gradle project in JetBrains Academy format, with one lesson per unit. Each lesson's examples follow its unit's slides, in the same order and with the same names. It contains:
 
 * **Code examples** (theory tasks): the examples shown in the slides, ready to read and run
 * **Exercises and assignments** (edu tasks): checked automatically with JUnit tests
 * **Output tasks**: checked by comparing the program's output with the expected one
 * **Course configuration**: `course-info.yaml`, a `lesson-info.yaml` per lesson, and a `task-info.yaml` and `task.md` per task
 
-> These materials are designed to be opened in IntelliJ IDEA Edu or any JetBrains IDE with the EduTools plugin.
+> These materials are designed to be opened in IntelliJ IDEA with the JetBrains Academy plugin.
 
 ---
 
@@ -30,7 +30,7 @@ A Gradle project in JetBrains Academy format, with one lesson per unit. Each les
 | Unit   | Topic                           |
 |--------|---------------------------------|
 | Unit 1 | Introduction to Java            |
-| Unit 2 | Classes, Objects, and Methods   |
+| Unit 2 | Classes, objects, and methods   |
 | Unit 3 | Inheritance                     |
 | Unit 4 | Exceptions                      |
 | Unit 5 | Collections                     |
@@ -49,5 +49,5 @@ Each unit contains a combination of:
 To run and explore the course material:
 
 * Java 17 or later
-* IntelliJ IDEA Edu, or IntelliJ IDEA with the EduTools plugin
+* IntelliJ IDEA with the JetBrains Academy plugin
 * JetBrains Academy account (optional but recommended)

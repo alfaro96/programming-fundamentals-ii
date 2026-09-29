@@ -2,7 +2,7 @@
 
 This is the `code/` project of the **Programming Fundamentals II** repository: the JetBrains Academy course with the examples, exercises and assignments of each unit. The lecture slides are in `../slides/`, with their own `CLAUDE.md`. Every path below is relative to this `code/` folder.
 
-Students open it in IntelliJ IDEA Edu, or IntelliJ IDEA with the EduTools plugin.
+Students open it in IntelliJ IDEA with the JetBrains Academy plugin.
 
 ## Project layout
 
@@ -23,12 +23,12 @@ Students open it in IntelliJ IDEA Edu, or IntelliJ IDEA with the EduTools plugin
 
 ## Rules
 
-* **Placeholders are character offsets.** In `edu` tasks, `task-info.yaml` marks the part the student writes with an `offset` and a `length` counted in characters of the source file. Editing that file outside the IDE shifts them: update `offset`, `length` and `placeholder_text` in the same change, or say plainly that the instructor must fix them from EduTools.
-* A new task or lesson has to be listed in the `content` of its `lesson-info.yaml` or `course-info.yaml`, or EduTools will not show it.
+* **Placeholders are character offsets.** In `edu` tasks, `task-info.yaml` marks the part the student writes with an `offset` and a `length` counted in characters of the source file. Editing that file outside the IDE shifts them: update `offset`, `length` and `placeholder_text` in the same change, or say plainly that the instructor must fix them from the JetBrains Academy plugin.
+* A new task or lesson has to be listed in the `content` of its `lesson-info.yaml` or `course-info.yaml`, or the JetBrains Academy plugin will not show it.
 * All Java code must compile with Java 17 and every `edu` task must pass its own tests with the reference solution.
 * Keep the level of the slides: students come from C and meet Java syntax in unit 1. Do not use constructs the unit has not introduced yet.
-* `build/`, `out/`, `.gradle/` and `.idea/` are generated and ignored by git; never edit them.
+* `build/`, `out/`, `doc/` (Javadoc), `.gradle/` and `.idea/` are generated and ignored by git; never edit them.
 
-Each lesson mirrors a unit of the slides: see "Keeping `slides/` and `code/` in step" in the repository's `CLAUDE.md` before renaming, adding or reordering anything.
+Each lesson goes with a unit of the slides: its `theory` tasks mirror the slides, while its exercises (`edu` and `output`) are problems of their own that only have to stay within what the slides introduce. See "Keeping `slides/` and `code/` in step" in the repository's `CLAUDE.md` before renaming, adding or reordering anything; if a slide links to an exercise, renaming its folder means updating that link.
 
 To be completed as work on the code starts.

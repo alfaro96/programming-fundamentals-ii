@@ -8,29 +8,29 @@
 # Settings of each machine
 .env
 
-# slides: generated exports (PDFs, web version and published site)
+# Generated exports (PDFs, web version and screenshots)
 slides/production/
 
-# code: build and compiled class files
+# Build and compiled class files
 code/**/*.class
 code/**/build/
 code/**/out/
 
-# code: IDE files
+# IDE files
 code/.idea/
 code/**/*.iml
 
-# code: documentation
-code/doc/
+# Javadoc generated from the code
+code/**/doc/
 
-# code: Gradle build cache
+# Gradle build cache
 code/.gradle/
 
-# code: Java backup files
+# Java backup files
 code/**/*~
 code/**/*.bak
 
-# code: JetBrains Academy remote metadata and creator state
+# JetBrains Academy remote metadata and creator state
 code/**/lesson-remote-info.yaml
 code/**/task-remote-info.yaml
 code/.coursecreator/

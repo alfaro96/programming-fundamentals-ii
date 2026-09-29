@@ -1,4 +1,5 @@
-// Marks the print view that puts every step of a slide on one page (the print PDF), so theme/custom.css can drop the step highlights there; the class PDF and the screen keep them
+// Marks the print view with every step on one page (the print PDF), so theme/custom.css can drop
+// the step highlights there; the class PDF and the screen keep them
 
 (function () {
   function mark() {

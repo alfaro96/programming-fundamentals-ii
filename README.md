@@ -1,6 +1,6 @@
 # Programming Fundamentals II
 
-This repository contains the slides and the JetBrains Academy-compatible code for **Programming Fundamentals II**, a second-semester course in the Computer Science degree program.
+This repository contains the slides and the code for **Programming Fundamentals II**, a second-semester course in the Computer Science degree program.
 
 ---
 
@@ -30,10 +30,10 @@ The lecture slides, one Markdown file per unit, rendered with reveal.js. It cont
 
 Both PDF versions are generated from the same slides:
 
-* **class**: one page per step, as shown during the lecture
-* **print**: one page per slide, every step visible, for students to print and study
+* **Class**: one page per step, as shown during the lecture
+* **Print**: one page per slide, every step visible, for students to print and study
 
-The web version and both PDFs are published on GitHub Pages on every push.
+The web version is published on GitHub Pages on every push.
 
 > See `slides/README.md` for how to view, edit and export the slides.
 
@@ -46,7 +46,7 @@ A Gradle project in JetBrains Academy format, with one lesson per unit. It conta
 * **Output tasks** that compare the program's output with the expected one
 * **Course configuration**: `course-info.yaml`, a `lesson-info.yaml` per lesson and a `task-info.yaml` and `task.md` per task
 
-> These materials are designed to be opened in IntelliJ IDEA Edu or any JetBrains IDE with the EduTools plugin.
+> These materials are designed to be opened in IntelliJ IDEA with the JetBrains Academy plugin.
 
 > Each folder's README (`slides/README.md` and `code/README.md`) lists its own technical requirements.
 
@@ -57,7 +57,7 @@ A Gradle project in JetBrains Academy format, with one lesson per unit. It conta
 | Unit   | Topic                           |
 |--------|---------------------------------|
 | Unit 1 | Introduction to Java            |
-| Unit 2 | Classes, Objects, and Methods   |
+| Unit 2 | Classes, objects, and methods   |
 | Unit 3 | Inheritance                     |
 | Unit 4 | Exceptions                      |
 | Unit 5 | Collections                     |

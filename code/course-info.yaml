@@ -13,7 +13,7 @@ content:
   - Exceptions
   - Collections
 environment_settings:
-  jvm_language_level: JDK_1_8
+  jvm_language_level: JDK_17
 additional_files:
   - name: build.gradle
   - name: settings.gradle

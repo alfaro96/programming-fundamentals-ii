@@ -1,10 +1,10 @@
 // Reads reveal-md.json5 for the other scripts, which import readConfig() or run this one
 //
-// size: prints the canvas width and height in pixels, in the form reveal-md --print-size takes
+// size: prints the canvas size in pixels, as reveal-md --print-size takes it
 
 import { readFile } from "node:fs/promises";
 
-// Plain JSON once the // comments are dropped: keep the file to JSON plus comments (no trailing commas)
+// JSON once the // comments are dropped, so the file takes no trailing commas
 export async function readConfig() {
   const text = await readFile("reveal-md.json5", "utf8");
   let json = "";

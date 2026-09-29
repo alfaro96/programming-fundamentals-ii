@@ -1,6 +1,4 @@
-# Publishes the slides: the web version, plus two PDFs per unit, one with a
-# page per step as shown in class and one with every step on a single page
-# for students to print
+# Publishes the web version of the slides
 name: Publish slides
 
 on:
@@ -11,18 +9,17 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read # Check out the repository to build the slides
-  pages: write # Publish the result
-  id-token: write # Prove that this workflow is the one publishing
+  contents: read  # Check out the repository to build the slides
+  pages: write  # Publish the result
+  id-token: write  # Prove that this workflow is the one publishing
 
-# Only one publication at a time: a new push cancels the one still running,
-# so the latest version is always the one that ends up online
+# Only one publication at a time: a new push cancels the one still running
 concurrency:
   group: pages
   cancel-in-progress: true
 
 jobs:
-  # Generates the web version, the PDFs and the index page
+  # Builds the web version of the slides
   build:
     runs-on: ubuntu-latest
     defaults:
@@ -33,10 +30,10 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: 24
-      - run: sh scripts/site.sh
+      - run: npm run build
       - uses: actions/upload-pages-artifact@v5
         with:
-          path: slides/production/site
+          path: slides/production/web
 
   # Puts what build generated online
   deploy:

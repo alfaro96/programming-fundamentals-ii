@@ -1,6 +1,8 @@
-// Builds every slide marked class="contents": the unit title from the cover, the COURSE.contents subtitle (theme/cover.js, loaded first) and the list of sections, with the one about to start highlighted
+// Builds every slide marked class="contents": the unit title, the COURSE.contents subtitle
+// (theme/cover.js, loaded first) and the sections, with the one about to start highlighted
 //
-// data-section: the number of the section about to start; the list is written only in the unit's first contents slide and the others reuse it, e.g. <!-- .slide: class="contents" data-section="2" -->
+// data-section: the section about to start. Only the first contents slide writes the list,
+// the others reuse it, e.g. <!-- .slide: class="contents" data-section="2" -->
 //
 // Generated structure, styled by theme/custom.css:
 //   section.contents

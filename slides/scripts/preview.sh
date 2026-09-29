@@ -1,12 +1,12 @@
 #!/bin/sh
-# Screenshots units into production/preview/<mode>/<unit file name>/ to check how they look, on screen or as PDF pages, without opening a browser
+# Screenshots units into production/preview/<mode>/<unit>/ to check how they look
 #
-# mode: screen (every slide in its final state, every step visible, the default), print or class (every page of that PDF version)
+# mode: screen (every slide with all its steps, the default), print or class (every PDF page)
 # unit: the unit file name without .md; every unit if left out
 
 set -e
 
-# Chrome is Puppeteer's own, or the one PUPPETEER_EXECUTABLE_PATH names in .env if this machine needs it (kept out of Git)
+# Chrome is Puppeteer's own, or the one PUPPETEER_EXECUTABLE_PATH names in .env (not in Git)
 if [ -f .env ]; then set -a; . ./.env; set +a; fi
 
 mode="${1:-screen}"

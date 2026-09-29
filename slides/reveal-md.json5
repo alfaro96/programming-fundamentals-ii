@@ -25,10 +25,10 @@
     "margin": 0
   },
 
-  // Loaded in every unit, in this order: cover.js defines what the others read, and draw.js sets up the chalkboard plugin loaded just before it
+  // Loaded in every unit, in order: cover.js first (the others read it), the plugin before draw.js
   "scripts": "theme/cover.js,theme/contents.js,theme/handout.js,theme/vendor/chalkboard/plugin.js,theme/draw.js",
 
-  // The page around the slides: reveal-md's own template with viewport-fit=cover, so the controls can keep clear of a tablet's screen edges
+  // The page around the slides: reveal-md's template plus viewport-fit=cover, for tablets
   "template": "theme/reveal.html",
 
   // Extra stylesheets: the chalkboard plugin's own, which theme/custom.css adjusts

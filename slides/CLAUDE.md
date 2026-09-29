@@ -29,7 +29,7 @@ Every slide has a title and a one-line subtitle (`##` then `###`).
 2. **Concept** (`concept.md`): an idea or definition as rule cards, one idea per card; never a bullet list.
 3. **Code** (`code.md`): the code block is the protagonist. Use step-by-step line highlighting (`[1|3-5]`) when it makes sense to walk through the code incrementally, instead of surrounding it with explanatory text.
 4. **Comparison** (`comparison.md`): two versions side by side, all visible at once, with only the lines that differ highlighted (typically C and Java).
-5. **Exercise** (`exercise.md`): a challenge or question for the class; the solution goes in a vertical sub-slide (`--`) below it, not on the same slide.
+5. **Exercise** (`exercise.md`): a challenge or question for the class during the lecture; the solution goes in a vertical sub-slide (`--`) below it, not on the same slide. Not to be confused with the unit's exercises in `../code/`, which students solve on their own.
 6. **Summary** (`summary.md`): unit wrap-up as a grid of cards, one per section.
 7. **Contents** (`contents.md`): the unit's index, repeated before every section with that section highlighted. The list is written once, in the first one; `theme/contents.js` builds the title, the subtitle and the copies.
 
@@ -67,7 +67,7 @@ These are non-negotiable. If a request seems to need one of the things forbidden
 
 **No magic numbers.** Any value that positions something (e.g. `29%`, `63px`) gets a named variable in `:root` with a comment saying what it's for. Sizes are `em` against `--slide-font-size` so the deck rescales as one; the only absolute values in the whole theme are the ones under "Deck geometry" and the `--cover-*` sizes and gaps that lay out the cover.
 
-**Comment and formatting style.** Keep comments short: one line saying what something is or warning about a trap, never wrapped by hand and never a paragraph explaining the reasoning. One space before a trailing comment, never padding to align them in a column. Section headers are plain (`/* Base */`) with a blank line either side, not ruled off with dashes. Double quotes, not single. No em dashes.
+**Comment and formatting style.** Keep comments short: say what something is or warn about a trap, never a paragraph explaining the reasoning. One line when it fits in about 100 characters; if it really needs more, a second line split at a natural break. One space before a trailing comment in CSS and JavaScript, two in YAML (yamllint's default), never padding to align them in a column. Section headers are plain (`/* Base */`) with a blank line either side, not ruled off with dashes. Double quotes, not single. No em dashes.
 
 **One source of truth.** Anything that appears on more than one slide is defined once. Never solve repetition by copy-pasting into each unit file.
 

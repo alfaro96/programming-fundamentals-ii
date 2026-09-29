@@ -1,8 +1,8 @@
-// Screenshots one unit of the static site to check how it looks, with the Puppeteer in PUPPETEER_DIR (preview.sh finds it)
+// Screenshots one unit of the static site, with the Puppeteer in PUPPETEER_DIR (preview.sh finds it)
 //
 // html: the unit's page in the static site
 // outDir: the folder the images go to
-// mode: screen (every slide in its final state, every step visible, the default), print or class (every page of that PDF version)
+// mode: screen (every slide with all its steps, the default), print or class (every PDF page)
 
 import path from "node:path";
 import { pathToFileURL } from "node:url";
@@ -13,11 +13,11 @@ const { default: puppeteer } = await import(
   path.join(process.env.PUPPETEER_DIR, "lib/esm/puppeteer/puppeteer.js")
 );
 
-// Chrome now and then fails to start: retry; on GitHub Actions, which sets CI, it runs without its sandbox, as in pdf.sh
+// Chrome now and then fails to start: retry
 let browser;
 for (let attempt = 1; !browser; attempt++) {
   try {
-    browser = await puppeteer.launch({ headless: true, args: process.env.CI ? ["--no-sandbox"] : [] });
+    browser = await puppeteer.launch({ headless: true });
   } catch (error) {
     if (attempt === 3) throw error;
   }

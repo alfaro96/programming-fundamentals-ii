@@ -167,7 +167,7 @@
   --list-indent: 1.2em; /* room for the marker; reveal's reset zeroes list padding */
   --script-size: 0.7em; /* superscripts and subscripts, em of their line */
 
-  /* Drawing buttons (theme/draw.js): a row matching reveal's arrows on the other side, in the same units */
+  /* Drawing buttons (theme/draw.js): in line with reveal's arrows, in their units */
   --draw-unit: 10px; /* the font size reveal gives its .controls, which every em below is of */
   --draw-row: 3.2em; /* how high reveal sets its left and right arrows */
   --draw-button-size: 3.6em; /* the size of each of those arrows */
@@ -175,19 +175,16 @@
   --draw-icon-size: 2em;
   --draw-idle-opacity: 0.85; /* a little quieter while nobody draws */
 
-  /* Site index page (scripts/site-index.mjs): an ordinary web page, so sizes are rem of the browser's text */
+  /* Index page (scripts/index.mjs): a plain web page, so sizes are rem */
   --site-width: 64rem; /* widest the content gets */
   --site-gutter: 1.25rem; /* side air, phones included */
-  --site-gap: 1.5rem; /* between blocks and between cards */
+  --site-gap: 1.5rem; /* between the cards */
   --site-hero-padding: 4rem; /* above the course name, half of it below the author */
   --site-title-size: clamp(2.25rem, 1.5rem + 3vw, 3.5rem);
   --site-card-padding: 1.75rem;
   --site-number-size: 3.5rem; /* the unit number disc */
   --site-chip-padding: 0.3em 0.8em;
-  --site-link-padding: 0.65em 1.1em;
-  --site-icon-size: 1.25em; /* em of the text next to it */
-  --site-icon-stroke: 2; /* line width, in the icons' own 24 units */
-  --site-tint: 7%; /* backgrounds, share of the heading blue */
+  --site-tint: 7%; /* chip backgrounds, share of the heading blue */
   --site-lift: -0.2rem; /* how far a card rises under the pointer */
 }
 
@@ -212,7 +209,8 @@
   padding: var(--slide-space-y) var(--slide-space-x);
 }
 
-/* .slides is exactly the canvas, so it paints the page. It is opaque, so a data-background-* on a slide would end up hidden behind it. */
+/* .slides is exactly the canvas, so it paints the page.
+   Being opaque, it hides any data-background-* set on a slide. */
 .reveal .slides {
   background-color: var(--color-bg);
   text-align: left;
@@ -357,7 +355,7 @@
   font-variant-ligatures: none;
 }
 
-/* Inline code anywhere outside a block: the code font and color, at the size of the text around it */
+/* Inline code outside a block: code font and color, at the size of the text around it */
 .reveal :not(pre) > code {
   color: var(--color-accent-2);
   font-family: var(--font-code);
@@ -374,7 +372,8 @@
   max-height: 19em; /* about 12 lines before it scrolls */
 }
 
-/* Syntax colors: IntelliJ's Islands Light editor scheme ("Light"), mapped onto the palette. Tokens not listed read as plain text, as in the IDE */
+/* Syntax colors: IntelliJ's Islands Light scheme, mapped onto the palette.
+   Tokens not listed read as plain text, as in the IDE. */
 
 .reveal pre code [class*="hljs-"] {
   color: inherit;
@@ -414,7 +413,7 @@
   background: var(--color-code-current-line);
 }
 
-/* C and Java side by side: the whole code stays readable and the highlight only marks what differs */
+/* C and Java side by side: all the code readable, only the differences highlighted */
 .reveal .code-diff .hljs.has-highlights tr:not(.highlight-line) {
   opacity: 1;
 }
@@ -424,7 +423,7 @@
   width: 100%;
 }
 
-/* The code column claims all the spare width, in every browser, so the numbers keep only what their digits need */
+/* The code column takes the spare width, so the line numbers keep only what they need */
 .reveal pre code .hljs-ln-code {
   width: 100%;
 }
@@ -433,13 +432,13 @@
   white-space: nowrap;
 }
 
-/* Print: reveal zeroes the slide padding, so the gutter comes back as a transparent border; the PDF keeps the same margins as the screen */
+/* Print: reveal zeroes the slide padding, so a transparent border keeps the screen's margins */
 html.reveal-print .reveal .slides section:not(.stack) {
   border-block: var(--slide-space-y) solid transparent;
   border-inline: var(--slide-space-x) solid transparent;
 }
 
-/* The print handout (theme/handout.js): every step is on the page, so a block that highlights step by step prints clean; one fixed highlight (C vs Java) stays */
+/* Print PDF (theme/handout.js): steps print without their highlight; a fixed one (C vs Java) stays */
 html.print-handout .reveal pre:has(code.fragment) .hljs.has-highlights tr:not(.highlight-line) {
   opacity: 1;
 }
@@ -571,7 +570,7 @@ html.print-handout .reveal pre:has(code.fragment) .hljs.has-highlights tr.highli
   color: var(--color-muted);
 }
 
-/* The ratio is stated so the height is reserved before the SVG loads; without it reveal centers the slide against a height that then changes */
+/* The ratio reserves the height before the SVG loads, so reveal centers the slide right */
 .reveal .card-qr img {
   width: 100%;
   aspect-ratio: 1;
@@ -617,7 +616,8 @@ html.print-handout .reveal pre:has(code.fragment) .hljs.has-highlights tr.highli
   color: inherit;
 }
 
-/* Stage: the slide fills the canvas, .stage-body is centered in the space under the title (.stage-top keeps it at the top instead) and an optional .stage-note sits at the very bottom */
+/* Stage: the slide fills the canvas, its block centered under the title (.stage-body)
+   or at the top (.stage-top), and an optional .stage-note at the bottom */
 
 .reveal .slides section:has(> .stage) {
   height: 100%;
@@ -710,7 +710,7 @@ html.print-handout .reveal pre:has(code.fragment) .hljs.has-highlights tr.highli
   --flow-tone: var(--color-accent-red);
 }
 
-/* What happens above the shaft, the command under it: the shaft sits at the exact middle of the row */
+/* What happens above the shaft, the command under it, so the shaft sits mid-row */
 .reveal .flow-arrow {
   display: grid;
   grid-template-rows: 1fr auto 1fr;
@@ -1011,7 +1011,7 @@ html.print-handout .reveal pre:has(code.fragment) .hljs.has-highlights tr.highli
 
 /* Data table: groups of rows (one tbody each) split by a darker line */
 
-/* Separate borders belong to their cells, so they fade in with each group; collapsed ones are painted by the table and ignore the fragments */
+/* Separate borders belong to their cells, so they fade in with each group */
 .reveal .data-table {
   width: 100%;
   border-collapse: separate;
@@ -1093,7 +1093,7 @@ html.print-handout .reveal pre:has(code.fragment) .hljs.has-highlights tr.highli
   margin-bottom: var(--contents-gap);
 }
 
-/* An inside marker takes no margin or padding, so the gap to the text is the suffix: an en space plus a quarter em, instead of the default plain space */
+/* An inside marker has no margin, so the suffix sets the gap: an en space plus a quarter em */
 @counter-style contents-number {
   system: extends decimal;
   suffix: ".\2002\2005";
@@ -1137,7 +1137,8 @@ html.print-handout .reveal pre:has(code.fragment) .hljs.has-highlights tr.highli
   color: var(--color-accent-2);
 }
 
-/* reveal's arrows, and the drawing buttons with them, keep clear of the screen edges a tablet reserves (theme/reveal.html asks for them); on a computer those are 0 */
+/* reveal's arrows, and the drawing buttons with them, keep clear of a tablet's screen edges
+   (theme/reveal.html asks for them; on a computer they are 0) */
 .reveal-viewport {
   --r-controls-spacing: max(0.8em, env(safe-area-inset-bottom, 0px), env(safe-area-inset-left, 0px), env(safe-area-inset-right, 0px));
 }
@@ -1167,7 +1168,7 @@ html.reveal-print .reveal .slide-number-pdf {
   font-size: var(--slide-number-size);
 }
 
-/* Site index page */
+/* Index page: the course over the heading blue, then one card per unit */
 
 .site-index {
   margin: 0;
@@ -1185,18 +1186,6 @@ html.reveal-print .reveal .slide-number-pdf {
   padding-inline: var(--site-gutter);
 }
 
-.site-icon {
-  flex: none;
-  width: var(--site-icon-size);
-  height: var(--site-icon-size);
-  fill: none;
-  stroke: currentColor;
-  stroke-width: var(--site-icon-stroke);
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-/* The hero: the course on the heading blue, over an accent rule */
 .site-hero {
   padding-block: var(--site-hero-padding) calc(var(--site-hero-padding) / 2);
   border-bottom: var(--rule-accent) solid var(--color-accent);
@@ -1225,10 +1214,8 @@ html.reveal-print .reveal .slide-number-pdf {
   opacity: 0.85;
 }
 
-/* What each link gives, above the units */
-.site-versions {
+.site-units {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
   gap: var(--site-gap);
   margin: 0;
   margin-block: calc(2 * var(--site-gap));
@@ -1236,33 +1223,7 @@ html.reveal-print .reveal .slide-number-pdf {
   list-style: none;
 }
 
-.site-versions li {
-  display: flex;
-  gap: 0.75em;
-  align-items: flex-start;
-  color: var(--color-accent-2);
-}
-
-.site-versions p {
-  margin: 0;
-  color: var(--color-muted);
-}
-
-.site-versions strong {
-  display: block;
-  color: var(--color-text);
-}
-
-/* One card per unit: the number disc, then its title, sections and links */
-.site-units {
-  display: grid;
-  gap: var(--site-gap);
-  margin: 0;
-  margin-bottom: calc(2 * var(--site-gap));
-  padding: 0;
-  list-style: none;
-}
-
+/* The whole card is the link, an easy target on a tablet */
 .site-unit {
   display: flex;
   gap: var(--site-card-padding);
@@ -1271,10 +1232,13 @@ html.reveal-print .reveal .slide-number-pdf {
   border-left: var(--rule-accent) solid var(--color-accent);
   background: var(--color-bg);
   box-shadow: var(--card-shadow);
+  color: inherit;
+  text-decoration: none;
   transition: transform 0.2s ease;
 }
 
-.site-unit:hover {
+.site-unit:hover,
+.site-unit:focus-visible {
   transform: translateY(var(--site-lift));
 }
 
@@ -1324,7 +1288,7 @@ html.reveal-print .reveal .slide-number-pdf {
   flex-wrap: wrap;
   gap: 0.5rem;
   margin: 0;
-  margin-block: 1.25rem;
+  margin-top: 1.25rem;
   padding: 0;
   list-style: none;
 }
@@ -1343,56 +1307,14 @@ html.reveal-print .reveal .slide-number-pdf {
   font-weight: 700;
 }
 
-.site-unit-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-}
-
-.site-link {
-  display: inline-flex;
-  gap: 0.5em;
-  align-items: center;
-  padding: var(--site-link-padding);
-  border: var(--rule-hairline) solid var(--color-heading);
-  color: var(--color-heading);
-  font-weight: 600;
-  text-decoration: none;
-  transition: background 0.2s ease, color 0.2s ease;
-}
-
-.site-link:hover,
-.site-link-main {
-  background: var(--color-heading);
-  color: var(--color-bg);
-}
-
-.site-link-main:hover {
-  border-color: var(--color-accent-2);
-  background: var(--color-accent-2);
-}
-
-/* Phones: one column, the number above the title and the links full width */
+/* Phones: the number above the title */
 @media (max-width: 40rem) {
-  .site-versions,
-  .site-unit-links {
-    grid-template-columns: 1fr;
-  }
-
   .site-unit {
     flex-direction: column;
   }
-
-  .site-unit-links {
-    display: grid;
-  }
-
-  .site-link {
-    justify-content: center;
-  }
 }
 
-/* Drawing: the buttons of theme/draw.js, above the plugin's canvases, and the plugin's color palette in the theme's colors */
+/* Drawing: the buttons of theme/draw.js and the plugin's palette, in the theme's colors */
 
 .reveal .draw-tools {
   position: absolute;
@@ -1449,7 +1371,7 @@ html.reveal-print .reveal .slide-number-pdf {
   touch-action: none;
 }
 
-/* The plugin draws each color as a Font Awesome square: without that font, the square is drawn here */
+/* The plugin draws each color as a Font Awesome square; without that font, it is drawn here */
 #notescanvas div.palette .fa-square,
 #chalkboard div.palette .fa-square {
   display: block;

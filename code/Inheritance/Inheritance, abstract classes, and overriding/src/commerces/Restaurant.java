@@ -31,7 +31,7 @@ public class Restaurant extends Commerce {
 
     /**
      * Default constructor. Delegates to the parent default constructor
-     * and initialises {@link Restaurant#dailyMenus} with empty strings.
+     * and initializes {@link Restaurant#dailyMenus} with empty strings.
      */
     public Restaurant() {
         super();

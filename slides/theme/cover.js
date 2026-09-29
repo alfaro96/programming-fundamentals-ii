@@ -1,6 +1,7 @@
-// Builds every slide marked class="cover" from the COURSE object below, the only place those strings are defined
+// Builds every slide marked class="cover" from COURSE below, the only place its strings live
 //
-// data-course, data-author, data-degree: on one slide, replace that field of COURSE, e.g. <!-- .slide: class="cover" data-degree="Master in Computer Science" -->
+// data-course, data-author, data-degree: override that field on one slide,
+// e.g. <!-- .slide: class="cover" data-degree="Master in Computer Science" -->
 //
 // Generated structure, styled by theme/custom.css:
 //   section.cover
@@ -61,6 +62,6 @@ const COURSE = {
     if (window.Reveal && typeof Reveal.layout === "function") Reveal.layout();
   }
 
-  // The sections only exist once reveal.js is ready: reveal-md turns the markdown into slides during Reveal.initialize
+  // The slides only exist once reveal.js is ready: reveal-md builds them from the markdown
   if (window.Reveal && typeof Reveal.on === "function") Reveal.on("ready", buildAll);
 })();

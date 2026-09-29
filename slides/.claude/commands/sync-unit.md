@@ -8,6 +8,6 @@ $ARGUMENTS
 Follow "Keeping `slides/` and `code/` in step" in the repository's `CLAUDE.md` and the rules in `../code/CLAUDE.md`.
 
 1. Find the unit's lesson in `../code/` and read its `lesson-info.yaml`, every task's `task-info.yaml`, `task.md` and `src/`.
-2. List every mismatch, slide by slide: lesson or task names that no longer match a slide title, topics with no task or tasks with no topic, order, examples whose code differs from the slide, `task.md` text that explains something the slide no longer says, and exercises that use what the unit hasn't introduced.
+2. List every mismatch, slide by slide, for the `theory` tasks: lesson or task names that no longer match a slide title, topics with no task or tasks with no topic, order, examples whose code differs from the slide, and `task.md` text that explains something the slide no longer says. For the exercises (`edu` and `output`) check only that they use nothing the unit hasn't introduced: they are not paired with slides, so never flag them for their name, their number or their order.
 3. Show that list and wait for the instructor's go-ahead before changing anything in `../code/`.
-4. Apply the changes: rename folders, update `content` in `course-info.yaml` and `lesson-info.yaml`, and update `src/` and `task.md`. Say plainly which placeholders need their offsets fixed from EduTools, if any.
+4. Apply the changes: rename the lesson or `theory` task folders, update `content` in `course-info.yaml` and `lesson-info.yaml`, and update `src/` and `task.md`. Say plainly which placeholders need their offsets fixed from the JetBrains Academy plugin, if any.

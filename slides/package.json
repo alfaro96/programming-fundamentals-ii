@@ -1,14 +1,13 @@
 {
-  "name": "pf2-slides",
+  "name": "programming-fundamentals-ii-slides",
   "private": true,
   "description": "Programming Fundamentals II slides, built with reveal.js",
   "scripts": {
     "dev": "npx reveal-md content --theme theme/custom.css -w",
-    "build": "npx reveal-md content --theme theme/custom.css --static production/web",
+    "build": "npx reveal-md content --theme theme/custom.css --static production/web && node scripts/index.mjs content production/web",
     "pdf": "npm run pdf:class && npm run pdf:print",
     "pdf:class": "sh scripts/pdf.sh class",
     "pdf:print": "sh scripts/pdf.sh print",
-    "site": "sh scripts/site.sh",
     "preview": "sh scripts/preview.sh"
   }
 }

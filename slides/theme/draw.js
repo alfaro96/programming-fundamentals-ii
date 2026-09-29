@@ -1,4 +1,5 @@
-// Drawing on the slides with the chalkboard plugin (theme/vendor/chalkboard/): a pen over the slide and a whiteboard, opened with the buttons at the bottom left, so a tablet needs no keyboard, or with the C and B keys
+// Drawing on the slides with the chalkboard plugin (theme/vendor/chalkboard/): a pen and a
+// whiteboard, opened with the buttons at the bottom left or with the C and B keys
 
 (function () {
   // The pens, as palette variables of theme/custom.css
