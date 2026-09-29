@@ -166,6 +166,21 @@
   --line-height-body: 1.4;
   --list-indent: 1.2em; /* room for the marker; reveal's reset zeroes list padding */
   --script-size: 0.7em; /* superscripts and subscripts, em of their line */
+
+  /* Site index page (scripts/site-index.mjs): an ordinary web page, so sizes are rem of the browser's text */
+  --site-width: 64rem; /* widest the content gets */
+  --site-gutter: 1.25rem; /* side air, phones included */
+  --site-gap: 1.5rem; /* between blocks and between cards */
+  --site-hero-padding: 4rem; /* above the course name, half of it below the author */
+  --site-title-size: clamp(2.25rem, 1.5rem + 3vw, 3.5rem);
+  --site-card-padding: 1.75rem;
+  --site-number-size: 3.5rem; /* the unit number disc */
+  --site-chip-padding: 0.3em 0.8em;
+  --site-link-padding: 0.65em 1.1em;
+  --site-icon-size: 1.25em; /* em of the text next to it */
+  --site-icon-stroke: 2; /* line width, in the icons' own 24 units */
+  --site-tint: 7%; /* backgrounds, share of the heading blue */
+  --site-lift: -0.2rem; /* how far a card rises under the pointer */
 }
 
 /* Base */
@@ -1137,4 +1152,245 @@ html.print-handout .reveal pre:has(code.fragment) .hljs.has-highlights tr.highli
 /* The printed copy on each PDF page gets its own size from reveal */
 html.reveal-print .reveal .slide-number-pdf {
   font-size: var(--slide-number-size);
+}
+
+/* Site index page */
+
+.site-index {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  line-height: var(--line-height-body);
+}
+
+.site-wrap {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: calc(var(--site-width) + 2 * var(--site-gutter));
+  margin-inline: auto;
+  padding-inline: var(--site-gutter);
+}
+
+.site-icon {
+  flex: none;
+  width: var(--site-icon-size);
+  height: var(--site-icon-size);
+  fill: none;
+  stroke: currentColor;
+  stroke-width: var(--site-icon-stroke);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* The hero: the course on the heading blue, over an accent rule */
+.site-hero {
+  padding-block: var(--site-hero-padding) calc(var(--site-hero-padding) / 2);
+  border-bottom: var(--rule-accent) solid var(--color-accent);
+  background: var(--color-heading);
+  color: var(--color-bg);
+}
+
+.site-hero h1 {
+  margin: 0;
+  font-size: var(--site-title-size);
+  line-height: 1.1;
+}
+
+.site-degree {
+  margin: 0;
+  color: var(--color-accent-yellow);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.site-author {
+  margin: 0;
+  margin-top: 0.5em;
+  font-size: 1.15rem;
+  opacity: 0.85;
+}
+
+/* What each link gives, above the units */
+.site-versions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--site-gap);
+  margin: 0;
+  margin-block: calc(2 * var(--site-gap));
+  padding: 0;
+  list-style: none;
+}
+
+.site-versions li {
+  display: flex;
+  gap: 0.75em;
+  align-items: flex-start;
+  color: var(--color-accent-2);
+}
+
+.site-versions p {
+  margin: 0;
+  color: var(--color-muted);
+}
+
+.site-versions strong {
+  display: block;
+  color: var(--color-text);
+}
+
+/* One card per unit: the number disc, then its title, sections and links */
+.site-units {
+  display: grid;
+  gap: var(--site-gap);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.site-unit {
+  display: flex;
+  gap: var(--site-card-padding);
+  padding: var(--site-card-padding);
+  border: 1px solid var(--color-card-edge);
+  border-left: var(--rule-accent) solid var(--color-accent);
+  background: var(--color-bg);
+  box-shadow: var(--card-shadow);
+  transition: transform 0.2s ease;
+}
+
+.site-unit:hover {
+  transform: translateY(var(--site-lift));
+}
+
+.site-unit-number {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: var(--site-number-size);
+  height: var(--site-number-size);
+  border-radius: 50%;
+  background: var(--color-accent);
+  color: var(--color-bg);
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.site-unit-body {
+  min-width: 0;
+}
+
+.site-unit-label {
+  margin: 0;
+  color: var(--color-accent);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.site-unit h2 {
+  margin: 0;
+  color: var(--color-heading);
+  font-size: 1.75rem;
+  line-height: 1.2;
+}
+
+.site-unit-summary {
+  margin: 0;
+  margin-top: 0.25em;
+  color: var(--color-muted);
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.site-unit-sections {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+  margin-block: 1.25rem;
+  padding: 0;
+  list-style: none;
+}
+
+.site-unit-sections li {
+  padding: var(--site-chip-padding);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-heading) var(--site-tint), transparent);
+  color: var(--color-heading);
+  font-size: 0.9rem;
+}
+
+.site-unit-sections span {
+  margin-right: 0.5em;
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
+.site-unit-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.site-link {
+  display: inline-flex;
+  gap: 0.5em;
+  align-items: center;
+  padding: var(--site-link-padding);
+  border: var(--rule-hairline) solid var(--color-heading);
+  color: var(--color-heading);
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.site-link:hover,
+.site-link-main {
+  background: var(--color-heading);
+  color: var(--color-bg);
+}
+
+.site-link-main:hover {
+  border-color: var(--color-accent-2);
+  background: var(--color-accent-2);
+}
+
+.site-footer {
+  padding-block: calc(2 * var(--site-gap));
+  color: var(--color-muted);
+}
+
+.site-footer a {
+  display: inline-flex;
+  gap: 0.5em;
+  align-items: center;
+  color: inherit;
+  text-decoration: none;
+}
+
+.site-footer a:hover {
+  color: var(--color-accent-2);
+}
+
+/* Phones: one column, the number above the title and the links full width */
+@media (max-width: 40rem) {
+  .site-versions,
+  .site-unit-links {
+    grid-template-columns: 1fr;
+  }
+
+  .site-unit {
+    flex-direction: column;
+  }
+
+  .site-unit-links {
+    display: grid;
+  }
+
+  .site-link {
+    justify-content: center;
+  }
 }
