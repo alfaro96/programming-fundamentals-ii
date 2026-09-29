@@ -169,7 +169,8 @@
 
   /* Drawing buttons (theme/draw.js): outside the scaled slide, so sizes are rem, a touch target on a tablet */
   --draw-button-size: 3rem;
-  --draw-inset: 0.5rem; /* from the bottom left corner of the window */
+  --draw-inset-x: 0.5rem; /* from the left edge of the window */
+  --draw-inset-y: 2.5rem; /* from the bottom, clear of a tablet browser's toolbar */
   --draw-gap: 0.4rem; /* between the two buttons */
   --draw-idle-opacity: 0.85; /* a little quieter while nobody draws */
 
@@ -1389,8 +1390,8 @@ html.reveal-print .reveal .slide-number-pdf {
 
 .reveal .draw-tools {
   position: absolute;
-  bottom: var(--draw-inset);
-  left: var(--draw-inset);
+  bottom: calc(var(--draw-inset-y) + env(safe-area-inset-bottom, 0px));
+  left: calc(var(--draw-inset-x) + env(safe-area-inset-left, 0px));
   z-index: 30;
   display: flex;
   flex-direction: column;
