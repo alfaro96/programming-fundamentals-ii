@@ -1,0 +1,33 @@
+// reveal-md settings, read once at startup: restart npm run dev after a change
+{
+  // A line with only -- starts a vertical sub-slide (--- starts a new slide)
+  "verticalSeparator": "\r?\n--\r?\n",
+
+  // Base theme for code highlighting; theme/custom.css recolors it with the palette
+  "highlightTheme": "github",
+
+  // Options passed to reveal.js
+  "revealOptions": {
+    // The canvas: the slides, the PDF pages and the screenshots all take this size
+    "width": 1920,
+    "height": 1080,
+
+    // How much a slide may be enlarged on a big screen
+    "maxScale": 4,
+
+    // Slides start at the top; covers center themselves
+    "center": false,
+
+    // PDF: every step of a slide on one page (the class PDF turns it on)
+    "pdfSeparateFragments": false,
+
+    // No frame around the slide, so a PDF page is exactly the canvas
+    "margin": 0
+  },
+
+  // Loaded in every unit, in this order: cover.js defines what the others read
+  "scripts": "theme/cover.js,theme/contents.js,theme/handout.js",
+
+  // Copied into every export: the images of the units
+  "staticDirs": "content/assets"
+}

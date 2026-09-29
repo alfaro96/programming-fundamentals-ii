@@ -1,30 +1,36 @@
-# Build and compiled class files
-*.class
-**/build/
-
-# IDE files
-.idea/
-*.iml
-out/
-
-# Documentation
-doc/
-
-# Gradle build cache
-.gradle/
+# Mac system files
+.DS_Store
 
 # Logs and temporary files
 *.log
 *.tmp
 
-# Mac system files
-.DS_Store
+# Settings of each machine
+.env
 
-# Ignore Java backup files
-*~
-*.bak
+# slides: generated exports (PDFs, web version and published site)
+slides/production/
 
-# JetBrains Academy remote metadata and creator state
-lesson-remote-info.yaml
-task-remote-info.yaml
-.coursecreator/
+# code: build and compiled class files
+code/**/*.class
+code/**/build/
+code/**/out/
+
+# code: IDE files
+code/.idea/
+code/**/*.iml
+
+# code: documentation
+code/doc/
+
+# code: Gradle build cache
+code/.gradle/
+
+# code: Java backup files
+code/**/*~
+code/**/*.bak
+
+# code: JetBrains Academy remote metadata and creator state
+code/**/lesson-remote-info.yaml
+code/**/task-remote-info.yaml
+code/.coursecreator/
