@@ -1,5 +1,6 @@
 // Builds every slide marked class="contents": the unit title, the COURSE.contents subtitle
-// (theme/cover.js, loaded first) and the sections, with the one about to start highlighted
+// (theme/cover.js, loaded first) and the sections, each numbered in a disc: the one about to
+// start highlighted, the ones already seen marked done
 //
 // data-section: the section about to start. Only the first contents slide writes the list,
 // the others reuse it, e.g. <!-- .slide: class="contents" data-section="2" -->
@@ -9,13 +10,25 @@
 //     h2
 //     h3
 //     ol.contents-focus
-//       li.current
+//       li.done / li.current
+//         span.contents-number
 
 (function () {
   function heading(tag, text) {
     const h = document.createElement(tag);
     h.textContent = text;
     return h;
+  }
+
+  // The number as text of its own, so the disc can hold it; hidden from screen readers,
+  // which already count the list's items
+  function number(item, n) {
+    if (item.querySelector(".contents-number")) return;
+    const disc = document.createElement("span");
+    disc.className = "contents-number";
+    disc.setAttribute("aria-hidden", "true");
+    disc.textContent = n;
+    item.insertBefore(disc, item.firstChild);
   }
 
   function buildContents(section, source, unitTitle) {
@@ -29,11 +42,14 @@
     }
 
     const current = Number(section.dataset.section);
-    if (list && current) {
-      list.classList.add("contents-focus");
+    if (list) {
       Array.from(list.children).forEach(function (item, i) {
+        number(item, i + 1);
+        if (!current) return;
         item.classList.toggle("current", i + 1 === current);
+        item.classList.toggle("done", i + 1 < current);
       });
+      if (current) list.classList.add("contents-focus");
     }
 
     section.insertBefore(heading("h3", COURSE.contents), section.firstChild);

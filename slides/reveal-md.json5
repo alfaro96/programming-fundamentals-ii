@@ -18,6 +18,9 @@
     // Slides start at the top; covers center themselves
     "center": false,
 
+    // Slides change at once, with no animation
+    "transition": "none",
+
     // PDF: every step of a slide on one page (the class PDF turns it on)
     "pdfSeparateFragments": false,
 

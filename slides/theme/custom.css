@@ -66,7 +66,10 @@
   --flow-stroke: var(--rule-accent);
   --flow-head: 0.35em; /* arrowhead width and height */
   --flow-drop: 1em; /* vertical air between the main row and the branch */
+  --flow-branch-start: 25%; /* the branch arrow spans two columns and starts half a column in */
   --flow-caption-gap: 0.3em; /* box to the caption under it */
+  --flow-layer-gap: 0.8em; /* between two flows stacked as layers, the same above and below the divider */
+  --flow-icon-size: 1.2em; /* an icon in an arrow's label, em of the label */
 
   /* Stage */
   --stage-note-size: 0.58em; /* the takeaway at the bottom */
@@ -91,6 +94,8 @@
 
   /* Rule cards: a title and one sentence under it */
   --rules-gap: 0.6em; /* between cards */
+  --code-dim: 0.4; /* reveal's own opacity for the lines out of focus */
+  --code-cards-gap: 1.2em; /* code blocks to the cards under them */
   --rules-columns: 3; /* when the cards form a grid */
   --rule-padding: 0.4em 0.6em;
   --rule-text-size: 0.48em;
@@ -130,6 +135,9 @@
   --contents-dim: 0.25; /* opacity of the other sections */
   --contents-gap: 1.2em; /* "Contents" subtitle to the list, em of the subtitle */
   --contents-item-gap: 0.9em; /* between sections */
+  --contents-number-text: 0.6em; /* the figure in each disc, em of the section title */
+  --contents-number-size: 2.6em; /* the disc, em of that figure */
+  --contents-number-gap: 0.6em; /* disc to the section title */
 
   /* Palette: the instructor's colors. Every accent below points at one of these */
   --color-accent-red: #c32900;
@@ -140,17 +148,21 @@
   /* Accents */
   --color-accent: var(--color-accent-orange); /* underlines, emphasis, and exercises */
   --color-accent-soft: color-mix(in srgb, var(--color-accent) 24%, transparent);
+  --color-highlight-soft: color-mix(in srgb, var(--color-accent-yellow) 22%, var(--color-bg)); /* takeaways and quotes, like a highlighter */
   --color-accent-2: var(--color-accent-teal); /* code, links and success */
 
   /* Deck geometry. Every other size is an em of these */
   --slide-font-size: 47px;
   --slide-space-x: 75px; /* side gutter on every slide, cover included */
   --slide-space-y: 75px; /* top and bottom gutter */
-  --rule-hairline: 2px; /* h2 and link underlines */
+  --rule-hairline: 2px; /* h2 underline, table and code block lines */
   --rule-accent: 4px; /* left bars on code blocks and quotes */
 
   /* Stacked terminals */
   --terminals-gap: 0.8em; /* between one machine's terminal and the next */
+
+  /* Card, code and output, one example per row */
+  --runs-gap: 0.6em; /* between rows and between columns */
 
   /* Slide number */
   --slide-number-size: 0.5em;
@@ -330,7 +342,7 @@
 /* Quotes and highlighted definitions */
 
 .reveal blockquote {
-  background: var(--color-accent-soft);
+  background: var(--color-highlight-soft);
   border-left: var(--rule-accent) solid var(--color-accent);
   padding: 0.5em 0.9em;
   font-style: normal;
@@ -413,6 +425,11 @@
   background: var(--color-code-current-line);
 }
 
+/* Two blocks walked through together: in a later step with nothing to mark, a block dims whole */
+html:not(.print-handout) .reveal .code-pair .hljs.fragment:not(.has-highlights) tr {
+  opacity: var(--code-dim);
+}
+
 /* C and Java side by side: all the code readable, only the differences highlighted */
 .reveal .code-diff .hljs.has-highlights tr:not(.highlight-line) {
   opacity: 1;
@@ -467,10 +484,10 @@ html.print-handout .reveal pre:has(code.fragment) .hljs.has-highlights tr.highli
 
 /* Links and emphasis */
 
+/* Just the link color, no underline */
 .reveal a {
   color: var(--color-accent-2);
   text-decoration: none;
-  border-bottom: var(--rule-hairline) solid currentColor;
 }
 
 .reveal strong {
@@ -495,6 +512,38 @@ html.print-handout .reveal pre:has(code.fragment) .hljs.has-highlights tr.highli
 .reveal .terminals {
   display: grid;
   row-gap: var(--terminals-gap);
+}
+
+/* Card, code and output per row; the code column takes its widest line */
+.reveal .runs {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) auto minmax(0, 2fr);
+  grid-auto-rows: 1fr; /* every row as tall as the tallest, so the cards match */
+  gap: var(--runs-gap);
+}
+
+/* Every cell fills its row and centers its content, so a row reads across at one height */
+.reveal .runs > div:not(.rule) {
+  display: flex;
+  flex-direction: column;
+}
+
+.reveal .runs .rule {
+  display: grid;
+  align-content: center;
+}
+
+.reveal .runs pre {
+  flex: 1;
+  display: grid;
+  align-content: center;
+  margin: 0;
+}
+
+/* The block's border fills the cell; the code keeps its own height to be centered in it */
+.reveal .runs pre code {
+  min-height: 0;
+  font-size: 0.55em;
 }
 
 .reveal .column h4 {
@@ -678,6 +727,11 @@ html.print-handout .reveal pre:has(code.fragment) .hljs.has-highlights tr.highli
   font-size: var(--flow-detail-size);
 }
 
+/* A short description in place of a file, same size */
+.reveal .flow-detail {
+  font-size: var(--flow-detail-size);
+}
+
 .reveal .flow-box {
   --flow-tone: var(--color-heading);
   display: flex;
@@ -754,10 +808,12 @@ html.print-handout .reveal pre:has(code.fragment) .hljs.has-highlights tr.highli
   --flow-line: dashed;
 }
 
-/* The branch hangs from the middle box (column 3) and runs along row 3 */
+/* The branch hangs from the middle box (column 3) and runs along row 3. Its arrow starts under
+   that box's center, so the label centers on the whole arrow */
 .reveal .flow-arrow.flow-lower {
   grid-row: 3;
-  grid-column: 4;
+  grid-column: 3 / 5;
+  margin-left: var(--flow-branch-start);
 }
 
 .reveal .flow-box.flow-lower {
@@ -765,7 +821,7 @@ html.print-handout .reveal pre:has(code.fragment) .hljs.has-highlights tr.highli
   grid-column: 5;
 }
 
-/* Same 1fr auto 1fr split as an arrow, so its corner meets the shaft */
+/* The drop from the middle box, with the same 1fr auto 1fr split as an arrow, so it meets the shaft */
 .reveal .flow-elbow {
   grid-row: 2 / 4;
   grid-column: 3;
@@ -781,11 +837,40 @@ html.print-handout .reveal pre:has(code.fragment) .hljs.has-highlights tr.highli
   border-left: var(--flow-stroke) var(--flow-line) currentColor;
 }
 
-.reveal .flow-elbow::after {
+/* Layers: a simple flow and a detailed one, in either order, split by a labeled line */
+.reveal .flow-layers {
+  display: grid;
+  gap: var(--flow-layer-gap);
+}
+
+.reveal .flow-divider {
+  display: flex;
+  gap: 0.6em;
+  align-items: center;
+  margin: 0;
+  color: var(--color-muted);
+  font-size: var(--flow-label-size);
+  font-weight: 600;
+}
+
+.reveal .flow-divider::before,
+.reveal .flow-divider::after {
   content: "";
-  grid-column: 2;
-  grid-row: 3;
-  border-top: var(--flow-stroke) var(--flow-line) currentColor;
+  flex: 1;
+  border-top: var(--rule-hairline) dashed currentColor;
+}
+
+/* An arrow across the three middle columns, straight to the last box */
+.reveal .flow-arrow.flow-long {
+  grid-column: span 3;
+}
+
+/* An icon before an arrow's label, like the Run button of an IDE */
+.reveal .flow-icon {
+  width: var(--flow-icon-size);
+  height: var(--flow-icon-size);
+  vertical-align: middle;
+  fill: var(--color-accent-2);
 }
 
 /* Toolbox */
@@ -900,6 +985,17 @@ html.print-handout .reveal pre:has(code.fragment) .hljs.has-highlights tr.highli
   --rules-columns: 2;
 }
 
+.reveal .rules-three {
+  --rules-columns: 3;
+}
+
+/* Code blocks with a row of cards under them */
+.reveal .code-over-cards {
+  display: grid;
+  align-content: start;
+  row-gap: var(--code-cards-gap);
+}
+
 /* A heading over the cards: the grid gap alone separates it */
 .reveal .rules > h4 {
   margin-bottom: 0;
@@ -907,9 +1003,19 @@ html.print-handout .reveal pre:has(code.fragment) .hljs.has-highlights tr.highli
 
 /* Bar and background share one color, as quotes do in orange */
 .reveal .rule {
+  --rule-tone: var(--color-heading);
   padding: var(--rule-padding);
-  background: color-mix(in srgb, var(--color-heading) var(--rule-tint), var(--color-bg));
-  border-left: var(--rule-accent) solid var(--color-heading);
+  background: color-mix(in srgb, var(--rule-tone) var(--rule-tint), var(--color-bg));
+  border-left: var(--rule-accent) solid var(--rule-tone);
+}
+
+/* Same meaning as the verdicts: it works but take care, or it does not compile */
+.reveal .rule-warn {
+  --rule-tone: var(--color-accent-orange);
+}
+
+.reveal .rule-error {
+  --rule-tone: var(--color-accent-red);
 }
 
 .reveal .rule p {
@@ -920,6 +1026,7 @@ html.print-handout .reveal pre:has(code.fragment) .hljs.has-highlights tr.highli
 
 /* Title on its own line; the sentence flows on under it */
 .reveal .rule strong:first-child {
+  color: var(--rule-tone);
   display: block;
   margin-bottom: var(--rule-title-gap);
   font-size: var(--rule-title-size);
@@ -1033,8 +1140,21 @@ html.print-handout .reveal pre:has(code.fragment) .hljs.has-highlights tr.highli
   border-bottom-color: var(--color-heading);
 }
 
-.reveal .data-table tbody tr:last-child > * {
+/* A group's last line; a cell spanning the group (its category) ends there too */
+.reveal .data-table tbody tr:last-child > *,
+.reveal .data-table td[rowspan] {
   border-bottom-color: var(--color-heading);
+}
+
+/* A cell as a custom fragment (reveal leaves it visible) hides only its text, not its line */
+.reveal .data-table .fragment.custom:not(.visible),
+.reveal .data-table .fragment.custom:not(.visible) * {
+  color: transparent;
+}
+
+/* A category spanning its group sits in the middle of it */
+.reveal .data-table td[rowspan] {
+  vertical-align: middle;
 }
 
 /* The type of each row, as a keyword */
@@ -1044,6 +1164,40 @@ html.print-handout .reveal pre:has(code.fragment) .hljs.has-highlights tr.highli
 
 .reveal .data-table th[scope="row"] code {
   color: var(--color-code-keyword);
+}
+
+/* Verdict table: a mark per question, in the verdicts' colors */
+.reveal .data-table .mark {
+  color: var(--mark-tone);
+  font-weight: 700;
+  text-align: center;
+}
+
+.reveal .mark-ok {
+  --mark-tone: var(--color-accent-2);
+}
+
+.reveal .mark-warn {
+  --mark-tone: var(--color-accent-orange);
+}
+
+.reveal .mark-error {
+  --mark-tone: var(--color-accent-red);
+}
+
+.reveal .mark-none {
+  --mark-tone: var(--color-muted);
+}
+
+/* What is judged is code, not a type: the usual code color */
+.reveal .verdict-table th[scope="row"] code {
+  color: var(--color-accent-2);
+}
+
+/* The question columns are centered over their marks */
+.reveal .verdict-table thead th:nth-child(2),
+.reveal .verdict-table thead th:nth-child(3) {
+  text-align: center;
 }
 
 /* Comparison table: the feature in each row reads as a label */
@@ -1093,38 +1247,55 @@ html.print-handout .reveal pre:has(code.fragment) .hljs.has-highlights tr.highli
   margin-bottom: var(--contents-gap);
 }
 
-/* An inside marker has no margin, so the suffix sets the gap: an en space plus a quarter em */
-@counter-style contents-number {
-  system: extends decimal;
-  suffix: ".\2002\2005";
-}
-
-/* Inside, so the numbers line up with the subtitle */
+/* The discs (theme/contents.js) replace the list's own numbers and line up with the subtitle */
 .reveal .contents ol {
   color: var(--color-contents-text);
   padding-left: 0;
-  list-style: contents-number inside;
+  list-style: none;
 }
 
 .reveal .contents li {
+  display: flex;
+  gap: var(--contents-number-gap);
+  align-items: center;
   margin-bottom: var(--contents-item-gap);
 }
 
-.reveal .contents li::marker {
+/* Sections still to come: just the outline */
+.reveal .contents-number {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: var(--contents-number-size);
+  height: var(--contents-number-size);
+  border: var(--rule-accent) solid var(--color-contents-number);
+  border-radius: 50%;
+  box-sizing: border-box;
   color: var(--color-contents-number);
+  font-size: var(--contents-number-text);
+  font-weight: 700;
 }
 
 .reveal .contents-focus > li {
   opacity: var(--contents-dim);
 }
 
+/* Sections already seen: a filled disc, dimmed with the rest */
+.reveal .contents-focus > li.done .contents-number {
+  background: var(--color-contents-number);
+  color: var(--color-bg);
+}
+
+/* The section about to start: a solid disc in the accent */
 .reveal .contents-focus > li.current {
   opacity: 1;
   font-weight: 700;
 }
 
-.reveal .contents-focus > li.current::marker {
-  color: var(--color-contents-current);
+.reveal .contents-focus > li.current .contents-number {
+  border-color: var(--color-contents-current);
+  background: var(--color-contents-current);
+  color: var(--color-bg);
 }
 
 /* Numbering and controls */
@@ -1150,11 +1321,6 @@ html.print-handout .reveal pre:has(code.fragment) .hljs.has-highlights tr.highli
   font-family: var(--font-body);
   font-size: var(--slide-number-size);
   font-weight: 600;
-}
-
-/* reveal makes the number a link: no underline here */
-.reveal .slide-number a {
-  border-bottom: none;
 }
 
 /* No number on a cover, on screen or on its PDF page */

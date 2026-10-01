@@ -26,9 +26,9 @@ Defined in `theme/custom.css`. Everything sits on the slide background, code blo
 Every slide has a title and a one-line subtitle (`##` then `###`).
 
 1. **Title** (`title.md`): opens a unit with `## Unit N: Unit name` and a subtitle.
-2. **Concept** (`concept.md`): an idea or definition as rule cards, one idea per card; never a bullet list.
+2. **Concept** (`concept.md`): an idea or definition as rule cards, one idea per card; never a bullet list. Cards are blue; `rule-warn` (orange) marks something that works but needs care and `rule-error` (red) something that does not compile or fails, as the verdicts do. Use them sparingly, or the color stops meaning anything.
 3. **Code** (`code.md`): the code block is the protagonist. Use step-by-step line highlighting (`[1|3-5]`) when it makes sense to walk through the code incrementally, instead of surrounding it with explanatory text.
-4. **Comparison** (`comparison.md`): two versions side by side, all visible at once, with only the lines that differ highlighted (typically C and Java).
+4. **Comparison** (`comparison.md`): two versions side by side (typically C and Java), in steps: the known one alone, then the other next to it, then only the lines that differ highlighted, with the note. When there is nothing to mark, the note comes right after the second version.
 5. **Exercise** (`exercise.md`): a challenge or question for the class during the lecture; the solution goes in a vertical sub-slide (`--`) below it, not on the same slide. Not to be confused with the unit's exercises in `../code/`, which students solve on their own.
 6. **Summary** (`summary.md`): unit wrap-up as a grid of cards, one per section.
 7. **Contents** (`contents.md`): the unit's index, repeated before every section with that section highlighted. The list is written once, in the first one; `theme/contents.js` builds the title, the subtitle and the copies.
@@ -40,12 +40,15 @@ If the notes don't make it clear which slide type fits, pick the best match and 
 Built for a specific need, with no template on purpose: reuse one when the same need comes back, and don't force it where it doesn't fit. Its classes are in `theme/custom.css`; copy the markup from a slide that already uses it (the ones named here are examples from unit 1; if one has changed, search `content/` for the class).
 
 * **Stage** (`stage`, `stage-body`, `stage-top`, `stage-note`): the slide fills the canvas, its block is centered (`stage-body`) or kept at the top (`stage-top`), and the takeaway sits at the bottom (`stage-note`). Used by almost every slide.
-* **Code with cards**: a card appears with the lines it explains. The code goes as raw `<pre><code data-fragment-index="0">` and the cards count from 0 too (see the comment in the slide). E.g. "Basic syntax rules" and "Comments".
-* **Flow diagram** (`flow`): boxes joined by arrows, with an optional branch. E.g. "Understanding platform dependency" and "The elements of a Java program".
-* **Terminals** (`terminals`): consoles of different machines, one under the other, no line numbers. E.g. "Same binary, different machine".
-* **Toolbox** (`toolbox`): a block of cards, with an optional block nested inside. E.g. "Working with the Java Development Kit" and "The JDK and the JRE".
-* **Verdicts** (`verdicts`): examples judged one by one with ✓, ✗ (struck out) or !. E.g. "Valid or not?" and "Safe or not?".
+* **Code with cards**: a card appears with the lines it explains. The code goes as raw `<pre><code data-fragment-index="0">` and the cards count from 0 too (see the comment in the slide). E.g. "Comments".
+* **Paired walkthrough** (`code-pair`, `code-over-cards`): C and Java stepped together from 0, with the cards under them (`rules-pair`); a block with nothing to mark in a later step (an empty step in `data-line-numbers`) dims whole, while an empty first step leaves it as it is (C alone, on entry). Inside raw `<pre>`, write `<` as `&amp;lt;`: the entity is decoded once before the HTML is read. Reveal renumbers the fragment indices without gaps before the code steps exist, so every index a code step uses must also be used by some other element on the slide. E.g. "Our first program: `Hello.java`".
+* **Flow diagram** (`flow`): boxes joined by arrows, with an optional branch; `flow-layers` stacks a simple flow and a detailed one, in either order, split by a `flow-divider` (e.g. "Under the hood", "On the surface"), and `flow-long` stretches an arrow to the last box. E.g. "Platform dependency" and "Java's execution model".
+* **Terminals** (`terminals`): consoles of different machines, one under the other, no line numbers. No slide uses it at the moment.
+* **Code and output** (`runs`): one example per row, a card, its code and what it prints, rows as tall as the tallest. E.g. "Printing to the screen".
+* **Toolbox** (`toolbox`): a block of cards, with an optional block nested inside. E.g. "The Java Development Kit" and "The JDK and the JRE".
+* **Verdicts** (`verdicts`): examples judged one by one with ✓, ✗ (struck out) or !. No slide uses it at the moment: "Valid or not?" and "Safe or not?" moved to the verdict table.
 * **Data table** (`data-table`, `compare-table`): rows revealed by group or one by one. E.g. "The eight primitive types" and "Arrays in C and Java".
+* **Verdict table** (`data-table verdict-table`, `mark mark-ok|warn|error|none`): one row per example, a question per column answered with ✓/✗ in the verdicts' colors, and the answers of a row filled in at once (custom fragments, the lines stay). E.g. "Valid or not?".
 * **Keyword grid** (`keywords`): a list of words in columns, some crossed out. E.g. "Reserved words".
 * **Widening chain** (`widening`): types joined by arrows in both directions. E.g. "Type conversion".
 
