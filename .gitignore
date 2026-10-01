@@ -23,6 +23,9 @@ code/**/*.iml
 # Javadoc generated from the code
 code/**/doc/
 
+# LaTeX of the assignments, generated from task.md with /latex
+code/**/latex/
+
 # Gradle build cache
 code/.gradle/
 

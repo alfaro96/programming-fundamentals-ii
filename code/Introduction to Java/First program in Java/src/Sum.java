@@ -1,61 +1,49 @@
 /**
- * Laboratory Assignment 0: First program in Java.
- * This class implements and compares iterative and formulaic summation methods.
+ * Laboratory assignment 0: first program in Java.
+ * Computes the sum of the integers from 0 to <i>n</i> in two ways and checks that both agree.
  *
  * @author Juan Carlos Alfaro Jiménez
  */
 public class Sum {
 
-   /**
-    * Calculates the sum of the first n natural numbers using an iterative approach.
-    *
-    * @param n The upper limit of the summation.
-    * @return The accumulated sum of integers from 0 up to n.
-    */
-   public static int sum1(int n) {
-      int sum = 0;
-      for (int i = 0; i <= n; i++) {
-         sum = sum + i;
-      }
-      return sum;
-   }
+    /**
+     * Computes the sum of the integers from 0 to {@code n} with a {@code for} loop.
+     *
+     * @param n the last integer to add.
+     * @return the sum 0 + 1 + &hellip; + <i>n</i>.
+     */
+    public static int sum1(int n) {
+        int sum = 0;
+        for (int i = 0; i <= n; i++) {
+            sum = sum + i;
+        }
+        return sum;
+    }
 
-   /**
-    * Calculates the sum of the first n natural numbers using the provided formula.
-    *
-    * @param n The upper limit of the summation.
-    * @return The result of the mathematical formula.
-    */
-   public static int sum2(int n) {
-      return (n * (n + 1)) / 2;
-   }
+    /**
+     * Computes the sum of the integers from 0 to {@code n} with the formula
+     * <i>n</i>(<i>n</i> + 1) / 2.
+     *
+     * @param n the last integer to add.
+     * @return the sum 0 + 1 + &hellip; + <i>n</i>.
+     */
+    public static int sum2(int n) {
+        return n * (n + 1) / 2;
+    }
 
-   /**
-    * Main entry point of the program.
-    * It is used to call and verify the summation methods.
-    *
-    * @param args Command line arguments (not used).
-    */
-   public static void main(String[] args) {
-      // Individual test: Value 11
-      int testValue = 11;
-      System.out.println("Individual test for n = " + testValue);
-      System.out.println("sum1: " + sum1(testValue));
-      System.out.println("sum2: " + sum2(testValue));
-      System.out.println();
+    /**
+     * Tests {@code sum1} and {@code sum2}, first with a single value and then with a
+     * list of values, checking that both methods return the same result.
+     *
+     * @param args the command-line arguments (not used).
+     */
+    public static void main(String[] args) {
+        System.out.printf("sum1(11) = %d\n", sum1(11));
+        System.out.printf("sum2(11) = %d\n", sum2(11));
 
-      // Batch testing with array
-      int[] data = {3, 4, 13, 21, 67, 102, 155, 365, 1007};
-      System.out.println("--- Automated verification ---");
-
-      for (int n : data) {
-         int res1 = sum1(n);
-         int res2 = sum2(n);
-
-         // Automation: Compare results directly
-         boolean match = (res1 == res2);
-
-         System.out.println("Input: " + n + " | Match: " + match + " (Value: " + res1 + ")");
-      }
-   }
+        int[] values = {3, 4, 13, 21, 67, 102, 155, 365, 1007};
+        for (int n : values) {
+            System.out.printf("n = %d: sum1 = %d, sum2 = %d, equal: %b\n", n, sum1(n), sum2(n), sum1(n) == sum2(n));
+        }
+    }
 }

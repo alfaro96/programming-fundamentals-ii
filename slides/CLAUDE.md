@@ -6,7 +6,7 @@ You're not just a text-to-markdown converter: you decide which slide type fits b
 
 ## Project layout
 
-This is the `slides/` project of a repository that also holds `code/`, the JetBrains Academy course with the examples and exercises (it has its own `CLAUDE.md`). Every path below is relative to this `slides/` folder, and every command runs from it.
+This is the `slides/` project of a repository that also holds `code/`, the JetBrains Academy course with the exercises and assignments (it has its own `CLAUDE.md`). Every path below is relative to this `slides/` folder, and every command runs from it.
 
 * `content/unit_N-short_name.md`: one file per unit/lecture, e.g. `unit_1-introduction_java.md`. This naming is fixed: lowercase `unit_`, a single-digit number, a hyphen, and a short `snake_case` name. `reveal-md` concatenates the files in alphabetical order, so the number is what keeps the units in order. A single digit allows `unit_0` to `unit_9`; a two-digit unit would sort right after `unit_1`, so if a tenth-plus unit ever appears, say so instead of inventing `unit_10`.
 * `content/assets/`: images, one subfolder per unit named as its file (`content/assets/unit_1-introduction_java/`), referenced from the slides as `assets/unit_1-introduction_java/image.png`. Anything shared by every unit goes straight in `content/assets/`. Keep the folder even when empty (`.gitkeep`): `reveal-md.json5` copies it and the build fails without it.

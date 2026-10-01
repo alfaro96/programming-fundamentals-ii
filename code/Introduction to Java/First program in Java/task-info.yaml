@@ -4,8 +4,17 @@ files:
     visible: true
     placeholders:
       - offset: 0
-        length: 1764
-        placeholder_text: "/* TODO: Implement Sum class. */"
+        length: 194
+        placeholder_text: "/* TODO: Document the Sum class. */"
+      - offset: 219
+        length: 355
+        placeholder_text: "/* TODO: Document and implement sum1. */"
+      - offset: 580
+        length: 297
+        placeholder_text: "/* TODO: Document and implement sum2. */"
+      - offset: 1173
+        length: 326
+        placeholder_text: "/* TODO: Test sum1 and sum2. */"
   - name: test/Tests.java
     visible: false
     propagatable: false

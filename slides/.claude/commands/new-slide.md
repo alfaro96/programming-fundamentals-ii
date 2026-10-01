@@ -15,5 +15,5 @@ Follow `CLAUDE.md`, above all "Slide types", "Components" and "Expected workflow
 4. Place it inside its section, before the summary, never after it.
 5. If it opens a new section: add the section to the list in the first contents slide, and put a contents slide with `data-section` set to it right before the section.
 6. If it changes what a section teaches, update that section's card in the summary.
-7. Bring the unit's `theory` tasks in `../code/` in line, as the repository's `CLAUDE.md` describes; the exercises only need to stay within what the slides introduce.
+7. Check the unit's lesson in `../code/`, as the repository's `CLAUDE.md` describes: its exercises only need to stay within what the slides introduce, so change them only if this slide alters something they rely on.
 8. Check it with `npm run preview` (and the print version if it has fragments, highlights or a bottom note), then say in one sentence which template or component you used and why, what you changed in `../code/`, and what you couldn't check.

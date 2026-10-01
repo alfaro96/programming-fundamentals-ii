@@ -1,6 +1,6 @@
 # Programming Fundamentals II: code
 
-The JetBrains Academy course for **Programming Fundamentals II**, a second-semester course in the Computer Science degree program. It holds the examples, exercises and assignments of each unit; the lecture slides that go with them are in the `slides/` folder of the same repository.
+The JetBrains Academy course for **Programming Fundamentals II**, a second-semester course in the Computer Science degree program. It holds the exercises and assignments of each unit; the lecture slides that go with them, with the examples, are in the `slides/` folder of the same repository.
 
 ---
 
@@ -14,14 +14,23 @@ Through Java, students learn to structure larger applications and apply reusable
 
 ## About this project
 
-A Gradle project in JetBrains Academy format, with one lesson per unit. Each lesson's examples follow its unit's slides, in the same order and with the same names. It contains:
+A Gradle project in JetBrains Academy format, with one lesson per unit. It contains:
 
-* **Code examples** (theory tasks): the examples shown in the slides, ready to read and run
 * **Exercises and assignments** (edu tasks): checked automatically with JUnit tests
 * **Output tasks**: checked by comparing the program's output with the expected one
 * **Course configuration**: `course-info.yaml`, a `lesson-info.yaml` per lesson, and a `task-info.yaml` and `task.md` per task
 
 > These materials are designed to be opened in IntelliJ IDEA with the JetBrains Academy plugin.
+
+### Assignment PDFs
+
+Each assignment is also handed out as a PDF, compiled in Overleaf, and the file students start from (`template/` in its task folder). With Claude Code started from this folder:
+
+```
+/latex Introduction to Java/First program in Java
+```
+
+writes `goals.tex`, `parameters.tex` and `tasks.tex` in the task's `latex/` folder, converted from its `task.md`, ready to paste into the Overleaf template.
 
 ---
 
@@ -38,7 +47,6 @@ A Gradle project in JetBrains Academy format, with one lesson per unit. Each les
 
 Each unit contains a combination of:
 
-* **Examples** focused on each concept
 * **Exercises** with guidance
 * **Assignments** based on realistic problems
 

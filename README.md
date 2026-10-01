@@ -17,7 +17,7 @@ Through Java, students learn to structure larger applications and apply reusable
 This repository brings together the lectures and the programming components of the course, so that each unit's slides, examples and exercises live side by side. It is organized in two folders:
 
 * `slides/`: reveal.js project with the lecture slides
-* `code/`: JetBrains Academy project with the examples, exercises and assignments
+* `code/`: JetBrains Academy project with the exercises and assignments
 
 ### `slides/`
 
@@ -41,7 +41,6 @@ The web version is published on GitHub Pages on every push.
 
 A Gradle project in JetBrains Academy format, with one lesson per unit. It contains:
 
-* **Code examples** (theory tasks) that demonstrate key concepts from each unit
 * **Exercises and assignments** (edu tasks) checked automatically with JUnit tests
 * **Output tasks** that compare the program's output with the expected one
 * **Course configuration**: `course-info.yaml`, a `lesson-info.yaml` per lesson and a `task-info.yaml` and `task.md` per task

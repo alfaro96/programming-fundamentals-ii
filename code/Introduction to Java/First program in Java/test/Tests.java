@@ -2,8 +2,8 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * This class performs unit testing on the {@link Sum} class to verify
- * the correctness of iterative and formulaic summation implementations.
+ * Tests the {@link Sum} class: both summation methods must return the sum of the
+ * integers from 0 to <i>n</i>.
  *
  * @author Juan Carlos Alfaro Jiménez
  * @see Sum
@@ -11,83 +11,52 @@ import static org.junit.Assert.*;
 public class Tests {
 
     /**
-     * Verifies the iterative implementation {@link Sum#sum1} with the specific
-     * test value requested in the assignment logic.
-     *
-     * <p>Test Logic:</p>
-     * <ul>
-     * <li>Input: 11</li>
-     * <li>Expected output: 66</li>
-     * </ul>
+     * The values of <i>n</i> used in the assignment.
+     */
+    private static final int[] VALUES = {3, 4, 13, 21, 67, 102, 155, 365, 1007};
+
+    /**
+     * The sum of the integers from 0 to <i>n</i> for each value in {@link #VALUES}.
+     */
+    private static final int[] EXPECTED = {6, 10, 91, 231, 2278, 5253, 12090, 66795, 507528};
+
+    /**
+     * Checks {@link Sum#sum1} with the value of the individual test: {@code sum1(11)} is 66.
      */
     @Test
-    public void testIterativeSumSpecificValue() {
-        int input = 11;
-        int expected = 66;
-
-        int result = Sum.sum1(input);
-
-        assertEquals("The sum of the first 11 numbers should be 66", expected, result);
+    public void testSum1Eleven() {
+        assertEquals("sum1(11) should be 66", 66, Sum.sum1(11));
     }
 
     /**
-     * Verifies the formulaic implementation {@link Sum#sum2} with the specific
-     * test value requested in the assignment logic.
-     *
-     * <p>Test Logic:</p>
-     * <ul>
-     * <li>Input: 11</li>
-     * <li>Expected output: 66</li>
-     * </ul>
+     * Checks {@link Sum#sum2} with the value of the individual test: {@code sum2(11)} is 66.
      */
     @Test
-    public void testFormulaicSumSpecificValue() {
-        int input = 11;
-        int expected = 66;
-
-        int result = Sum.sum2(input);
-
-        assertEquals("The formula result for 11 should be 66", expected, result);
+    public void testSum2Eleven() {
+        assertEquals("sum2(11) should be 66", 66, Sum.sum2(11));
     }
 
     /**
-     * Verifies the boundary condition where the input is 0.
-     * Both methods must handle the lower limit correctly.
-     *
-     * <p>Test Logic:</p>
-     * <ul>
-     * <li>Input: 0</li>
-     * <li>Expected output: 0</li>
-     * </ul>
+     * Checks both methods with the smallest values: <i>n</i> = 0 gives 0 and <i>n</i> = 1 gives 1.
      */
     @Test
-    public void testZeroBoundary() {
-        int input = 0;
-        int expected = 0;
-
-        assertEquals("Iterative sum of 0 should be 0", expected, Sum.sum1(input));
-        assertEquals("Formulaic sum of 0 should be 0", expected, Sum.sum2(input));
+    public void testSmallestValues() {
+        assertEquals("sum1(0) should be 0", 0, Sum.sum1(0));
+        assertEquals("sum2(0) should be 0", 0, Sum.sum2(0));
+        assertEquals("sum1(1) should be 1", 1, Sum.sum1(1));
+        assertEquals("sum2(1) should be 1", 1, Sum.sum2(1));
     }
 
     /**
-     * Automates the verification process by comparing both implementation techniques
-     * (iterative vs formulaic) against the dataset provided in the assignment tasks.
-     *
-     * <p>This test ensures that {@code sum1(n) == sum2(n)} for every n in the array:</p>
-     * <p>{@code {3, 4, 13, 21, 67, 102, 155, 365, 1007}}</p>
+     * Checks both methods against the expected result for every value in the
+     * assignment's list, so that two methods wrong in the same way do not pass.
      */
     @Test
-    public void testBatchComparisonAndConsistency() {
-        // The specific array provided in the "verification and testing" task
-        int[] data = {3, 4, 13, 21, 67, 102, 155, 365, 1007};
-
-        for (int n : data) {
-            int iterativeResult = Sum.sum1(n);
-            int formulaResult = Sum.sum2(n);
-
-            // Verification: results must be identical regardless of the method used
-            assertEquals("Results for input " + n + " must match between methods",
-                    iterativeResult, formulaResult);
+    public void testValues() {
+        for (int i = 0; i < VALUES.length; i++) {
+            int n = VALUES[i];
+            assertEquals("sum1(" + n + ") should be " + EXPECTED[i], EXPECTED[i], Sum.sum1(n));
+            assertEquals("sum2(" + n + ") should be " + EXPECTED[i], EXPECTED[i], Sum.sum2(n));
         }
     }
 }
