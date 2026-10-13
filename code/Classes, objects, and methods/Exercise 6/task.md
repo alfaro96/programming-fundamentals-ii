@@ -1,40 +1,39 @@
 # Exercise 6
 
-The goal of this exercise is to define the `Library` class, which represents a library containing several `Book` objects. To complete this exercise, you must use the `Book` class.
+The goal of this exercise is to write a `Library` class that represents a library holding several `Book` objects. It uses the `Book` class of Exercise 3, which is provided.
 
 ### Implementation
 
-Implement an `Library` class with the following requirements:
+Write a `Library` class with the following requirements:
 
 * **Attributes**:
-  * `String name`: The name of the library.
-  * `Book[] books`: An array containing every `Book` within the library.
-  * `int currentBookIndex`: An index representing the book currently being read. By default, this starts at -1, indicating that no book is currently selected.
+  * `String name`: the name of the library.
+  * `Book[] books`: the books of the library. The array is filled from its first position, so the empty positions, all at the end, hold `null`.
+  * `int currentBookIndex`: the position of the book currently selected. It starts at -1, which means that no book is selected.
 
 * **Methods**:
-  * **Constructor**:
-    * A constructor that takes a name and the initial maximum capacity of books. By default, the library starts without any books.
-  * `addBook()`: Adds a given book to the first empty position in the array. If the array is full, its size must be doubled before adding the book. Since arrays are immutable, you must create a new, larger array and copy the existing values.
-  * `getCurrentBook()`: Returns the `Book` specified by the current index.
-  * `nextBook()`: Moves the current index to the next book and returns it. If no more books exist, it should return a null value.
-  * `previousBook()`: Moves the current index to the previous book and returns it. If no books exist before the current one, it should return a null value.
-  * `toString()`: Returns a human-legible `String` representing the library's information. This method should not print the books themselves, only the information about the library.
+  * **Constructor**: receives the name of the library and the number of books it has room for at first. The library starts without books.
+  * `addBook()`: adds a book in the first empty position of the array. If the array is full, it first has to be replaced by one twice as long: since an array cannot change its size, create a new, longer array and copy the books into it, in the same positions.
+  * `getCurrentBook()`: returns the book currently selected, or `null` if none is.
+  * `nextBook()`: selects the next book and returns it. If there are no more books, it returns `null` and the selection does not change.
+  * `previousBook()`: selects the previous book and returns it. If there is no book before the current one, or no book is selected, it returns `null` and the selection does not change.
+  * `describe()`: returns a `String` with the data of the library, including its name and its number of books, but not the data of the books themselves.
 
 ### Recommendations
 
-* **Incremental implementation**: It is highly recommended to implement and test each method individually before moving on to the next one, ensuring each part works correctly before building the rest of the class.
+* **Incremental implementation**: write and test each method on its own before moving on to the next one, making sure each part works before building the rest of the class.
 
 ### Evaluation and testing
 
-To successfully complete the exercise, implement a `main` method to perform the following tests:
+To complete the exercise, write a `Main` class with a `main` method that performs the following tests:
 
 1. **Class functionality**:
-   * Create the `Library` class with all specified attributes, constructors, and methods.
+   * Write the `Library` class with all the attributes, constructors and methods described.
 
-2. **Main method testing**:
+2. **Testing in the `main` method**:
    * Create a library and several books.
-   * Add books to the library, ensuring the initial size is small enough to trigger the array-doubling logic.
-   * Move through the library using navigation methods and verify that edge cases (reaching non-existent books) are handled properly.
+   * Add the books to the library, with a starting size small enough for the array to have to double.
+   * Go through the library with the navigation methods, in both directions, and check that reaching either end is handled properly.
 
 3. **Clean code and documentation**:
-    * Ensure that the code is clean, legible, and includes explanatory comments where necessary.
+   * Make sure the code is clean and legible, with explanatory comments where necessary.

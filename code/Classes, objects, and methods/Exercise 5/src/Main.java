@@ -1,99 +1,55 @@
 /**
- * Main application class to demonstrate the {@link Polynomial} class.
- * Creates {@link Polynomial} instances using all constructors and exercises all their operations.
+ * Exercise 5: tries every constructor and method of the {@link Polynomial} class.
  *
  * @author Juan Carlos Alfaro Jiménez
  * @see Polynomial
  * @see Monomial
  */
-public class Main {
+class Main {
 
     /**
-     * Entry point of the program.
+     * Creates polynomials with the three constructors, operates with them and prints each
+     * result next to the value it should have.
      *
-     * @param args Command line arguments (not used).
+     * @param args the command-line arguments (not used).
      */
     public static void main(String[] args) {
-        // 1. Empty constructor
-        Polynomial empty = new Polynomial(5);
-        System.out.println("--- Empty constructor ---");
-        System.out.println("maxSize (expected 5): " + empty.maxSize);
-        System.out.println("numMonomials (expected 0): " + empty.numMonomials);
-        System.out.println();
+        // An empty polynomial, filled monomial by monomial
+        Polynomial p1 = new Polynomial(3);
+        System.out.println("p1 = " + p1.describe() + " (should be 0)");
+        p1.addMonomial(new Monomial(2.0, 2));
+        p1.addMonomial(new Monomial(1.0, 0));
+        System.out.println("p1 = " + p1.describe() + " (should be 1.0X^0 + 2.0X^2)");
 
-        // 2. Coefficient-array constructor: P(x) = 1 + 0x + 3x^2
-        double[] coeffs = {1.0, 0.0, 3.0};
-        Polynomial fromCoeffs = new Polynomial(coeffs);
-        System.out.println("--- Coefficient-array constructor: {1.0, 0.0, 3.0} ---");
-        System.out.println("getMonomial(0).coefficient (expected 1.0): " + fromCoeffs.getMonomial(0).coefficient);
-        System.out.println("getMonomial(2).coefficient (expected 3.0): " + fromCoeffs.getMonomial(2).coefficient);
-        System.out.println(fromCoeffs);
-        System.out.println();
+        // From its coefficients: 1 + 0X + 3X^2
+        double[] coefficients = {1.0, 0.0, 3.0};
+        Polynomial p2 = new Polynomial(coefficients);
+        System.out.println("p2 = " + p2.describe() + " (should be 1.0X^0 + 3.0X^2)");
 
-        // 3. Monomial-array constructor
-        Monomial[] monomials = {new Monomial(2.0, 0), new Monomial(5.0, 1)};
-        Polynomial fromMonomials = new Polynomial(monomials);
-        System.out.println("--- Monomial-array constructor: [2X^0, 5X^1] ---");
-        System.out.println("getMonomial(0).coefficient (expected 2.0): " + fromMonomials.getMonomial(0).coefficient);
-        System.out.println("getMonomial(1).coefficient (expected 5.0): " + fromMonomials.getMonomial(1).coefficient);
-        System.out.println(fromMonomials);
-        System.out.println();
+        // From its monomials, in any order
+        Monomial[] monomials = {new Monomial(5.0, 1), new Monomial(2.0, 0)};
+        Polynomial p3 = new Polynomial(monomials);
+        System.out.println("p3 = " + p3.describe() + " (should be 2.0X^0 + 5.0X^1)");
 
-        // 4. addMonomial()
-        empty.addMonomial(new Monomial(3.0, 2));
-        System.out.println("--- addMonomial(Monomial(3.0, 2)) ---");
-        System.out.println("numMonomials (expected 1): " + empty.numMonomials);
-        System.out.println("getMonomial(2).coefficient (expected 3.0): " + empty.getMonomial(2).coefficient);
-        System.out.println();
+        System.out.println("Monomial of p2 with exponent 2: " + p2.getMonomial(2).describe() + " (should be 3.0X^2)");
+        System.out.println("Monomial of p2 with exponent 1: " + p2.getMonomial(1) + " (should be null)");
 
-        // 6. add(): P1(x) = 1 + 2x^2, P2(x) = 3 + 4x^2 -> P1+P2 = 4 + 6x^2
-        Polynomial p1 = new Polynomial(new double[]{1.0, 0.0, 2.0});
-        Polynomial p2 = new Polynomial(new double[]{3.0, 0.0, 4.0});
-        Polynomial sumP = p1.add(p2);
-        System.out.println("--- add() ---");
-        System.out.println("P1: " + p1);
-        System.out.println("P2: " + p2);
-        System.out.println("P1.add(P2): " + sumP);
-        System.out.println("result.getMonomial(0).coefficient (expected 4.0): " + sumP.getMonomial(0).coefficient);
-        System.out.println("result.getMonomial(2).coefficient (expected 6.0): " + sumP.getMonomial(2).coefficient);
-        System.out.println();
+        p2.replaceMonomial(new Monomial(4.0, 2));
+        System.out.println("p2 after the replacement = " + p2.describe() + " (should be 1.0X^0 + 4.0X^2)");
 
-        // 7. scalarProduct(): P(x) = 2 + 3x, scalar = 2 -> 4 + 6x
-        Polynomial pScalar = new Polynomial(new double[]{2.0, 3.0});
-        Polynomial scaledP = pScalar.scalarProduct(2.0);
-        System.out.println("--- scalarProduct(2.0) ---");
-        System.out.println("P: " + pScalar);
-        System.out.println("P.scalarProduct(2.0): " + scaledP);
-        System.out.println("result.getMonomial(0).coefficient (expected 4.0): " + scaledP.getMonomial(0).coefficient);
-        System.out.println("result.getMonomial(1).coefficient (expected 6.0): " + scaledP.getMonomial(1).coefficient);
-        System.out.println();
+        System.out.println("p1 + p2 = " + p1.add(p2).describe() + " (should be 2.0X^0 + 6.0X^2)");
+        // Coefficients that cancel out leave no monomials
+        System.out.println("p3 + (-1) * p3 = " + p3.add(p3.scalarProduct(-1.0)).describe() + " (should be 0)");
+        System.out.println("p3 * 2 = " + p3.scalarProduct(2.0).describe() + " (should be 4.0X^0 + 10.0X^1)");
+        System.out.println("p3 * p3 = " + p3.product(p3).describe() + " (should be 4.0X^0 + 20.0X^1 + 25.0X^2)");
 
-        // 8. product(): P1(x) = 1 + x, P2(x) = 1 + x -> 1 + 2x + x^2
-        Polynomial pa = new Polynomial(new double[]{1.0, 1.0});
-        Polynomial pb = new Polynomial(new double[]{1.0, 1.0});
-        Polynomial prodP = pa.product(pb);
-        System.out.println("--- product() ---");
-        System.out.println("P1: " + pa + "  P2: " + pb);
-        System.out.println("P1.product(P2): " + prodP);
-        System.out.println("coeff at exp 0 (expected 1.0): " + prodP.getMonomial(0).coefficient);
-        System.out.println("coeff at exp 1 (expected 2.0): " + prodP.getMonomial(1).coefficient);
-        System.out.println("coeff at exp 2 (expected 1.0): " + prodP.getMonomial(2).coefficient);
-        System.out.println();
+        System.out.println("p3 at X = 2: " + p3.solve(2.0) + " (should be 12.0)");
+        System.out.println("p2 at X = -1: " + p2.solve(-1.0) + " (should be 5.0)");
 
-        // 9. solve(): P(x) = 2 + 3x, x = 2 -> 8
-        double solveResult = pScalar.solve(2.0);
-        System.out.println("--- solve() ---");
-        System.out.println("P(x) = 2 + 3x");
-        System.out.println("P.solve(2.0) (expected 8.0): " + solveResult);
-        System.out.println();
-
-        // 10. equals()
-        Polynomial pe1 = new Polynomial(new double[]{1.0, 2.0, 3.0});
-        Polynomial pe2 = new Polynomial(new double[]{1.0, 2.0, 3.0});
-        Polynomial pe3 = new Polynomial(new double[]{1.0, 2.0, 9.0});
-        System.out.println("--- equals() ---");
-        System.out.println("pe1.equals(pe2) (expected true):  " + pe1.equals(pe2));
-        System.out.println("pe1.equals(pe3) (expected false): " + pe1.equals(pe3));
-        System.out.println();
+        // The same polynomial, built in two different ways
+        double[] sameCoefficients = {2.0, 5.0};
+        Polynomial p4 = new Polynomial(sameCoefficients);
+        System.out.println("p3 equals p4: " + p3.isEqualTo(p4) + " (should be true)");
+        System.out.println("p1 equals p2: " + p1.isEqualTo(p2) + " (should be false)");
     }
 }

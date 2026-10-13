@@ -6,9 +6,12 @@
   // Base theme for code highlighting; theme/custom.css recolors it with the palette
   "highlightTheme": "github",
 
+  // Print PDF only: the canvas grows to this height, 4:3 with the width below, for paper
+  "printHeight": 1440,
+
   // Options passed to reveal.js
   "revealOptions": {
-    // The canvas: the slides, the PDF pages and the screenshots all take this size
+    // The canvas, 16:9: the slides, the class PDF and the screenshots take this size
     "width": 1920,
     "height": 1080,
 

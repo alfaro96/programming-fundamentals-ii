@@ -1,57 +1,54 @@
 /**
- * Represents a person with physical attributes and a registry of children.
- * This class demonstrates object relationships, array management, and recursion.
+ * Represents a person: their personal data and their children, who are people too.
+ * <p>
+ * The children are kept in an array of fixed size, filled from the start: the empty
+ * positions, all at the end, hold {@code null}.
  *
  * @author Juan Carlos Alfaro Jiménez
  */
-public class Person {
+class Person {
 
     /**
      * The name of the person.
      */
-    public String name;
+    String name;
 
     /**
-     * The age in years.
+     * The age of the person, in years.
      */
-    public int age;
+    int age;
 
     /**
-     * The height in meters.
+     * The height of the person, in meters.
      */
-    public double height;
+    double height;
 
     /**
-     * The weight in kilograms.
+     * The weight of the person, in kilograms.
      */
-    public double weight;
+    double weight;
 
     /**
-     * The residential address.
+     * The address of the person.
      */
-    public String address;
+    String address;
 
     /**
-     * A fixed-size array containing references to the person's children.
+     * The children of the person, with {@code null} in the positions not yet filled.
      */
-    public Person[] children;
+    Person[] children;
 
     /**
-     * Counter for the children currently added to the array.
-     */
-    private int currentChildrenCount = 0;
-
-    /**
-     * Constructs a {@link Person} with a specific capacity for children.
+     * Creates a person with room for the given number of children, none of them added yet.
      *
-     * @param name             Name of the person.
-     * @param age              Age in years.
-     * @param height           Height in meters.
-     * @param weight           Weight in kilograms.
-     * @param address          Home address.
-     * @param numberOfChildren The fixed size of the children array.
+     * @param name the name of the person.
+     * @param age the age of the person, in years.
+     * @param height the height of the person, in meters.
+     * @param weight the weight of the person, in kilograms.
+     * @param address the address of the person.
+     * @param numberOfChildren the number of children the person can have.
      */
-    public Person(String name, int age, double height, double weight, String address, int numberOfChildren) {
+    Person(String name, int age, double height, double weight, String address, int numberOfChildren) {
         this.name = name;
         this.age = age;
         this.height = height;
@@ -61,89 +58,91 @@ public class Person {
     }
 
     /**
-     * Constructs a childless {@link Person}.
-     * The children array is initialized with size 0.
+     * Creates a person without children, whose array of children is empty.
      *
-     * @param name    Name of the person.
-     * @param age     Age in years.
-     * @param height  Height in meters.
-     * @param weight  Weight in kilograms.
-     * @param address Home address.
+     * @param name the name of the person.
+     * @param age the age of the person, in years.
+     * @param height the height of the person, in meters.
+     * @param weight the weight of the person, in kilograms.
+     * @param address the address of the person.
      */
-    public Person(String name, int age, double height, double weight, String address) {
-        this.name = name;
-        this.age = age;
-        this.height = height;
-        this.weight = weight;
-        this.address = address;
-        this.children = new Person[0];
+    Person(String name, int age, double height, double weight, String address) {
+        this(name, age, height, weight, address, 0);
     }
 
     /**
-     * Adds a child to the array if there is available space.
-     * Displays an error if the array is full.
+     * Adds a child in the first empty position of the array of children.
+     * <p>
+     * The array never grows: if it is full, an error message is printed and the child is
+     * not added.
      *
-     * @param child The {@link Person} to be added.
+     * @param child the child to add.
      */
-    public void addChild(Person child) {
-        if (this.currentChildrenCount < this.children.length) {
-            this.children[this.currentChildrenCount] = child;
-            this.currentChildrenCount++;
-        } else {
-            System.out.println("Error: The children array for " + this.name + " is full.");
+    void addChild(Person child) {
+        for (int i = 0; i < this.children.length; i++) {
+            if (this.children[i] == null) {
+                this.children[i] = child;
+                return;
+            }
         }
+        System.out.println("Error: " + this.name + " cannot have more than " + this.children.length + " children");
     }
 
     /**
-     * Identifies the oldest child in the registry.
+     * Finds the oldest child. If several are the oldest, returns the first one added.
      *
-     * @return The child with the highest age, or {@code null} if no children exist.
+     * @return the oldest child, or {@code null} if the person has no children.
      */
-    public Person getOldestChild() {
-        if (this.currentChildrenCount == 0) return null;
-
-        Person oldest = this.children[0];
-        for (int i = 1; i < this.currentChildrenCount; i++) {
-            if (this.children[i].age > oldest.age) {
-                oldest = this.children[i];
+    Person getOldestChild() {
+        Person oldest = null;
+        for (Person child : this.children) {
+            if (child != null && (oldest == null || child.age > oldest.age)) {
+                oldest = child;
             }
         }
         return oldest;
     }
 
     /**
-     * Identifies the youngest child in the registry.
+     * Finds the youngest child. If several are the youngest, returns the first one added.
      *
-     * @return The child with the lowest age, or {@code null} if no children exist.
+     * @return the youngest child, or {@code null} if the person has no children.
      */
-    public Person getYoungestChild() {
-        if (this.currentChildrenCount == 0) return null;
-
-        Person youngest = this.children[0];
-        for (int i = 1; i < this.currentChildrenCount; i++) {
-            if (this.children[i].age < youngest.age) {
-                youngest = this.children[i];
+    Person getYoungestChild() {
+        Person youngest = null;
+        for (Person child : this.children) {
+            if (child != null && (youngest == null || child.age < youngest.age)) {
+                youngest = child;
             }
         }
         return youngest;
     }
 
     /**
-     * Returns a recursive string representation of the person and their children.
+     * Returns all the data of the person, followed by that of each child in brackets,
+     * such as {@code "Ana, 40 years, 1.65 m, 60.0 kg, Main St 1, children: [Luis, 8 years,
+     * 1.3 m, 28.0 kg, Main St 1, children: []]"}.
+     * <p>
+     * The data of each child comes from calling this same method on the child. The text is
+     * built in a {@link StringBuilder}, which grows instead of being copied for each child.
      *
-     * @return Formatted string with all personal and offspring information.
+     * @return the data of the person and of their children.
      */
-    @Override
-    public String toString() {
-        String info = "Name: " + this.name + " (Age: " + this.age + "), Address: " + this.address;
-
-        if (this.currentChildrenCount > 0) {
-            info += "\n  Children of " + this.name + ":";
-            for (int i = 0; i < this.currentChildrenCount; i++) {
-                // Recursive call with indentation for clarity
-                info += "\n    - " + this.children[i].toString().replace("\n", "\n    ");
+    String describe() {
+        StringBuilder text = new StringBuilder();
+        text.append(this.name).append(", ").append(this.age).append(" years, ")
+                .append(this.height).append(" m, ").append(this.weight).append(" kg, ")
+                .append(this.address).append(", children: [");
+        boolean first = true;
+        for (Person child : this.children) {
+            if (child != null) {
+                if (!first) {
+                    text.append("; ");
+                }
+                text.append(child.describe());
+                first = false;
             }
         }
-        return info;
+        return text.append("]").toString();
     }
 }

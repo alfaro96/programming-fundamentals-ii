@@ -1,99 +1,126 @@
 /**
- * Represents a library that manages a collection of {@link Book} objects.
- * It handles dynamic array growth and provides navigation through the collection.
+ * Represents a library: a name and an array of {@link Book} objects that can be gone
+ * through one by one, forward or backward.
+ * <p>
+ * The books fill the array from the start, so the empty positions, all at the end, hold
+ * {@code null}. When the array is full, adding a book replaces it with one twice as long.
  *
  * @author Juan Carlos Alfaro Jiménez
+ * @see Book
  */
-public class Library {
+class Library {
 
-   /** The name of the library. */
-   public String name;
+    /**
+     * The name of the library.
+     */
+    String name;
 
-   /** The array containing the books in the library. */
-   public Book[] books;
+    /**
+     * The books of the library, with {@code null} in the positions not yet filled.
+     */
+    Book[] books;
 
-   /** The index of the book currently being selected or read. */
-   public int currentBookIndex = -1;
+    /**
+     * The position of the book currently selected, or &minus;1 if none is.
+     */
+    int currentBookIndex;
 
-   /** Number of books currently stored in the library. */
-   private int bookCount = 0;
+    /**
+     * Creates a library with no books and no book selected.
+     *
+     * @param name the name of the library.
+     * @param capacity the number of books the library has room for at first.
+     */
+    Library(String name, int capacity) {
+        this.name = name;
+        this.books = new Book[capacity];
+        this.currentBookIndex = -1;
+    }
 
-   /**
-    * Constructs a new {@link Library} with a name and initial capacity.
-    *
-    * @param name The name of the library.
-    * @param initialCapacity The starting size of the books array.
-    */
-   public Library(String name, int initialCapacity) {
-      this.name = name;
-      this.books = new Book[initialCapacity];
-   }
+    /**
+     * Counts the books in the library, which may be fewer than the positions of the array.
+     *
+     * @return the number of books.
+     */
+    int countBooks() {
+        int count = 0;
+        for (Book book : this.books) {
+            if (book != null) {
+                count++;
+            }
+        }
+        return count;
+    }
 
-   /**
-    * Adds a book to the library. If the internal array is full, its size is doubled.
-    *
-    * @param book The {@link Book} to add.
-    */
-   public void addBook(Book book) {
-      if (this.bookCount == this.books.length) {
-         // Resize logic: Double the array size
-         Book[] largerArray = new Book[this.books.length * 2];
-         for (int i = 0; i < this.books.length; i++) {
-            largerArray[i] = this.books[i];
-         }
-         this.books = largerArray;
-         System.out.println("System: Library storage doubled to " + this.books.length);
-      }
+    /**
+     * Adds a book in the first empty position of the array.
+     * <p>
+     * If the array is full, it is first replaced by a new one twice as long, at least one
+     * position long, with the same books in the same positions.
+     *
+     * @param book the book to add.
+     */
+    void addBook(Book book) {
+        int count = this.countBooks();
+        if (count == this.books.length) {
+            Book[] larger = new Book[Math.max(1, 2 * this.books.length)];
+            for (int i = 0; i < this.books.length; i++) {
+                larger[i] = this.books[i];
+            }
+            this.books = larger;
+        }
+        this.books[count] = book;
+    }
 
-      this.books[this.bookCount] = book;
-      this.bookCount++;
-   }
+    /**
+     * Returns the book currently selected.
+     *
+     * @return the current book, or {@code null} if none is selected.
+     */
+    Book getCurrentBook() {
+        if (this.currentBookIndex < 0) {
+            return null;
+        }
+        return this.books[this.currentBookIndex];
+    }
 
-   /**
-    * Retrieves the book currently selected.
-    *
-    * @return The current {@link Book}, or {@code null} if no book is selected.
-    */
-   public Book getCurrentBook() {
-      if (this.currentBookIndex >= 0 && this.currentBookIndex < this.bookCount) {
-         return this.books[this.currentBookIndex];
-      }
-      return null;
-   }
+    /**
+     * Selects the next book and returns it. If there is no next book, the selection does
+     * not change.
+     *
+     * @return the next book, or {@code null} if the current one is the last.
+     */
+    Book nextBook() {
+        int next = this.currentBookIndex + 1;
+        if (next >= this.books.length || this.books[next] == null) {
+            return null;
+        }
+        this.currentBookIndex = next;
+        return this.books[next];
+    }
 
-   /**
-    * Moves the selection to the next book.
-    *
-    * @return The next {@link Book}, or null if at the end of the collection.
-    */
-   public Book nextBook() {
-      if (this.currentBookIndex + 1 < this.bookCount) {
-         this.currentBookIndex++;
-         return this.books[this.currentBookIndex];
-      }
-      return null;
-   }
+    /**
+     * Selects the previous book and returns it. If there is no previous book, the
+     * selection does not change.
+     *
+     * @return the previous book, or {@code null} if the current one is the first or none is
+     *         selected.
+     */
+    Book previousBook() {
+        if (this.currentBookIndex <= 0) {
+            return null;
+        }
+        this.currentBookIndex--;
+        return this.books[this.currentBookIndex];
+    }
 
-   /**
-    * Moves the selection to the previous book.
-    *
-    * @return The previous {@link Book}, or {@code null} if at the start or none selected.
-    */
-   public Book previousBook() {
-      if (this.currentBookIndex - 1 >= 0) {
-         this.currentBookIndex--;
-         return this.books[this.currentBookIndex];
-      }
-      return null;
-   }
-
-   /**
-    * Returns the library's metadata.
-    *
-    * @return {@code String} representation of the library name and book count.
-    */
-   @Override
-   public String toString() {
-      return "Library: " + this.name + " (" + this.bookCount + " books total)";
-   }
+    /**
+     * Returns the data of the library, without those of its books, such as
+     * {@code "City Library: 3 books, room for 4"}.
+     *
+     * @return the name, the number of books and the length of the array.
+     */
+    String describe() {
+        return this.name + ": " + this.countBooks() + " books, room for " + this.books.length;
+    }
 }

@@ -4,8 +4,8 @@ files:
     visible: true
     placeholders:
       - offset: 0
-        length: 5091
-        placeholder_text: "/* TODO: Implement Matrix class. */"
+        length: 6188
+        placeholder_text: "/* TODO: Implement the Matrix class. */"
   - name: test/Tests.java
     visible: false
     propagatable: false
@@ -13,5 +13,5 @@ files:
     visible: true
     placeholders:
       - offset: 0
-        length: 5371
-        placeholder_text: "/* TODO: Implement Main class. */"
+        length: 2162
+        placeholder_text: "/* TODO: Implement the Main class. */"

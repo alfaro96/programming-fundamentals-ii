@@ -1,6 +1,7 @@
 // Reads reveal-md.json5 for the other scripts, which import readConfig() or run this one
 //
-// size: prints the canvas size in pixels, as reveal-md --print-size takes it
+// size [print]: prints the canvas size in pixels, as reveal-md --print-size takes it; with print,
+// the height is printHeight, the 4:3 canvas of the print PDF
 
 import { readFile } from "node:fs/promises";
 
@@ -29,6 +30,8 @@ export async function readConfig() {
 }
 
 if (process.argv[2] === "size") {
-  const { width, height } = (await readConfig()).revealOptions;
+  const config = await readConfig();
+  const { width } = config.revealOptions;
+  const height = process.argv[3] === "print" ? config.printHeight : config.revealOptions.height;
   console.log(`${width}x${height}px`);
 }

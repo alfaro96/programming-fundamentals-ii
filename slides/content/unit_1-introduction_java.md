@@ -89,7 +89,7 @@ The primary drawback of a <strong>compiled language</strong> is that a <strong>b
 Note:
 Start from what they already do: hello.c. Step 1, in their IDE they press the green Run button and "Hello, world!" appears, as if running the source file directly. Step 2, under the hood that button does two things. Step 3, first it compiles: gcc translates the C file straight into machine code for the processor it runs on, here an ordinary x86-64 laptop, and leaves an executable file. Step 4, then it runs that file, and on the same kind of machine it works. Step 5, take that very same executable to a machine with a different processor (an ARM board, a Mac with Apple Silicon) and ask them what they think will happen. Step 6, it does not even start: the instructions inside are not ones that processor understands. Step 7, the takeaway: to run on another architecture you have to recompile for it, once per platform.
 
----
+--
 
 <div class="stage">
 
@@ -243,7 +243,7 @@ The first section is done: they know why bytecode for a virtual machine makes a 
 Note:
 The JDK is what they install to write Java, not only to run it. Step 1, the two they already met: javac and java. Step 2, the tools to hand the program to someone else: jar bundles everything into one file, javadoc turns the /** */ comments into a web page like the official API docs. Step 3, jshell to test a line without writing a whole program, jdb to stop and inspect a program (in practice they will debug from the IDE, which uses the same machinery).
 
----
+--
 
 <div class="stage">
 
@@ -333,7 +333,7 @@ public class Hello {
 </div>
 
 Note:
-The program they wrote on their first day of C, next to its Java version: the same output, and the differences are what they have to learn. Each step lights up the lines that go together in both programs. On entry, only the C program they know: let them read it and say what each line does. Step 1, its Java version appears whole: this is the Java code, now let's go step by step. Step 2, the class: Java wraps everything in a class, C has nothing like it, so the whole C side is dimmed. For now the only thing they need is the naming rule, Hello in the code and Hello.java on disk, with the same capital letter: Java is case-sensitive, so a class Hello saved as hello.java does not compile. What a class is, the whole next unit. Step 3, main: where the program starts in both, but Java's returns nothing (void), so there is no return 0; the words around it (public, static, String[] args) come later too, for now its first line is copied as it is. Step 4, printing: the very same printf, format and \n included, only called through System.out; in C it needs the #include of stdio.h, in Java System.out is always available. The next slide shows that Java has two more ways to print, and which one is used most.
+The program they wrote on their first day of C, next to its Java version: the same output, and the differences are what they have to learn. Each step lights up the lines that go together in both programs. On entry, only the C program they know: let them read it and say what each line does. Step 1, its Java version appears whole: this is the Java code, now let's go step by step. Step 2, the class: Java wraps everything in a class, C has nothing like it, so the whole C side is dimmed. For now the only thing they need is the naming rule, Hello in the code and Hello.java on disk, with the same capital letter: Java is case-sensitive, so a class Hello saved as hello.java does not compile. What a class is, the whole next unit. Step 3, main: where the program starts in both, but Java's returns nothing (void), so there is no return 0; the words around it (public, static, String[] args) come later too, for now its first line is copied as it is. Step 4, printing: the very same printf, format and \n included, only called through System.out; in C it needs the #include of stdio.h, in Java System.out is always available. The slide below shows that Java has two more ways to print, and which one is used most.
 
 --
 
@@ -513,7 +513,7 @@ They can write a first program; now the values it works with: the primitive type
 </table>
 
 <blockquote class="stage-note fragment" data-fragment-index="5">
-Unlike C, every size is <strong>fixed</strong>: an <code>int</code> has 32 bits on <strong>every platform</strong>, which is part of Write Once, Run Anywhere.
+Unlike C, every size is <strong>fixed</strong>: the same on <strong>every platform</strong>, which is part of Write Once, Run Anywhere.
 </blockquote>
 
 </div>
@@ -669,7 +669,7 @@ No need to memorize the table: the IDE colors these words, and the compiler comp
 
 <table class="data-table verdict-table stage-body">
 <thead>
-<tr><th>Name</th><th>Compiles?</th><th>Convention?</th><th>Why</th></tr>
+<tr><th>Name</th><th class="mark-head">Compiles?</th><th class="mark-head">Convention?</th><th>Why</th></tr>
 </thead>
 <tbody>
 <tr><th scope="row"><code>totalPrice</code></th><td class="mark mark-ok fragment custom" data-fragment-index="0">✓</td><td class="mark mark-ok fragment custom" data-fragment-index="0">✓</td><td class="fragment custom" data-fragment-index="0">The convention for variables</td></tr>
@@ -734,7 +734,7 @@ The chain goes from the type that holds the least to the one that holds the most
 
 <table class="data-table verdict-table stage-body">
 <thead>
-<tr><th>Statement</th><th>Compiles?</th><th>Keeps the value?</th><th>Why</th></tr>
+<tr><th>Statement</th><th class="mark-head">Compiles?</th><th class="mark-head">Keeps the value?</th><th>Why</th></tr>
 </thead>
 <tbody>
 <tr><th scope="row"><code>int age = 20;</code></th><td class="mark mark-ok fragment custom" data-fragment-index="0">✓</td><td class="mark mark-ok fragment custom" data-fragment-index="0">✓</td><td class="fragment custom" data-fragment-index="0">Declaration and value, as in C</td></tr>

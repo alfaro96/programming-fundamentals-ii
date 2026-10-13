@@ -1,83 +1,88 @@
 /**
- * Represents a mathematical monomial.
- * A monomial consists of a constant coefficient and a variable X raised to an exponent.
+ * Represents a monomial <i>m</i> &middot; <i>X</i><sup><i>p</i></sup>: a constant coefficient
+ * multiplied by the variable <i>X</i> raised to an exponent.
+ * <p>
+ * The variable is always <i>X</i>, so it is not stored.
  *
  * @author Juan Carlos Alfaro Jiménez
  */
-public class Monomial {
-
-    /** The constant value multiplying the variable. */
-    public double coefficient;
-
-    /** The power to which the variable X is raised. */
-    public int exponent;
+class Monomial {
 
     /**
-     * Constructs a new {@link Monomial} with the specified values.
-     *
-     * @param coefficient The numerical constant.
-     * @param exponent The power of the variable.
+     * The constant that multiplies the variable.
      */
-    public Monomial(double coefficient, int exponent) {
+    double coefficient;
+
+    /**
+     * The power the variable is raised to.
+     */
+    int exponent;
+
+    /**
+     * Creates a monomial with the given coefficient and exponent.
+     *
+     * @param coefficient the constant that multiplies the variable.
+     * @param exponent the power the variable is raised to.
+     */
+    Monomial(double coefficient, int exponent) {
         this.coefficient = coefficient;
         this.exponent = exponent;
     }
 
     /**
-     * Returns a string representation of the monomial.
+     * Returns the written form of the monomial, such as {@code "2.0X^3"}.
      *
-     * @return A formatted {@code String}.
+     * @return the coefficient, followed by {@code X^} and the exponent.
      */
-    @Override
-    public String toString() {
+    String describe() {
         return this.coefficient + "X^" + this.exponent;
     }
 
     /**
-     * Adds another monomial to the current one.
-     * This operation is only performed if the exponents are identical.
+     * Adds another monomial to this one.
+     * <p>
+     * Two monomials only add up to a single monomial when they have the same exponent:
+     * the coefficients are added and the exponent stays the same.
      *
-     * @param other The {@link Monomial} to be added.
-     * @return A new {@link Monomial} representing the sum, or {@code null} if exponents differ.
+     * @param other the monomial to add.
+     * @return a new monomial with the sum, or {@code null} if the exponents differ.
      */
-    public Monomial addition(Monomial other) {
-        // Validation: In mathematics, addition is only valid if exponents are equal
+    Monomial addition(Monomial other) {
         if (this.exponent != other.exponent) {
             return null;
         }
-
         return new Monomial(this.coefficient + other.coefficient, this.exponent);
     }
 
     /**
-     * Multiplies the monomial by a scalar value.
+     * Multiplies this monomial by a number: the coefficient is multiplied and the
+     * exponent stays the same.
      *
-     * @param scalar The numerical value to multiply by.
-     * @return A new {@link Monomial} with the updated coefficient.
+     * @param scalar the number to multiply by.
+     * @return a new monomial with the product.
      */
-    public Monomial scalarProduct(double scalar) {
+    Monomial scalarProduct(double scalar) {
         return new Monomial(this.coefficient * scalar, this.exponent);
     }
 
     /**
-     * Multiplies the current monomial by another one.
+     * Multiplies this monomial by another one: the coefficients are multiplied and the
+     * exponents are added.
      *
-     * @param other The {@link Monomial} to multiply with.
-     * @return A new {@link Monomial} representing the product.
+     * @param other the monomial to multiply by.
+     * @return a new monomial with the product.
      */
-    public Monomial product(Monomial other) {
-        double newCoefficient = this.coefficient * other.coefficient;
-        int newExponent = this.exponent + other.exponent;
-        return new Monomial(newCoefficient, newExponent);
+    Monomial product(Monomial other) {
+        return new Monomial(this.coefficient * other.coefficient, this.exponent + other.exponent);
     }
 
     /**
-     * Solves the monomial for a specific value of X.
+     * Evaluates the monomial, replacing <i>X</i> with the given value.
      *
-     * @param xValue The value to substitute for X.
-     * @return The numerical result.
+     * @param x the value of <i>X</i>.
+     * @return the coefficient multiplied by {@code x} raised to the exponent.
      */
-    public double evaluate(double xValue) {
-        return this.coefficient * Math.pow(xValue, this.exponent);
+    double evaluate(double x) {
+        return this.coefficient * Math.pow(x, this.exponent);
     }
 }

@@ -1,68 +1,37 @@
 /**
- * Main application class to demonstrate the {@link Monomial} class.
- * Creates several monomials and exercises all their operations.
+ * Exercise 1: tries every operation of the {@link Monomial} class.
  *
  * @author Juan Carlos Alfaro Jiménez
+ * @see Monomial
  */
-public class Main {
+class Main {
 
     /**
-     * Entry point of the program.
+     * Creates several monomials, prints them and prints the result of each operation,
+     * next to the value it should have.
      *
-     * @param args Command line arguments (not used).
+     * @param args the command-line arguments (not used).
      */
     public static void main(String[] args) {
-        // 1. Constructor and toString()
         Monomial m1 = new Monomial(2.0, 3);
-        System.out.println("--- Monomial constructor and toString() ---");
-        System.out.println("Created: Monomial(2.0, 3)");
-        System.out.println("toString(): " + m1);
-        System.out.println();
-
-        // 2. addition() with equal exponents (valid)
         Monomial m2 = new Monomial(3.0, 3);
-        Monomial addValid = m1.addition(m2);
-        System.out.println("--- addition() with equal exponents ---");
-        System.out.println("m1: " + m1);
-        System.out.println("m2: " + m2);
-        System.out.println("m1.addition(m2): " + addValid);
-        System.out.println("Coefficient (expected 5.0): " + addValid.coefficient);
-        System.out.println("Exponent (expected 3):   " + addValid.exponent);
-        System.out.println();
-
-        // 3. addition() with different exponents (invalid -> null)
         Monomial m3 = new Monomial(3.0, 2);
-        Monomial addInvalid = m1.addition(m3);
-        System.out.println("--- addition() with different exponents ---");
-        System.out.println("m1: " + m1);
-        System.out.println("m3 (exp 2): " + m3);
-        System.out.println("m1.addition(m3) (expected null): " + addInvalid);
-        System.out.println();
 
-        // 4. scalarProduct()
-        Monomial scalar = m1.scalarProduct(4.0);
-        System.out.println("--- scalarProduct() ---");
-        System.out.println("m1: " + m1);
-        System.out.println("m1.scalarProduct(4.0): " + scalar);
-        System.out.println("Coefficient (expected 8.0): " + scalar.coefficient);
-        System.out.println("Exponent (expected 3):   " + scalar.exponent);
-        System.out.println();
+        System.out.println("m1 = " + m1.describe() + " (should be 2.0X^3)");
+        System.out.println("m2 = " + m2.describe() + " (should be 3.0X^3)");
+        System.out.println("m3 = " + m3.describe() + " (should be 3.0X^2)");
 
-        // 5. product() of two monomials
-        Monomial product = m1.product(m3);
-        System.out.println("--- product() ---");
-        System.out.println("m1: " + m1);
-        System.out.println("m3: " + m3);
-        System.out.println("m1.product(m3): " + product);
-        System.out.println("Coefficient (expected 6.0): " + product.coefficient);
-        System.out.println("Exponent (expected 5):   " + product.exponent);
-        System.out.println();
+        // Same exponent: the result is a new monomial
+        System.out.println("m1 + m2 = " + m1.addition(m2).describe() + " (should be 5.0X^3)");
 
-        // 6. evaluate()
-        double result = m1.evaluate(2.0);
-        System.out.println("--- evaluate() ---");
-        System.out.println("m1: " + m1);
-        System.out.println("m1.evaluate(2.0) (expected 16.0): " + result);
-        System.out.println();
+        // Different exponents: there is no single monomial for the result
+        System.out.println("m1 + m3 = " + m1.addition(m3) + " (should be null)");
+
+        System.out.println("m1 * 4 = " + m1.scalarProduct(4.0).describe() + " (should be 8.0X^3)");
+        System.out.println("m1 * m3 = " + m1.product(m3).describe() + " (should be 6.0X^5)");
+        System.out.println("m1 at X = 2: " + m1.evaluate(2.0) + " (should be 16.0)");
+
+        // The operations return new monomials: m1 is still the same
+        System.out.println("m1 = " + m1.describe() + " (should still be 2.0X^3)");
     }
 }

@@ -1,99 +1,68 @@
 /**
- * Main application class to demonstrate the {@link Book} class.
- * Creates {@link Book} instances and exercises all their operations.
+ * Exercise 3: tries every method of the {@link Book} class.
  *
  * @author Juan Carlos Alfaro Jiménez
  * @see Book
  */
-public class Main {
+class Main {
 
     /**
-     * Entry point of the program.
+     * Prints every page of a book, one per line, with its position.
      *
-     * @param args Command line arguments (not used).
+     * @param book the book whose pages are printed.
+     */
+    static void printPages(Book book) {
+        for (int i = 0; i < book.numPages; i++) {
+            System.out.println("  " + i + ": " + book.pages[i]);
+        }
+    }
+
+    /**
+     * Creates a book and changes its pages, reads it, and then creates two more books to try
+     * {@link Book#concatenateWith} and {@link Book#isEqualTo}.
+     *
+     * @param args the command-line arguments (not used).
      */
     public static void main(String[] args) {
-        // 1. Create a book and verify the constructor
-        String[] pages = {"Page one content", "Page two content", "Page three content"};
-        Book book = new Book("Sample Title", "Jane Doe", 2020, "ISBN-001", pages);
-        System.out.println("--- Book constructor ---");
-        System.out.println(book);
-        System.out.println("currentPage (expected 0): " + book.currentPage);
-        System.out.println();
+        String[] pages = {"It was a dark night.", "The end."};
+        Book book = new Book("The Night", "Jane Doe", 2020, "ISBN-001", pages);
+        System.out.println(book.describe());
 
-        // 2. addPage() - insert a new page at index 1
-        book.addPage(1, "New page");
-        System.out.println("--- addPage(1, \"New page\") ---");
-        System.out.println("pages.length (expected 4): " + book.pages.length);
-        System.out.println("pages[0]: " + book.pages[0]);
-        System.out.println("pages[1] (expected new page): " + book.pages[1]);
-        System.out.println("pages[2] (expected page two content): " + book.pages[2]);
-        System.out.println("pages[3] (expected page three content): " + book.pages[3]);
-        System.out.println();
+        // Pages added at the start, in the middle and at the end
+        book.addPage(0, "Chapter 1");
+        book.addPage(2, "It started to rain.");
+        book.addPage(4, "Afterword");
+        System.out.println("After adding three pages (should be 5):");
+        printPages(book);
 
-        // 3. replacePage() - overwrite index 1
-        book.replacePage(1, "Replaced content");
-        System.out.println("--- replacePage(1, \"Replaced content\") ---");
-        System.out.println("pages[0] (expected page one content): " + book.pages[0]);
-        System.out.println("pages[1] (expected replaced content): " + book.pages[1]);
-        System.out.println();
+        book.replacePage(4, "Acknowledgments");
+        System.out.println("After replacing page 4:");
+        printPages(book);
 
-        // 4. readPage() - iterate through two pages
-        System.out.println("--- readPage() ---");
-        System.out.println("currentPage before reads: " + book.currentPage);
-        String read1 = book.readPage();
-        String read2 = book.readPage();
-        System.out.println("readPage() #1: " + read1);
-        System.out.println("readPage() #2: " + read2);
-        System.out.println("currentPage after 2 reads (expected 2): " + book.currentPage);
-        System.out.println();
-
-        // 5. goToFirstPage() - reset the cursor
+        System.out.println("Reading: " + book.readPage());
+        System.out.println("Reading: " + book.readPage());
+        System.out.println("Open at page " + book.currentPage + " (should be 2)");
         book.goToFirstPage();
-        System.out.println("--- goToFirstPage() ---");
-        System.out.println("currentPage after reset (expected 0): " + book.currentPage);
-        System.out.println();
+        System.out.println("Open at page " + book.currentPage + " (should be 0)");
 
-        // 6. removePage() - remove page at index 1
-        book.removePage(1);
-        System.out.println("--- removePage(1) ---");
-        System.out.println("pages.length (expected 3): " + book.pages.length);
-        System.out.println("pages[0]: " + book.pages[0]);
-        System.out.println("pages[1]: " + book.pages[1]);
-        System.out.println("pages[2]: " + book.pages[2]);
-        System.out.println();
+        book.removePage(2);
+        System.out.println("After removing page 2 (should be 4):");
+        printPages(book);
 
-        // 7. concatenateWith() - same author
-        String[] pagesA = {"A1", "A2"};
-        String[] pagesB = {"B1", "B2"};
-        Book bookA = new Book("Title A", "Jane Doe", 2019, "ISBN-A", pagesA);
-        Book bookB = new Book("Title B", "Jane Doe", 2021, "ISBN-B", pagesB);
-        Book combined = bookA.concatenateWith(bookB);
-        System.out.println("--- concatenateWith() - same author ---");
-        System.out.println("combined.pages.length (expected 4): " + combined.pages.length);
-        System.out.println("combined.pages[0] (expected A1): " + combined.pages[0]);
-        System.out.println("combined.pages[2] (expected B1): " + combined.pages[2]);
-        System.out.println();
+        // Two books by the same author can be joined
+        String[] sequelPages = {"Morning came."};
+        Book sequel = new Book("The Day", "Jane Doe", 2022, "ISBN-002", sequelPages);
+        Book both = book.concatenateWith(sequel);
+        System.out.println(both.describe());
+        printPages(both);
 
-        // 8. concatenateWith() - different authors (expects null)
-        Book bookC = new Book("Title C", "John Smith", 2021, "ISBN-C", pagesB);
-        Book combinedNull = bookA.concatenateWith(bookC);
-        System.out.println("--- concatenateWith() - different authors ---");
-        System.out.println("result (expected null): " + combinedNull);
-        System.out.println();
+        String[] otherPages = {"Hello."};
+        Book other = new Book("Other", "John Smith", 2021, "ISBN-003", otherPages);
+        System.out.println("Different authors: " + book.concatenateWith(other) + " (should be null)");
 
-        // 9. toString()
-        System.out.println("--- toString() ---");
-        System.out.println(bookA);
-        System.out.println();
-
-        // 10. equals() - ISBN-based comparison
-        String[] dummy = {"x"};
-        Book sameISBN = new Book("Other Title", "Other Author", 2022, "ISBN-A", dummy);
-        Book diffISBN = new Book("Other Title", "Other Author", 2022, "ISBN-Z", dummy);
-        System.out.println("--- equals() ---");
-        System.out.println("bookA.equals(sameISBN) (expected true):  " + bookA.equals(sameISBN));
-        System.out.println("bookA.equals(diffISBN) (expected false): " + bookA.equals(diffISBN));
-        System.out.println();
+        // Same ISBN, same book, even with another title
+        Book sameIsbn = new Book("The Night (2nd ed.)", "Jane Doe", 2024, "ISBN-001", otherPages);
+        System.out.println("book equals sameIsbn: " + book.isEqualTo(sameIsbn) + " (should be true)");
+        System.out.println("book equals sequel: " + book.isEqualTo(sequel) + " (should be false)");
     }
 }

@@ -1,11 +1,17 @@
 type: edu
 files:
-  - name: src/es/uclm/esii/math/complex/ComplexNumber.java
+  - name: src/ComplexNumber.java
     visible: true
     placeholders:
       - offset: 0
-        length: 3962
-        placeholder_text: "/* TODO: Implement ComplexNumber class. */"
+        length: 4306
+        placeholder_text: "/* TODO: Implement the ComplexNumber class. */"
+  - name: src/Main.java
+    visible: true
+    placeholders:
+      - offset: 0
+        length: 2223
+        placeholder_text: "/* TODO: Implement the Main class. */"
   - name: test/Tests.java
     visible: false
     propagatable: false

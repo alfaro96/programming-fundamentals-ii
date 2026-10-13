@@ -1,99 +1,105 @@
 /**
- * Represents a directed line between two Points in a two-dimensioanl plane.
- * This class depends on the {@link Point} class for its geometric logic.
+ * Represents a vector of the plane: a directed segment from an origin point to an end point.
+ * <p>
+ * The operations work on both points, coordinate by coordinate, and always return new
+ * objects: the vectors and points they receive do not change.
  *
  * @author Juan Carlos Alfaro Jiménez
+ * @see Point
  */
-public class Vector {
-
-    /** The point where the vector begins.  */
-    public Point originPoint;
-
-    /** The point where the vector ends.  */
-    public Point endPoint;
+class Vector {
 
     /**
-     * Constructor that takes the origin and end points.
-     *
-     * @param originPoint The starting point.
-     * @param endPoint The ending point.
+     * The point where the vector starts.
      */
-    public Vector(Point originPoint, Point endPoint) {
+    Point originPoint;
+
+    /**
+     * The point where the vector ends.
+     */
+    Point endPoint;
+
+    /**
+     * Creates the vector that goes from one point to another.
+     *
+     * @param originPoint the point where the vector starts.
+     * @param endPoint the point where the vector ends.
+     */
+    Vector(Point originPoint, Point endPoint) {
         this.originPoint = originPoint;
         this.endPoint = endPoint;
     }
 
     /**
-     * Adds another vector to this one.
+     * Adds another vector to this one: the origins are added coordinate by coordinate, and
+     * so are the ends.
      *
-     * @param other Vector to be added.
-     * @return A new {@link Vector} representing the addition.
+     * @param other the vector to add.
+     * @return a new vector with the sum.
      */
-    public Vector add(Vector other) {
-        Point newOrigin = new Point(this.originPoint.x + other.originPoint.x, this.originPoint.y + other.originPoint.y);
-        Point newEnd = new Point(this.endPoint.x + other.endPoint.x, this.endPoint.y + other.endPoint.y);
-        return new Vector(newOrigin, newEnd);
+    Vector add(Vector other) {
+        Point origin = new Point(this.originPoint.x + other.originPoint.x, this.originPoint.y + other.originPoint.y);
+        Point end = new Point(this.endPoint.x + other.endPoint.x, this.endPoint.y + other.endPoint.y);
+        return new Vector(origin, end);
     }
 
     /**
-     * Subtracts another vector from this one.
+     * Subtracts another vector from this one: the origins are subtracted coordinate by
+     * coordinate, and so are the ends.
      *
-     * @param other Vector to subtract.
-     * @return A new {@link Vector} representing the subtraction.
+     * @param other the vector to subtract.
+     * @return a new vector with the difference.
      */
-    public Vector subtract(Vector other) {
-        Point newOrigin = new Point(this.originPoint.x - other.originPoint.x, this.originPoint.y - other.originPoint.y);
-        Point newEnd = new Point(this.endPoint.x - other.endPoint.x, this.endPoint.y - other.endPoint.y);
-        return new Vector(newOrigin, newEnd);
+    Vector subtract(Vector other) {
+        Point origin = new Point(this.originPoint.x - other.originPoint.x, this.originPoint.y - other.originPoint.y);
+        Point end = new Point(this.endPoint.x - other.endPoint.x, this.endPoint.y - other.endPoint.y);
+        return new Vector(origin, end);
     }
 
     /**
-     * Performs a scalar multiplication, multiplying each component of this
-     * {@link Vector} by the given scalar value.
+     * Multiplies this vector by a number: every coordinate of both points is multiplied by it.
      *
-     * @param scalar The scalar value to multiply by.
-     * @return A new {@link Vector} whose components are each multiplied by {@code scalar}.
+     * @param scalar the number to multiply by.
+     * @return a new vector with the product.
      */
-    public Vector scalarProduct(double scalar) {
-        Point newOrigin = new Point(this.originPoint.x * scalar, this.originPoint.y * scalar);
-        Point newEnd = new Point(this.endPoint.x * scalar, this.endPoint.y * scalar);
-        return new Vector(newOrigin, newEnd);
+    Vector scalarProduct(double scalar) {
+        Point origin = new Point(this.originPoint.x * scalar, this.originPoint.y * scalar);
+        Point end = new Point(this.endPoint.x * scalar, this.endPoint.y * scalar);
+        return new Vector(origin, end);
     }
 
     /**
-     * Calculates the centroid or barycenter of three vectors.
+     * Computes the centroid of this vector and two others: the barycenter of the triangle
+     * formed by their three origin points, whose coordinates are the averages of theirs.
      *
-     * @param v2 Second vector.
-     * @param v3 Third vector.
-     * @return A {@link Point} representing the centroid.
+     * @param second the second vector.
+     * @param third the third vector.
+     * @return a new point at the centroid.
      */
-    public Point centroid(Vector v2, Vector v3) {
-        double avgX = (this.originPoint.x + v2.originPoint.x + v3.originPoint.x) / 3.0;
-        double avgY = (this.endPoint.y + v2.endPoint.y + v3.endPoint.y) / 3.0;
-        return new Point(avgX, avgY);
+    Point centroid(Vector second, Vector third) {
+        double x = (this.originPoint.x + second.originPoint.x + third.originPoint.x) / 3;
+        double y = (this.originPoint.y + second.originPoint.y + third.originPoint.y) / 3;
+        return new Point(x, y);
     }
 
     /**
-     * Returns the vector in a readable format.
+     * Returns the vector in the form {@code "(x, y) -> (m, n)"}, such as
+     * {@code "(0.0, 0.0) -> (1.0, 2.0)"}.
      *
-     * @return String formatted.
+     * @return the origin point, an arrow and the end point.
      */
-    @Override
-    public String toString() {
-        return this.originPoint.toString() + " -> " + this.endPoint.toString();
+    String describe() {
+        return this.originPoint.describe() + " -> " + this.endPoint.describe();
     }
 
     /**
-     * Checks whether two vectors are equivalent.
+     * Checks whether this vector and another one are the same vector: they have the same
+     * origin point and the same end point.
      *
-     * @param o The object to compare.
-     * @return {@code true} if both origin and end points are equal.
+     * @param other the vector to compare with.
+     * @return {@code true} if both vectors are the same, {@code false} otherwise.
      */
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Vector)) return false;
-        Vector vector = (Vector) o;
-        return this.originPoint.equals(vector.originPoint) && this.endPoint.equals(vector.endPoint);
+    boolean isEqualTo(Vector other) {
+        return this.originPoint.isEqualTo(other.originPoint) && this.endPoint.isEqualTo(other.endPoint);
     }
 }

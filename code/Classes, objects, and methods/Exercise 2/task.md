@@ -1,45 +1,47 @@
 # Exercise 2
 
-A person refers to the concept of a `Person` and the attributes or behaviors that define it. The goal of this exercise is to define a `Person` class in Java. Compared to previous exercises, this requires more interpretation regarding how methods work, utilizes complex attributes like arrays of objects, and includes specific restrictions and error checking.
+The goal of this exercise is to write a `Person` class in Java. Compared to the previous exercise, it leaves more to your interpretation of how each method works, uses an array of objects as an attribute and has to handle some error cases.
 
 ### Implementation
 
-Implement a `Person` class with the following requirements:
+Write a `Person` class with the following requirements:
 
 * **Attributes**:
-  * `String name`: The name of the person.
-  * `int age`: The age of the person.
-  * `double height`: The height in meters.
-  * `double weight`: The weight in kilograms.
-  * `String address`: The address of the person.
-  * `Person[] children`: An array containing each child a person has.
+  * `String name`: the name of the person.
+  * `int age`: the age of the person, in years.
+  * `double height`: the height of the person, in meters.
+  * `double weight`: the weight of the person, in kilograms.
+  * `String address`: the address of the person.
+  * `Person[] children`: the children of the person, who are people too. The array has a fixed size and is filled from its first position, so the empty positions, all at the end, hold `null`.
 
 * **Methods**:
   * **Constructors**:
-    * A constructor that takes `name`, `age`, `height`, `weight`, `address`, and the number of children.
-    * A constructor that only takes `name`, `age`, `height`, `weight`, and `address`. The person is assumed to be childless and the array must be initialized appropriately.
-  * `addChild()`: A method that, given a `Person` as an argument, adds it to the children array. The array size is fixed; if it is full, the method should show an error.
-  * `getOldestChild()` and `getYoungestChild()`: Methods that return the oldest or youngest child in the children array.
-  * `toString()`: A method that returns a `String` representation of a person, including all information and the information of each child. Note: Since children are also `Person` objects, you can access their `toString()` method recursively.
+    * A constructor that receives `name`, `age`, `height`, `weight`, `address` and the number of children the person can have, which is the size of the array. No child has been added yet.
+    * A constructor that receives only `name`, `age`, `height`, `weight` and `address`, for a person without children. The array of children must be created anyway, with no positions, never left as `null`.
+  * `addChild()`: given a `Person`, stores it in the first empty position of the array of children. The array never grows: if it is full, the method prints an error message and the child is not added.
+  * `getOldestChild()` and `getYoungestChild()`: return the oldest or the youngest child, or `null` if the person has no children.
+  * `describe()`: returns a `String` with all the data of the person, followed by the data of each child. Since children are `Person` objects too, the data of each one can be obtained by calling `describe()` on it.
 
 ### Recommendations
 
-* **Incremental implementation**: It is highly recommended to implement and test each method individually before moving on to the next one, ensuring each part works correctly before building the rest of the class.
+* **Incremental implementation**: write and test each method on its own before moving on to the next one, making sure each part works before building the rest of the class.
+* **Building the text**: `describe()` joins one piece of text per child, so a `StringBuilder` is a better fit than `+`.
 
 ### Evaluation and testing
 
-To successfully complete the exercise, implement a `main` method to perform the following tests:
+To complete the exercise, write a `Main` class with a `main` method that performs the following tests:
 
-1. **Object creation and setup**:
-   * Create two `Person` objects: `Person 1` with two children and `Person 2` with three children.
-   * Create new `Person` objects and add them as children to each parent using `addChild()`.
-   * Create a third person, `Person 3`, using the childless constructor.
+1. **Object creation**:
+   * Create two `Person` objects: `Person 1`, with room for two children, and `Person 2`, with room for three.
+   * Create new `Person` objects and add them as children of each one with `addChild()`.
+   * Create a third person, `Person 3`, with the constructor for a person without children.
 
 2. **Functional verification**:
-   * Display the information of each person on the screen.
-   * Change the age of `Person 1` and verify the change on screen.
-   * Obtain the children array of `Person 1` and show it.
-   * Obtain and display the youngest and oldest child of `Person 2`.
+   * Print the data of each person.
+   * Change the age of `Person 1` and print its data again to check the change.
+   * Go through the array of children of `Person 1` and print each one.
+   * Print the youngest and the oldest child of `Person 2`.
+   * Try to add a child to a person whose array is full, and check that the error message is printed.
 
 3. **Clean code and documentation**:
-   * Ensure that the code is clean, legible, and includes explanatory comments where necessary.
+   * Make sure the code is clean and legible, with explanatory comments where necessary.

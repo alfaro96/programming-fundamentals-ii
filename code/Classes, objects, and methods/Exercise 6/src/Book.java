@@ -1,164 +1,192 @@
 /**
- * Represents a generic book with metadata and dynamic page content.
- * Demonstrates manual array resizing, state management, and object comparison.
+ * Represents a book: its data, the text of each page and the page it is open at.
+ * <p>
+ * The pages are kept in an array with one position per page. An array cannot change its
+ * size, so adding or removing a page creates a new array and copies the pages into it.
  *
  * @author Juan Carlos Alfaro Jiménez
  */
-public class Book {
-
-    /** The title of the book. */
-    public String title;
-
-    /** The author of the book. */
-    public String author;
-
-    /** Total number of pages in the book. */
-    public int numPages;
-
-    /** Year the book was published. */
-    public int publicationYear;
-
-    /** The International Standard Exercise 3 Number. */
-    public String ISBN;
-
-    /** Array containing the text content of each page. */
-    public String[] pages;
-
-    /** The index of the page currently being read. */
-    public int currentPage = 0;
+class Book {
 
     /**
-     * Constructs a new {@link Book} with the specified metadata.
-     * Note: {@link Book#currentPage} is not an argument as it defaults to 0.
-     *
-     * @param title Title of the book.
-     * @param author Author's name.
-     * @param publicationYear Year of release.
-     * @param ISBN Unique identifier code.
-     * @param pages Initial array of page contents.
+     * The title of the book.
      */
-    public Book(String title, String author, int publicationYear, String ISBN, String[] pages) {
+    String title;
+
+    /**
+     * The author of the book.
+     */
+    String author;
+
+    /**
+     * The number of pages, which is always the length of {@link #pages}.
+     */
+    int numPages;
+
+    /**
+     * The year the book was published.
+     */
+    int publicationYear;
+
+    /**
+     * The International Standard Book Number, which identifies the book and never changes.
+     */
+    final String isbn;
+
+    /**
+     * The text of each page, the first one at position 0.
+     */
+    String[] pages;
+
+    /**
+     * The position of the page the book is open at, the first one when it is created.
+     */
+    int currentPage;
+
+    /**
+     * Creates a book open at its first page.
+     *
+     * @param title the title of the book.
+     * @param author the author of the book.
+     * @param publicationYear the year the book was published.
+     * @param isbn the International Standard Book Number.
+     * @param pages the text of each page.
+     */
+    Book(String title, String author, int publicationYear, String isbn, String[] pages) {
         this.title = title;
         this.author = author;
         this.publicationYear = publicationYear;
-        this.ISBN = ISBN;
+        this.isbn = isbn;
         this.pages = pages;
         this.numPages = pages.length;
+        this.currentPage = 0;
     }
 
     /**
-     * Adds a new page at the specified position.
-     * This method resizes the internal array and shifts subsequent elements.
+     * Adds a page at the given position; that page and the following ones move forward one
+     * position.
+     * <p>
+     * The position can go from 0, before the first page, to {@link #numPages}, after the
+     * last one. For any other position the book does not change.
      *
-     * @param position The index where the page should be inserted.
-     * @param content The text content of the new page.
+     * @param position the position of the new page.
+     * @param text the text of the new page.
      */
-    public void addPage(int position, String content) {
-        if (position < 0 || position > this.pages.length) return;
-
-        String[] newPages = new String[this.pages.length + 1];
-        for (int i = 0, j = 0; i < newPages.length; i++) {
-            if (i == position) {
-                newPages[i] = content;
-            } else {
-                newPages[i] = this.pages[j++];
-            }
+    void addPage(int position, String text) {
+        if (position < 0 || position > this.numPages) {
+            return;
+        }
+        String[] newPages = new String[this.numPages + 1];
+        for (int i = 0; i < position; i++) {
+            newPages[i] = this.pages[i];
+        }
+        newPages[position] = text;
+        for (int i = position; i < this.numPages; i++) {
+            newPages[i + 1] = this.pages[i];
         }
         this.pages = newPages;
-        this.numPages = this.pages.length;
+        this.numPages = newPages.length;
     }
 
     /**
-     * Replaces the content of an existing page.
+     * Replaces the text of the page at the given position. If there is no page at that
+     * position, the book does not change.
      *
-     * @param position The index of the page to modify.
-     * @param text The new text content.
+     * @param position the position of the page.
+     * @param text the new text of the page.
      */
-    public void replacePage(int position, String text) {
-        if (position >= 0 && position < this.pages.length) {
+    void replacePage(int position, String text) {
+        if (position >= 0 && position < this.numPages) {
             this.pages[position] = text;
         }
     }
 
     /**
-     * Returns the current page content and advances the reader.
+     * Returns the text of the page the book is open at and turns to the next page.
      *
-     * @return The text of the current page, or an end-of-book message.
+     * @return the text of the current page, or {@code null} if the book is past its last page.
      */
-    public String readPage() {
-        if (this.currentPage < this.pages.length) {
-            return this.pages[this.currentPage++];
+    String readPage() {
+        if (this.currentPage >= this.numPages) {
+            return null;
         }
-        return "[End of book]";
+        String text = this.pages[this.currentPage];
+        this.currentPage++;
+        return text;
     }
 
     /**
-     * Resets the reading progress to the beginning of the book.
+     * Opens the book at its first page again.
      */
-    public void goToFirstPage() {
+    void goToFirstPage() {
         this.currentPage = 0;
     }
 
     /**
-     * Removes the page at the specified position.
-     * This method resizes the internal array and shifts subsequent elements back.
+     * Removes the page at the given position; the following pages move back one position.
+     * If there is no page at that position, the book does not change.
      *
-     * @param position The index of the page to remove.
+     * @param position the position of the page to remove.
      */
-    public void removePage(int position) {
-        if (position < 0 || position >= this.pages.length) return;
-
-        String[] newPages = new String[this.pages.length - 1];
-        for (int i = 0, j = 0; i < this.pages.length; i++) {
-            if (i != position) {
-                newPages[j++] = this.pages[i];
-            }
+    void removePage(int position) {
+        if (position < 0 || position >= this.numPages) {
+            return;
+        }
+        String[] newPages = new String[this.numPages - 1];
+        for (int i = 0; i < position; i++) {
+            newPages[i] = this.pages[i];
+        }
+        for (int i = position + 1; i < this.numPages; i++) {
+            newPages[i - 1] = this.pages[i];
         }
         this.pages = newPages;
-        this.numPages = this.pages.length;
+        this.numPages = newPages.length;
     }
 
     /**
-     * Creates a new {@link Book} by combining the pages of this book and another.
-     * Only valid if both books share the same author.
+     * Joins this book and another one by the same author into a new book: first the pages of
+     * this book, then those of the other.
+     * <p>
+     * The new book is titled {@code "First & Second"}, takes the later of both publication
+     * years and has both ISBNs, joined by a {@code /}, as its own.
      *
-     * @param other The {@link Book} to combine with.
-     * @return A new {@link Book} instance, or null if authors differ.
+     * @param other the book whose pages go after those of this one.
+     * @return a new book with the pages of both, or {@code null} if the authors differ.
      */
-    public Book concatenateWith(Book other) {
+    Book concatenateWith(Book other) {
         if (!this.author.equals(other.author)) {
             return null;
         }
-
-        String[] combinedPages = new String[this.pages.length + other.pages.length];
-        System.arraycopy(this.pages, 0, combinedPages, 0, this.pages.length);
-        System.arraycopy(other.pages, 0, combinedPages, this.pages.length, other.pages.length);
-
+        String[] newPages = new String[this.numPages + other.numPages];
+        for (int i = 0; i < this.numPages; i++) {
+            newPages[i] = this.pages[i];
+        }
+        for (int i = 0; i < other.numPages; i++) {
+            newPages[this.numPages + i] = other.pages[i];
+        }
         return new Book(this.title + " & " + other.title, this.author,
-                2026, this.ISBN + "-EXT", combinedPages);
+                Math.max(this.publicationYear, other.publicationYear), this.isbn + "/" + other.isbn, newPages);
     }
 
     /**
-     * Returns a string with the book's metadata.
+     * Returns the data of the book, without the text of its pages, such as
+     * {@code "Dune, by Frank Herbert (1965), 412 pages, ISBN 978-0441013593"}.
      *
-     * @return Summary of title, author, and page count.
+     * @return the title, author, publication year, number of pages and ISBN.
      */
-    @Override
-    public String toString() {
-        return "'" + this.title + "' by " + this.author + " (" + this.numPages + " pages). ISBN: " + this.ISBN;
+    String describe() {
+        return this.title + ", by " + this.author + " (" + this.publicationYear + "), " + this.numPages
+                + " pages, ISBN " + this.isbn;
     }
 
     /**
-     * Compares this book to another object based on the {@link Book#ISBN}.
+     * Checks whether this book and another one are the same book, which happens when they
+     * have the same ISBN, whatever their other data.
      *
-     * @param o The object to compare with.
-     * @return {@code true} if both are books and share the same {@link Book#ISBN}.
+     * @param other the book to compare with.
+     * @return {@code true} if both books have the same ISBN, {@code false} otherwise.
      */
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Book)) return false;
-        Book book = (Book) o;
-        return this.ISBN.equals(book.ISBN);
+    boolean isEqualTo(Book other) {
+        return this.isbn.equals(other.isbn);
     }
 }

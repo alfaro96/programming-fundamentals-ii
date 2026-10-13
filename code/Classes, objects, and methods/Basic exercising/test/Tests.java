@@ -1,11 +1,9 @@
 import org.junit.Test;
 import static org.junit.Assert.*;
-import es.uclm.esii.math.complex.ComplexNumber;
 
 /**
- * This class performs unit testing on the {@link ComplexNumber} class to verify
- * the correctness of constructors, arithmetic operations, and string representation
- * as defined in the project requirements.
+ * Tests the {@link ComplexNumber} class: its four constructors, the operations, which must
+ * return new complex numbers, the description and equality with a tolerance.
  *
  * @author Juan Carlos Alfaro Jiménez
  * @see ComplexNumber
@@ -13,159 +11,143 @@ import es.uclm.esii.math.complex.ComplexNumber;
 public class Tests {
 
     /**
-     * Verifies that the <b>default constructor</b> initializes both parts to zero.
-     * <p>
-     * <b>Requirement:</b> "Default constructor: Starts both fields to {@code 0}."
-     * </p>
+     * The largest difference allowed when comparing two {@code double} values.
+     */
+    private static final double DELTA = 1e-9;
+
+    /**
+     * Checks that a complex number has the expected parts.
+     *
+     * @param name the name of the complex number, for the failure messages.
+     * @param real the expected real part.
+     * @param imaginary the expected imaginary part.
+     * @param c the complex number to check.
+     */
+    private static void assertComplex(String name, double real, double imaginary, ComplexNumber c) {
+        assertNotNull(name + " should not be null", c);
+        assertEquals("The real part of " + name + " should be " + real, real, c.real, DELTA);
+        assertEquals("The imaginary part of " + name + " should be " + imaginary, imaginary, c.imaginary, DELTA);
+    }
+
+    /**
+     * Checks that the default constructor creates 0 + 0<i>i</i>.
      */
     @Test
     public void testDefaultConstructor() {
-        ComplexNumber zero = new ComplexNumber();
-        ComplexNumber expected = new ComplexNumber(0.0, 0.0);
-
-        assertTrue("Default constructor should initialize to 0 + 0i", zero.equals(expected));
+        assertComplex("new ComplexNumber()", 0.0, 0.0, new ComplexNumber());
     }
 
     /**
-     * Verifies the <b>integer constructor</b>.
-     * <p>
-     * <b>Requirement:</b> "Integer constructor: Takes two integer values."
-     * </p>
-     * Checks if integers are correctly promoted to internal {@code double} representation.
+     * Checks that the constructor with two integers stores them as the real and imaginary
+     * parts.
      */
     @Test
     public void testIntegerConstructor() {
-        ComplexNumber num = new ComplexNumber(3, 4);
-
-        // We verify against a double constructor to ensure internal representation is correct
-        ComplexNumber expected = new ComplexNumber(3.0, 4.0);
-
-        assertTrue("Integer constructor should correctly set values as doubles", num.equals(expected));
+        assertComplex("new ComplexNumber(3, -4)", 3.0, -4.0, new ComplexNumber(3, -4));
     }
 
     /**
-     * Verifies the <b>copy constructor</b> logic.
-     * <p>
-     * <b>Requirement:</b> "Copy constructor: Takes a different {@link ComplexNumber} object and copies its values."
-     * </p>
-     * Ensures that the new object contains the same values but is a distinct instance (deep copy).
+     * Checks that the constructor with two real numbers stores them as the real and imaginary
+     * parts.
+     */
+    @Test
+    public void testDoubleConstructor() {
+        assertComplex("new ComplexNumber(1.5, -2.5)", 1.5, -2.5, new ComplexNumber(1.5, -2.5));
+    }
+
+    /**
+     * Checks that the copy constructor creates a different object with the same parts, so
+     * changing the copy does not change the original.
      */
     @Test
     public void testCopyConstructor() {
         ComplexNumber original = new ComplexNumber(1.5, -2.5);
         ComplexNumber copy = new ComplexNumber(original);
 
-        assertTrue("Copy should be mathematically equal to original", copy.equals(original));
-        assertNotSame("Copy should be a new object reference, not an alias", original, copy);
+        assertNotSame("The copy should be a new object", original, copy);
+        assertComplex("The copy", 1.5, -2.5, copy);
+        copy.real = 9.0;
+        assertComplex("The original", 1.5, -2.5, original);
     }
 
     /**
-     * Verifies the <b>addition</b> operation logic.
-     * <p>
-     * <b>Requirement:</b> {@link ComplexNumber#add} adds a complex number and returns a new one.
-     * </p>
-     * <p><b>Math Logic:</b> {@code (1 + 2i) + (3 + 4i) = 4 + 6i}</p>
+     * Checks {@link ComplexNumber#add}: (1 + 2<i>i</i>) + (3 + 4<i>i</i>) = 4 + 6<i>i</i>, and
+     * both operands stay unchanged.
      */
     @Test
-    public void testAddOperation() {
+    public void testAdd() {
         ComplexNumber c1 = new ComplexNumber(1.0, 2.0);
         ComplexNumber c2 = new ComplexNumber(3.0, 4.0);
-        ComplexNumber expected = new ComplexNumber(4.0, 6.0);
 
-        ComplexNumber result = c1.add(c2);
-
-        assertTrue("Addition result should be 4 + 6i", result.equals(expected));
+        assertComplex("The sum", 4.0, 6.0, c1.add(c2));
+        assertComplex("c1", 1.0, 2.0, c1);
+        assertComplex("c2", 3.0, 4.0, c2);
     }
 
     /**
-     * Verifies the <b>subtraction</b> operation logic.
-     * <p>
-     * <b>Requirement:</b> {@link ComplexNumber#subtract} subtracts a complex number and returns a new one.
-     * </p>
-     * <p><b>Math Logic:</b> {@code (5 + 6i) - (2 + 3i) = 3 + 3i}</p>
+     * Checks {@link ComplexNumber#subtract}: (5 + 6<i>i</i>) &minus; (2 + 8<i>i</i>) =
+     * 3 &minus; 2<i>i</i>, and both operands stay unchanged.
      */
     @Test
-    public void testSubtractOperation() {
+    public void testSubtract() {
         ComplexNumber c1 = new ComplexNumber(5.0, 6.0);
-        ComplexNumber c2 = new ComplexNumber(2.0, 3.0);
-        ComplexNumber expected = new ComplexNumber(3.0, 3.0);
+        ComplexNumber c2 = new ComplexNumber(2.0, 8.0);
 
-        ComplexNumber result = c1.subtract(c2);
-
-        assertTrue("Subtraction result should be 3 + 3i", result.equals(expected));
+        assertComplex("The difference", 3.0, -2.0, c1.subtract(c2));
+        assertComplex("c1", 5.0, 6.0, c1);
+        assertComplex("c2", 2.0, 8.0, c2);
     }
 
     /**
-     * Verifies the <b>scalar multiplication</b> logic.
-     * <p>
-     * <b>Requirement:</b> {@link ComplexNumber#multiply(double)} accepts a scalar value.
-     * </p>
-     * <p><b>Math Logic:</b> {@code (2 + 3i) * 2 = 4 + 6i}</p>
+     * Checks {@link ComplexNumber#multiply(double)}: (2 + 3<i>i</i>) &middot; 2 = 4 + 6<i>i</i>,
+     * and the complex number stays unchanged.
      */
     @Test
-    public void testScalarMultiplyOperation() {
-        ComplexNumber c1 = new ComplexNumber(2.0, 3.0);
-        double scalar = 2.0;
-        ComplexNumber expected = new ComplexNumber(4.0, 6.0);
+    public void testMultiplyScalar() {
+        ComplexNumber c = new ComplexNumber(2.0, 3.0);
 
-        ComplexNumber result = c1.multiply(scalar);
-
-        assertTrue("Scalar multiplication result should be 4 + 6i", result.equals(expected));
+        assertComplex("The product", 4.0, 6.0, c.multiply(2.0));
+        assertComplex("c", 2.0, 3.0, c);
     }
 
     /**
-     * Verifies the <b>complex multiplication</b> logic.
-     * <p>
-     * <b>Requirement:</b> {@link ComplexNumber#multiply(ComplexNumber)} accepts another complex number.
-     * </p>
-     * <p><b>Math Logic:</b> {@code (a + bi)(c + di) = (ac - bd) + (ad + bc)i}</p>
-     * <p>Example: {@code (1 + 2i)(3 + 4i) = (3 - 8) + (4 + 6)i = -5 + 10i}</p>
+     * Checks {@link ComplexNumber#multiply(ComplexNumber)}: (1 + 2<i>i</i>)(3 + 4<i>i</i>) =
+     * &minus;5 + 10<i>i</i>, <i>i</i> &middot; <i>i</i> = &minus;1, and both operands stay unchanged.
      */
     @Test
-    public void testComplexMultiplyOperation() {
+    public void testMultiplyComplex() {
         ComplexNumber c1 = new ComplexNumber(1.0, 2.0);
         ComplexNumber c2 = new ComplexNumber(3.0, 4.0);
-        ComplexNumber expected = new ComplexNumber(-5.0, 10.0);
+        ComplexNumber i = new ComplexNumber(0.0, 1.0);
 
-        ComplexNumber result = c1.multiply(c2);
-
-        assertTrue("Complex multiplication result should be -5 + 10i", result.equals(expected));
+        assertComplex("(1 + 2i)(3 + 4i)", -5.0, 10.0, c1.multiply(c2));
+        assertComplex("i * i", -1.0, 0.0, i.multiply(i));
+        assertComplex("c1", 1.0, 2.0, c1);
+        assertComplex("c2", 3.0, 4.0, c2);
     }
 
     /**
-     * Verifies the <b>string representation</b> format.
-     * <p>
-     * <b>Requirement:</b> {@link ComplexNumber#toString} returns "human-legible text representation".
-     * </p>
-     * <p><b>Format:</b> {@code "real + imaginaryi"} (e.g., {@code "3.50 + 2.00i"}).</p>
+     * Checks {@link ComplexNumber#describe} with the example of the statement, 3.5 + 2.0<i>i</i>,
+     * and with a number created from integers.
      */
     @Test
-    public void testToStringFormat() {
-        ComplexNumber num = new ComplexNumber(3.5, 2.0);
-        // The implementation uses String.format("%.2f...")
-        String expected = "3.50 + 2.00i";
-
-        assertEquals("String representation must match standard format '%.2f + %.2fi'",
-                expected, num.toString());
+    public void testDescribe() {
+        assertEquals("3.5 + 2.0i should be described as 3.5 + 2.0i", "3.5 + 2.0i", new ComplexNumber(3.5, 2.0).describe());
+        assertEquals("3 + 4i should be described as 3.0 + 4.0i", "3.0 + 4.0i", new ComplexNumber(3, 4).describe());
     }
 
     /**
-     * Verifies the <b>epsilon comparison</b> logic in {@link ComplexNumber#equals)}.
-     * <p>
-     * <b>Requirement:</b> Compares two complex numbers using an epsilon comparison to handle rounding errors.
-     * </p>
-     * Checks if very small differences (smaller than {@code 1e-9}) are ignored.
+     * Checks {@link ComplexNumber#isEqualTo}: numbers whose parts differ by less than the
+     * tolerance are equal, and numbers that differ in either part are not.
      */
     @Test
-    public void testEqualsWithEpsilon() {
-        ComplexNumber standard = new ComplexNumber(1.0, 1.0);
+    public void testIsEqualTo() {
+        ComplexNumber c = new ComplexNumber(0.3, 1.0);
 
-        // Create a number that differs only by a tiny fraction (within epsilon)
-        ComplexNumber tinyDiff = new ComplexNumber(1.0 + 1e-10, 1.0);
-        assertTrue("Numbers within epsilon should be considered equal", standard.equals(tinyDiff));
-
-        // Create a number that differs significantly
-        ComplexNumber bigDiff = new ComplexNumber(1.1, 1.0);
-        assertFalse("Numbers with significant difference should NOT be equal", standard.equals(bigDiff));
+        assertTrue("Equal parts should be equal", c.isEqualTo(new ComplexNumber(0.3, 1.0)));
+        assertTrue("0.1 + 0.2 and 0.3 should be equal", c.isEqualTo(new ComplexNumber(0.1 + 0.2, 1.0)));
+        assertTrue("A difference of 1e-10 should be equal", c.isEqualTo(new ComplexNumber(0.3, 1.0 + 1e-10)));
+        assertFalse("A different real part should not be equal", c.isEqualTo(new ComplexNumber(0.4, 1.0)));
+        assertFalse("A different imaginary part should not be equal", c.isEqualTo(new ComplexNumber(0.3, 1.1)));
     }
 }

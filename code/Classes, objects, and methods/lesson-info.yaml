@@ -1,19 +1,9 @@
 content:
-  - Defining the structure and capabilities of our data
-  - Materializing state and active behavior in memory
-  - Defining behaviors via methods
-  - Mastering object initialization
-  - Enforcing architectural clarity and resolving scope ambiguity
   - Exercise 1
-  - Centralizing class-level resources
-  - Bridging primitives and objects
-  - Overloading class behavior
   - Exercise 2
   - Exercise 3
   - Exercise 4
-  - Optimizing text manipulation
   - Exercise 5
   - Exercise 6
   - Exercise 7
   - Basic exercising
-  - Real estate development management system

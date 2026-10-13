@@ -2,8 +2,9 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    {{! reveal-md 6.1.2's template (lib/template/reveal.html), changed only here: viewport-fit=cover
-        lets theme/custom.css keep the controls clear of a tablet's screen edges }}
+    {{! reveal-md 6.1.2's template (lib/template/reveal.html), with two changes: viewport-fit=cover here
+        keeps the controls clear of a tablet's screen edges, and the markdown tag below starts at column 0,
+        or reveal strips that indent from every line of code that has it }}
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 
     <title>{{{title}}}</title>
@@ -38,7 +39,7 @@
       <div class="slides">
         <section data-markdown {{{slidifyAttributes}}}>
           <textarea data-template>
-            {{{markdown}}}
+{{{markdown}}}
           </textarea>
         </section>
       </div>

@@ -24,8 +24,10 @@ for (let attempt = 1; !browser; attempt++) {
 }
 
 const page = await browser.newPage();
-// The window is the canvas set in reveal-md.json5
-const { width, height } = (await readConfig()).revealOptions;
+// The window is the canvas set in reveal-md.json5: 4:3, printHeight high, for the print PDF
+const config = await readConfig();
+const { width } = config.revealOptions;
+const height = mode === "print" ? config.printHeight : config.revealOptions.height;
 await page.setViewport({ width, height });
 const url = pathToFileURL(path.resolve(html)).href;
 const pad = (n, digits) => String(n).padStart(digits, "0");
@@ -51,7 +53,8 @@ if (mode === "screen") {
   }
 } else {
   // The print view of reveal.js, with a page per step for class, as pdf.sh exports them
-  const query = mode === "class" ? "?view=print&pdfSeparateFragments=true" : "?view=print";
+  const query =
+    mode === "class" ? "?view=print&pdfSeparateFragments=true" : `?view=print&height=${height}`;
   await page.emulateMediaType("print");
   await page.goto(url + query, { waitUntil: "load", timeout: 60000 });
   await page.waitForSelector(".pdf-page", { timeout: 60000 });

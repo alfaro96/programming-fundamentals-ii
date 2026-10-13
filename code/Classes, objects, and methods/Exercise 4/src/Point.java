@@ -1,78 +1,104 @@
 /**
- * Represents a point in two-dimensional Cartesian space.
+ * Represents a point (<i>x</i>, <i>y</i>) of the plane.
+ * <p>
+ * Coordinates are {@code double} values, which carry rounding errors, so two of them are
+ * considered equal when they differ by less than {@link #EPSILON}.
  *
  * @author Juan Carlos Alfaro Jiménez
+ * @see Vector
  */
-public class Point {
-
-    /** The X coordinate of the point. */
-    public double x;
-
-    /** The Y coordinate of the point. */
-    public double y;
+class Point {
 
     /**
-     * Default constructor. Initializes the point at origin (0,0).
+     * The largest difference between two values that are still considered equal.
      */
-    public Point() {
-        this.x = 0;
-        this.y = 0;
+    static final double EPSILON = 1e-9;
+
+    /**
+     * The <i>x</i> coordinate of the point.
+     */
+    double x;
+
+    /**
+     * The <i>y</i> coordinate of the point.
+     */
+    double y;
+
+    /**
+     * Creates the point (0, 0), the origin.
+     */
+    Point() {
+        this(0, 0);
     }
 
     /**
-     * Standard constructor with specific coordinates.
+     * Creates the point with the given coordinates.
      *
-     * @param x The X coordinate.
-     * @param y The Y coordinate.
+     * @param x the <i>x</i> coordinate.
+     * @param y the <i>y</i> coordinate.
      */
-    public Point(double x, double y) {
+    Point(double x, double y) {
         this.x = x;
         this.y = y;
     }
 
     /**
-     * Calculates the Euclidean distance to another point.
+     * Computes the Euclidean distance between this point and another one:
+     * &radic;((<i>x</i><sub>2</sub> &minus; <i>x</i><sub>1</sub>)<sup>2</sup> +
+     * (<i>y</i><sub>2</sub> &minus; <i>y</i><sub>1</sub>)<sup>2</sup>).
      *
-     * @param other The target point.
-     * @return The distance value.
+     * @param other the other point.
+     * @return the distance between both points.
      */
-    public double distance(Point other) {
-        return Math.sqrt(Math.pow(other.x - this.x, 2) + Math.pow(other.y - this.y, 2));
+    double distance(Point other) {
+        double dx = other.x - this.x;
+        double dy = other.y - this.y;
+        return Math.sqrt(dx * dx + dy * dy);
     }
 
     /**
-     * Checks if this point and two others are on the same line.
-     * Calculated using the area of the triangle formed by the points.
+     * Checks whether this point and two others lie on the same line.
+     * <p>
+     * They do when the triangle they form has no area, that is, when
+     * (<i>x</i><sub>2</sub> &minus; <i>x</i><sub>1</sub>)(<i>y</i><sub>3</sub> &minus; <i>y</i><sub>1</sub>) &minus;
+     * (<i>y</i><sub>2</sub> &minus; <i>y</i><sub>1</sub>)(<i>x</i><sub>3</sub> &minus; <i>x</i><sub>1</sub>) is 0.
      *
-     * @param p1 Second point.
-     * @param p2 Third point.
-     * @return {@code true} if they are colinear.
+     * @param second the second point.
+     * @param third the third point.
+     * @return {@code true} if the three points lie on the same line, {@code false} otherwise.
      */
-    public boolean isColinearTo(Point p1, Point p2) {
-        double area = this.x * (p1.y - p2.y) + p1.x * (p2.y - this.y) + p2.x * (this.y - p1.y);
-        return area == 0;
+    boolean isCollinearTo(Point second, Point third) {
+        double area = (second.x - this.x) * (third.y - this.y) - (second.y - this.y) * (third.x - this.x);
+        return Math.abs(area) < EPSILON;
     }
 
     /**
-     * Calculates the point exactly in the middle of this and another point.
+     * Computes the point halfway between this point and another one.
      *
-     * @param other The second point.
-     * @return A new {@link Point} object representing the middle.
+     * @param other the other point.
+     * @return a new point, whose coordinates are the averages of those of both points.
      */
-    public Point middlePoint(Point other) {
+    Point middlePoint(Point other) {
         return new Point((this.x + other.x) / 2, (this.y + other.y) / 2);
     }
 
-    @Override
-    public String toString() {
+    /**
+     * Returns the point in the form {@code "(x, y)"}, such as {@code "(1.0, 2.5)"}.
+     *
+     * @return both coordinates, in parentheses and separated by a comma.
+     */
+    String describe() {
         return "(" + this.x + ", " + this.y + ")";
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Point)) return false;
-        Point point = (Point) o;
-        return Double.compare(point.x, x) == 0 && Double.compare(point.y, y) == 0;
+    /**
+     * Checks whether this point and another one are the same point: both coordinates differ
+     * by less than {@link #EPSILON}.
+     *
+     * @param other the point to compare with.
+     * @return {@code true} if both points are the same, {@code false} otherwise.
+     */
+    boolean isEqualTo(Point other) {
+        return Math.abs(this.x - other.x) < EPSILON && Math.abs(this.y - other.y) < EPSILON;
     }
 }

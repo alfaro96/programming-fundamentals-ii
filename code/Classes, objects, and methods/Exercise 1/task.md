@@ -1,50 +1,53 @@
 # Exercise 1
 
-In mathematics, a monomial is the product of a variable, raised to a power, by a constant. Usually, it has the structure:
+In mathematics, a monomial is a constant multiplied by a variable raised to a power:
 
 $$
-m \cdot x^{p}
+m \cdot X^{p}
 $$
 
 where:
 
-* `m` (**coefficient**) refers to a constant value.
-* `x` (**variable**) refers to a variable value.
-* `p` (**exponent**) refers to the power the variable is raised to.
+* $m$ (**coefficient**) is a constant value.
+* $X$ (**variable**) is a variable value.
+* $p$ (**exponent**) is the power the variable is raised to.
 
-Examples of monomials include expressions like $ 2x^{5} $ or $ x^{-3} $. The goal of this exercise is to implement a class `Monomial` in Java to represent this data type and perform usual operations.
+Examples of monomials are $2X^{5}$ and $X^{-3}$. The goal of this exercise is to write a `Monomial` class in Java that represents this kind of data and performs the usual operations with it.
 
 ### Implementation
 
-Implement a `Monomial` class with the following requirements:
+Write a `Monomial` class with the following requirements:
 
 * **Attributes**:
-  * `double coefficient`: Represents the coefficient of the monomial.
-  * `int exponent`: Represents the power the variable is raised to.
-  * For this exercise, assume the variable is always `X` and is implicit.
+  * `double coefficient`: the coefficient of the monomial.
+  * `int exponent`: the power the variable is raised to.
+  * The variable is always $X$, so it is not stored.
 
 * **Methods**:
-  * **Constructor**: A constructor that allows the user to create a monomial given a coefficient and an exponent.
-  * `toString()`: A method that returns a `String` containing the written representation of the monomial (e.g., `"2X^3"`).
-  * `addition()`: A method that, given another `Monomial` as an argument, **returns a new monomial** representing the addition of the two.
-  * `scalarProduct()`: A method that, given a scalar (numerical) value, **returns a new monomial** representing the multiplication of the monomial by that value.
-  * `product()`: A method that, given another `Monomial` as an argument, **returns a new monomial** representing the multiplication of the two.
-  * `evaluate()`: A method that, given a scalar value as an argument, returns the numerical result of solving the monomial using that value as `X`.
+  * **Constructor**: creates a monomial from a coefficient and an exponent.
+  * `describe()`: returns a `String` with the written form of the monomial, made by joining the coefficient, `X^` and the exponent with `+`. For example, the monomial with coefficient `2` and exponent `3` is described as `"2.0X^3"` (a `double` is always written with a decimal point).
+  * `addition()`: given another `Monomial`, **returns a new monomial** with the sum of both. Two monomials only add up to a single monomial when they have the same exponent: the coefficients are added and the exponent stays the same. If the exponents differ, the method returns `null`.
+  * `scalarProduct()`: given a number, **returns a new monomial** with the product of the monomial by that number.
+  * `product()`: given another `Monomial`, **returns a new monomial** with the product of both: the coefficients are multiplied and the exponents are added.
+  * `evaluate()`: given a number, returns the value of the monomial when $X$ takes that value. `Math.pow(a, b)` computes $a^{b}$.
+
+None of the operations changes the monomials it works with: each one creates a new monomial with `new` and returns it.
 
 ### Recommendations
 
-* **Incremental implementation**: It is highly recommended to implement and test each method individually before moving on to the next one, ensuring each part works correctly before building the rest of the class.
+* **Incremental implementation**: write and test each method on its own before moving on to the next one, making sure each part works before building the rest of the class.
+* **`this`**: write `this.` before every attribute, such as `this.coefficient`, even where no parameter has the same name, as in the slides. It makes clear which values belong to the monomial itself and which to `other`.
 
 ### Evaluation
 
-To successfully complete the exercise, the following points must be addressed:
+The `Main` class provided creates several monomials and prints the result of each operation next to the value it should have. To complete the exercise:
 
 1. **Class functionality**:
-   * Ensure that the constructors work properly.
-   * Verify the output format of the `toString()` method.
+   * Check that the constructor stores both values.
+   * Check the text returned by `describe()`.
 
 2. **Monomial operations**:
-   * Test additions and products to ensure results are correct and that the coefficient and exponents remain consistent.
+   * Check that additions and products give the right coefficient and exponent, and that the original monomials do not change.
 
 3. **Clean code and documentation**:
-   * Ensure that the code is clean, legible, and includes explanatory comments where necessary.
+   * Make sure the code is clean and legible, with explanatory comments where necessary.

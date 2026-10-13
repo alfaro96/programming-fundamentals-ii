@@ -2,30 +2,8 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * {@link Polynomial} test suite.
- * <p>
- * This class performs unit testing on the {@link Polynomial} class to verify the
- * correctness of construction, monomial management, algebraic operations, evaluation,
- * and equality checks.
- * </p>
- * <p>
- * A polynomial is modeled as an array of {@link Monomial} objects where each
- * monomial's exponent corresponds to its index in the array:
- * {@code P(x) = c0 + c1·x + c2·x² + … + cₙ·xⁿ}.
- * </p>
- * <p><b>Covered scenarios:</b></p>
- * <ul>
- * <li>Empty constructor (capacity only).</li>
- * <li>Coefficient-array constructor ({@code double[]} → monomials by index).</li>
- * <li>Monomial-array constructor ({@code Monomial[]} → direct assignment).</li>
- * <li>{@link Polynomial#getMonomial(int)} – retrieves the monomial at a given exponent.</li>
- * <li>{@link Polynomial#addMonomial(Monomial)} – inserts a monomial at the correct position.</li>
- * <li>{@link Polynomial#add(Polynomial)} – polynomial addition.</li>
- * <li>{@link Polynomial#scalarProduct(double)} – polynomial × scalar.</li>
- * <li>{@link Polynomial#product(Polynomial)} – polynomial × polynomial.</li>
- * <li>{@link Polynomial#solve(double)} – numerical evaluation for a given {@code x}.</li>
- * <li>{@link Polynomial#equals(Object)} – {@code true} when all respective monomials are equal.</li>
- * </ul>
+ * Tests the {@link Polynomial} class: its three constructors, getting, adding and replacing
+ * monomials, the operations between polynomials, evaluation and equality.
  *
  * @author Juan Carlos Alfaro Jiménez
  * @see Polynomial
@@ -33,176 +11,249 @@ import static org.junit.Assert.*;
  */
 public class Tests {
 
-    /** Delta value for floating-point comparisons. */
+    /**
+     * The largest difference allowed when comparing two {@code double} values.
+     */
     private static final double DELTA = 1e-9;
 
     /**
-     * Verifies the empty constructor creates a polynomial with the specified maximum
-     * capacity and zero monomials.
-     * <p>
-     * <b>Requirement:</b> {@code numMonomials} must be {@code 0} and {@code maxSize}
-     * must match the provided capacity.
-     * </p>
+     * Checks that a polynomial has the expected coefficients: the one at position <i>i</i> is
+     * that of <i>X</i><sup><i>i</i></sup>, and a coefficient of 0 means there must be no
+     * monomial. Every exponent above the last coefficient must have no monomial either.
+     *
+     * @param expected the expected coefficients, from that of <i>X</i><sup>0</sup> upward.
+     * @param p the polynomial to check.
+     */
+    private static void assertCoefficients(double[] expected, Polynomial p) {
+        assertNotNull("The polynomial should not be null", p);
+        for (int i = 0; i < expected.length; i++) {
+            Monomial m = p.getMonomial(i);
+            if (expected[i] == 0) {
+                assertNull("A coefficient of 0 should leave no monomial with exponent " + i, m);
+            } else {
+                assertNotNull("There should be a monomial with exponent " + i, m);
+                assertEquals("The coefficient of X^" + i + " should be " + expected[i], expected[i], m.coefficient, DELTA);
+                assertEquals("The monomial at position " + i + " should have exponent " + i, i, m.exponent);
+            }
+        }
+        for (int i = expected.length; i < p.maxSize; i++) {
+            assertNull("There should be no monomial with exponent " + i, p.getMonomial(i));
+        }
+    }
+
+    /**
+     * Checks that the empty constructor creates an array of the given length with no
+     * monomials.
      */
     @Test
     public void testEmptyConstructor() {
         Polynomial p = new Polynomial(5);
 
-        assertEquals("maxSize must match the provided capacity", 5, p.maxSize);
-        assertEquals("numMonomials must be 0 for empty polynomial", 0, p.numMonomials);
+        assertEquals("maxSize should be 5", 5, p.maxSize);
+        assertEquals("The array should have length 5", 5, p.monomials.length);
+        assertEquals("numMonomials should be 0", 0, p.numMonomials);
+        for (int i = 0; i < 5; i++) {
+            assertNull("There should be no monomial with exponent " + i, p.getMonomial(i));
+        }
     }
 
     /**
-     * Verifies the coefficient-array constructor.
-     * <p>
-     * <b>Scenario:</b> {@code new Polynomial(new double[]{1.0, 0.0, 3.0})} →
-     * {@code P(x) = 1 + 0·x + 3x²}.
-     * The monomial at index {@code 0} must have coefficient {@code 1.0}; the monomial
-     * at index {@code 2} must have coefficient {@code 3.0}.
-     * </p>
+     * Checks the constructor from coefficients: {1, 0, 3} is 1 + 3<i>X</i><sup>2</sup>, with
+     * no monomial for the coefficient of 0.
      */
     @Test
-    public void testCoeffArrayConstructor() {
-        double[] coeffs = {1.0, 0.0, 3.0};
-        Polynomial p = new Polynomial(coeffs);
+    public void testCoefficientsConstructor() {
+        double[] coefficients = {1.0, 0.0, 3.0};
+        Polynomial p = new Polynomial(coefficients);
 
-        assertNotNull("Polynomial must not be null", p);
-        assertNotNull("Monomial at exponent 0 must exist", p.getMonomial(0));
-        assertNotNull("Monomial at exponent 2 must exist", p.getMonomial(2));
-        assertEquals("Coefficient at exponent 0 must be 1.0", 1.0, p.getMonomial(0).coefficient, DELTA);
-        assertEquals("Coefficient at exponent 2 must be 3.0", 3.0, p.getMonomial(2).coefficient, DELTA);
+        assertEquals("maxSize should be 3", 3, p.maxSize);
+        assertEquals("numMonomials should be 2", 2, p.numMonomials);
+        assertNull("There should be no monomial with exponent 1", p.getMonomial(1));
+        assertCoefficients(new double[]{1.0, 0.0, 3.0}, p);
     }
 
     /**
-     * Verifies the {@link Monomial}-array constructor.
-     * <p>
-     * <b>Scenario:</b> Pass {@code [Monomial(2.0, 0), Monomial(5.0, 1)]} →
-     * both monomials must be retrievable by exponent.
-     * </p>
+     * Checks the constructor from monomials: each one goes to the position of its exponent,
+     * whatever its position in the array.
      */
     @Test
-    public void testMonomialArrayConstructor() {
-        Monomial[] monomials = {new Monomial(2.0, 0), new Monomial(5.0, 1)};
+    public void testMonomialsConstructor() {
+        Monomial[] monomials = {new Monomial(5.0, 2), new Monomial(2.0, 0)};
         Polynomial p = new Polynomial(monomials);
 
-        assertNotNull("Polynomial must not be null", p);
-        assertEquals("Coefficient at exponent 0 must be 2.0", 2.0, p.getMonomial(0).coefficient, DELTA);
-        assertEquals("Coefficient at exponent 1 must be 5.0", 5.0, p.getMonomial(1).coefficient, DELTA);
+        assertEquals("numMonomials should be 2", 2, p.numMonomials);
+        assertCoefficients(new double[]{2.0, 0.0, 5.0}, p);
     }
 
     /**
-     * Verifies that {@link Polynomial#getMonomial(int)} returns the correct monomial
-     * for a given exponent.
+     * Checks that {@link Polynomial#getMonomial} returns {@code null} for an exponent with no
+     * monomial and for one outside the array.
      */
     @Test
-    public void testGetMonomial() {
-        Polynomial p = new Polynomial(new double[]{4.0, 0.0, 7.0});
+    public void testGetMonomialMissing() {
+        double[] coefficients = {4.0, 0.0, 7.0};
+        Polynomial p = new Polynomial(coefficients);
 
-        assertNotNull("Monomial at exponent 0 must exist", p.getMonomial(0));
-        assertNotNull("Monomial at exponent 2 must exist", p.getMonomial(2));
-        assertEquals("Coefficient at exponent 0 must be 4.0", 4.0, p.getMonomial(0).coefficient, DELTA);
-        assertEquals("Coefficient at exponent 2 must be 7.0", 7.0, p.getMonomial(2).coefficient, DELTA);
+        assertNull("There should be no monomial with exponent 1", p.getMonomial(1));
+        assertNull("There should be no monomial with exponent 3", p.getMonomial(3));
+        assertNull("There should be no monomial with exponent -1", p.getMonomial(-1));
     }
 
     /**
-     * Verifies that {@link Polynomial#addMonomial(Monomial)} places the monomial
-     * at the position corresponding to its exponent and increments {@code numMonomials}.
+     * Checks that {@link Polynomial#addMonomial} stores a monomial at the position of its
+     * exponent, adds it to the one already there, and ignores one the array has no room for.
      */
     @Test
     public void testAddMonomial() {
-        Polynomial p = new Polynomial(5);
-        p.addMonomial(new Monomial(3.0, 2));
+        Polynomial p = new Polynomial(3);
 
-        assertEquals("numMonomials must be 1 after one insertion", 1, p.numMonomials);
-        assertNotNull("Monomial at exponent 2 must exist after insertion", p.getMonomial(2));
-        assertEquals("Coefficient at exponent 2 must be 3.0", 3.0, p.getMonomial(2).coefficient, DELTA);
+        p.addMonomial(new Monomial(3.0, 2));
+        assertEquals("numMonomials should be 1", 1, p.numMonomials);
+        assertCoefficients(new double[]{0.0, 0.0, 3.0}, p);
+
+        p.addMonomial(new Monomial(4.0, 2));
+        assertEquals("Adding to an existing monomial should not change numMonomials", 1, p.numMonomials);
+        assertCoefficients(new double[]{0.0, 0.0, 7.0}, p);
+
+        p.addMonomial(new Monomial(1.0, 3));
+        assertEquals("A monomial with no room should not be added", 1, p.numMonomials);
+
+        p.addMonomial(new Monomial(-7.0, 2));
+        assertNull("A sum of 0 should leave the position empty", p.getMonomial(2));
+        assertEquals("A sum of 0 should leave no monomials", 0, p.numMonomials);
+
+        p.addMonomial(new Monomial(0.0, 1));
+        assertNull("A monomial with coefficient 0 should not be stored", p.getMonomial(1));
+        assertEquals("A monomial with coefficient 0 should not count", 0, p.numMonomials);
     }
 
     /**
-     * Verifies {@link Polynomial#add(Polynomial)}.
-     * <p>
-     * <b>Math Logic:</b> {@code P1(x) = 1 + 2x²} and {@code P2(x) = 3 + 4x²} →
-     * {@code P1 + P2 = 4 + 6x²}.
-     * </p>
+     * Checks that {@link Polynomial#replaceMonomial} replaces the monomial with the same
+     * exponent, removes it if the new coefficient is 0, and does nothing if there is none.
+     */
+    @Test
+    public void testReplaceMonomial() {
+        double[] coefficients = {1.0, 0.0, 3.0};
+        Polynomial p = new Polynomial(coefficients);
+
+        p.replaceMonomial(new Monomial(-2.0, 2));
+        assertCoefficients(new double[]{1.0, 0.0, -2.0}, p);
+
+        p.replaceMonomial(new Monomial(5.0, 1));
+        assertNull("There should still be no monomial with exponent 1", p.getMonomial(1));
+        assertEquals("numMonomials should still be 2", 2, p.numMonomials);
+
+        p.replaceMonomial(new Monomial(0.0, 2));
+        assertCoefficients(new double[]{1.0}, p);
+        assertEquals("Replacing with a coefficient of 0 should remove the monomial", 1, p.numMonomials);
+    }
+
+    /**
+     * Checks {@link Polynomial#add}: (1 + 2<i>X</i><sup>2</sup>) + (3 + 4<i>X</i> + 4<i>X</i><sup>2</sup> +
+     * <i>X</i><sup>3</sup>) = 4 + 4<i>X</i> + 6<i>X</i><sup>2</sup> + <i>X</i><sup>3</sup>, and both
+     * operands stay unchanged.
      */
     @Test
     public void testAdd() {
-        Polynomial p1 = new Polynomial(new double[]{1.0, 0.0, 2.0});
-        Polynomial p2 = new Polynomial(new double[]{3.0, 0.0, 4.0});
+        double[] c1 = {1.0, 0.0, 2.0};
+        double[] c2 = {3.0, 4.0, 4.0, 1.0};
+        Polynomial p1 = new Polynomial(c1);
+        Polynomial p2 = new Polynomial(c2);
 
-        Polynomial result = p1.add(p2);
-
-        assertNotNull("add() result must not be null", result);
-        assertEquals("Constant term (exp 0) must be 1 + 3=4", 4.0, result.getMonomial(0).coefficient, DELTA);
-        assertEquals("Quadratic term (exp 2) must be 2 + 4=6", 6.0, result.getMonomial(2).coefficient, DELTA);
+        assertCoefficients(new double[]{4.0, 4.0, 6.0, 1.0}, p1.add(p2));
+        assertCoefficients(new double[]{1.0, 0.0, 2.0}, p1);
+        assertCoefficients(new double[]{3.0, 4.0, 4.0, 1.0}, p2);
     }
 
     /**
-     * Verifies {@link Polynomial#scalarProduct(double)}.
-     * <p>
-     * <b>Math Logic:</b> {@code P(x) = 2 + 3x}, scalar {@code 2} →
-     * {@code 2·P(x) = 4 + 6x}.
-     * </p>
+     * Checks that adding a polynomial and its opposite leaves no monomials: the coefficients
+     * that cancel out are not kept as monomials with coefficient 0.
+     */
+    @Test
+    public void testAddCancelsOut() {
+        double[] coefficients = {1.0, 0.0, 3.0};
+        Polynomial p = new Polynomial(coefficients);
+        Polynomial sum = p.add(p.scalarProduct(-1.0));
+
+        assertEquals("p + (-p) should have no monomials", 0, sum.numMonomials);
+        assertEquals("p + (-p) should be described as 0", "0", sum.describe());
+    }
+
+    /**
+     * Checks {@link Polynomial#scalarProduct}: (2 + 3<i>X</i>) &middot; 2 = 4 + 6<i>X</i>, and the
+     * polynomial stays unchanged.
      */
     @Test
     public void testScalarProduct() {
-        Polynomial p = new Polynomial(new double[]{2.0, 3.0});
-        Polynomial result = p.scalarProduct(2.0);
+        double[] coefficients = {2.0, 3.0};
+        Polynomial p = new Polynomial(coefficients);
 
-        assertNotNull("scalarProduct() result must not be null", result);
-        assertEquals("Constant term (exp 0) must be 2*2=4", 4.0, result.getMonomial(0).coefficient, DELTA);
-        assertEquals("Linear term (exp 1) must be 3*2=6", 6.0, result.getMonomial(1).coefficient, DELTA);
+        assertCoefficients(new double[]{4.0, 6.0}, p.scalarProduct(2.0));
+        assertCoefficients(new double[]{2.0, 3.0}, p);
     }
 
     /**
-     * Verifies {@link Polynomial#product(Polynomial)}.
-     * <p>
-     * <b>Math Logic:</b> {@code P1(x) = 1 + x} and {@code P2(x) = 1 + x} →
-     * {@code P1·P2 = 1 + 2x + x²}.
-     * </p>
+     * Checks {@link Polynomial#product}: (1 + <i>X</i>)(2 &minus; <i>X</i> + <i>X</i><sup>2</sup>) =
+     * 2 + <i>X</i> + 0<i>X</i><sup>2</sup> + <i>X</i><sup>3</sup>, and both operands stay unchanged.
      */
     @Test
     public void testProduct() {
-        Polynomial p1 = new Polynomial(new double[]{1.0, 1.0});
-        Polynomial p2 = new Polynomial(new double[]{1.0, 1.0});
+        double[] c1 = {1.0, 1.0};
+        double[] c2 = {2.0, -1.0, 1.0};
+        Polynomial p1 = new Polynomial(c1);
+        Polynomial p2 = new Polynomial(c2);
 
-        Polynomial result = p1.product(p2);
-
-        assertNotNull("product() result must not be null", result);
-        assertEquals("Constant term (exp 0) must be 1*1=1", 1.0, result.getMonomial(0).coefficient, DELTA);
-        assertEquals("Linear term (exp 1) must be 1*1 + 1*1 = 2", 2.0, result.getMonomial(1).coefficient, DELTA);
-        assertEquals("Quadratic term (exp 2) must be 1*1=1", 1.0, result.getMonomial(2).coefficient, DELTA);
+        assertCoefficients(new double[]{2.0, 1.0, 0.0, 1.0}, p1.product(p2));
+        assertCoefficients(new double[]{1.0, 1.0}, p1);
+        assertCoefficients(new double[]{2.0, -1.0, 1.0}, p2);
     }
 
     /**
-     * Verifies {@link Polynomial#solve(double)}.
-     * <p>
-     * <b>Math Logic:</b> {@code P(x) = 2 + 3x} with {@code x = 2}:
-     * {@code 2 + 3·2 = 8}.
-     * </p>
+     * Checks {@link Polynomial#solve}: 2 + 3<i>X</i> at <i>X</i> = 2 is 8, and
+     * 1 &minus; <i>X</i><sup>2</sup> + <i>X</i><sup>3</sup> at <i>X</i> = &minus;2 is &minus;11.
      */
     @Test
     public void testSolve() {
-        Polynomial p = new Polynomial(new double[]{2.0, 3.0});
-        double result = p.solve(2.0);
+        double[] c1 = {2.0, 3.0};
+        double[] c2 = {1.0, 0.0, -1.0, 1.0};
 
-        assertEquals("P(2) = 2 + 3*2 = 8", 8.0, result, DELTA);
+        assertEquals("2 + 3X at X = 2 should be 8.0", 8.0, new Polynomial(c1).solve(2.0), DELTA);
+        assertEquals("1 - X^2 + X^3 at X = -2 should be -11.0", -11.0, new Polynomial(c2).solve(-2.0), DELTA);
     }
 
     /**
-     * Verifies {@link Polynomial#equals(Object)}.
-     * <p>
-     * Two polynomials with the same monomials at every position must be equal;
-     * two polynomials that differ in at least one monomial must not.
-     * </p>
+     * Checks that {@link Polynomial#describe} includes every monomial, and gives {@code "0"}
+     * for a polynomial with none.
      */
     @Test
-    public void testEquals() {
-        Polynomial p1 = new Polynomial(new double[]{1.0, 2.0, 3.0});
-        Polynomial p2 = new Polynomial(new double[]{1.0, 2.0, 3.0});
-        Polynomial p3 = new Polynomial(new double[]{1.0, 2.0, 9.0});
+    public void testDescribe() {
+        double[] coefficients = {1.0, 0.0, 3.0};
+        String text = new Polynomial(coefficients).describe();
 
-        assertTrue("Identical polynomials must be equal", p1.equals(p2));
-        assertFalse("Polynomials differing at exp-2 must not be equal", p1.equals(p3));
+        assertTrue("It should include the monomial 1.0X^0", text.contains("1.0X^0"));
+        assertTrue("It should include the monomial 3.0X^2", text.contains("3.0X^2"));
+        assertEquals("A polynomial with no monomials should be 0", "0", new Polynomial(3).describe());
+    }
+
+    /**
+     * Checks {@link Polynomial#isEqualTo}: polynomials with the same coefficients are equal, even
+     * if built in different ways or with arrays of different lengths, and polynomials that
+     * differ in one coefficient are not.
+     */
+    @Test
+    public void testIsEqualTo() {
+        double[] c1 = {1.0, 2.0, 3.0};
+        double[] c2 = {1.0, 2.0, 9.0};
+        Monomial[] monomials = {new Monomial(3.0, 2), new Monomial(2.0, 1), new Monomial(1.0, 0)};
+        Polynomial p1 = new Polynomial(c1);
+        Polynomial longer = new Polynomial(6);
+        longer.addMonomial(new Monomial(1.0, 0));
+        longer.addMonomial(new Monomial(2.0, 1));
+        longer.addMonomial(new Monomial(3.0, 2));
+
+        assertTrue("The same coefficients should be equal", p1.isEqualTo(new Polynomial(c1)));
+        assertTrue("Built from monomials, it should be equal", p1.isEqualTo(new Polynomial(monomials)));
+        assertTrue("With a longer array, it should be equal", p1.isEqualTo(longer));
+        assertFalse("A different coefficient should not be equal", p1.isEqualTo(new Polynomial(c2)));
     }
 }

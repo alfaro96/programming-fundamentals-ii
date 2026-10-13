@@ -4,8 +4,8 @@ files:
     visible: true
     placeholders:
       - offset: 0
-        length: 4396
-        placeholder_text: "/* TODO: Implement Person class. */"
+        length: 4749
+        placeholder_text: "/* TODO: Implement the Person class. */"
   - name: test/Tests.java
     visible: false
     propagatable: false
@@ -13,5 +13,5 @@ files:
     visible: true
     placeholders:
       - offset: 0
-        length: 4020
-        placeholder_text: "/* TODO: Implement Main class. */"
+        length: 2184
+        placeholder_text: "/* TODO: Implement the Main class. */"

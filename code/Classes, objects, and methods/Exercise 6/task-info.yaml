@@ -4,8 +4,8 @@ files:
     visible: true
     placeholders:
       - offset: 0
-        length: 4755
-        placeholder_text: "/* TODO: Implement Library class. */"
+        length: 3635
+        placeholder_text: "/* TODO: Implement the Library class. */"
   - name: src/Book.java
     visible: true
   - name: test/Tests.java
@@ -15,5 +15,5 @@ files:
     visible: true
     placeholders:
       - offset: 0
-        length: 4378
-        placeholder_text: "/* TODO: Implement Main class. */"
+        length: 2333
+        placeholder_text: "/* TODO: Implement the Main class. */"

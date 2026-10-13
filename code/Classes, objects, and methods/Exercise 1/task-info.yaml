@@ -4,7 +4,7 @@ files:
     visible: true
     placeholders:
       - offset: 0
-        length: 2608
+        length: 2685
         placeholder_text: "/* TODO: Implement the Monomial class. */"
   - name: src/Main.java
     visible: true

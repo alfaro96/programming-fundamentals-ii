@@ -1,109 +1,61 @@
 /**
- * Main application class to demonstrate the {@link Point} and {@link Vector} classes.
- * Creates {@link Point} and {@link Vector} instances and exercises all their operations.
+ * Exercise 4: tries every method of the {@link Point} and {@link Vector} classes.
  *
  * @author Juan Carlos Alfaro Jiménez
  * @see Point
  * @see Vector
  */
-public class Main {
+class Main {
 
     /**
-     * Entry point of the program.
+     * Creates four points and five vectors, prints them and prints the result of each
+     * operation, next to the value it should have.
      *
-     * @param args Command line arguments (not used).
+     * @param args the command-line arguments (not used).
      */
     public static void main(String[] args) {
-        // Point tests
-
-        // 1. Create four points and display them
-        Point p1 = new Point(); // default (0, 0)
+        Point p1 = new Point();
         Point p2 = new Point(3.0, 4.0);
         Point p3 = new Point(1.0, 1.0);
         Point p4 = new Point(2.0, 2.0);
-        System.out.println("--- Points ---");
-        System.out.println("p1 (default, expected (0.0, 0.0)): " + p1);
-        System.out.println("p2: " + p2);
-        System.out.println("p3: " + p3);
-        System.out.println("p4: " + p4);
-        System.out.println();
+        System.out.println("p1 = " + p1.describe() + " (should be the origin)");
+        System.out.println("p2 = " + p2.describe());
+        System.out.println("p3 = " + p3.describe());
+        System.out.println("p4 = " + p4.describe());
 
-        // 2. Distance between pairs
-        System.out.println("--- distance() ---");
-        System.out.println("p1.distance(p2) (expected 5.0): " + p1.distance(p2));
-        System.out.println("p3.distance(p4): " + p3.distance(p4));
-        System.out.println();
+        System.out.println("Distance p1-p2: " + p1.distance(p2) + " (should be 5.0)");
+        System.out.println("Distance p3-p4: " + p3.distance(p4) + " (should be 1.414...)");
 
-        // 3. Collinearity - true case: p1(0, 0), p3(1, 1), p4(2, 2) are on y = x
-        System.out.println("--- isColinearTo() ---");
-        System.out.println("p1, p3, p4 collinear (expected true):  " + p1.isColinearTo(p3, p4));
-        // False case: p1(0, 0), p2(3, 4), p3(1, 1) do not share a line
-        System.out.println("p1, p2, p3 collinear (expected false): " + p1.isColinearTo(p2, p3));
-        System.out.println();
+        // p1, p3 and p4 lie on the line y = x; p2 does not
+        System.out.println("p1, p3, p4 collinear: " + p1.isCollinearTo(p3, p4) + " (should be true)");
+        System.out.println("p1, p2, p3 collinear: " + p1.isCollinearTo(p2, p3) + " (should be false)");
 
-        // 4. Middle point
-        Point mid12 = p1.middlePoint(p2);
-        System.out.println("--- middlePoint() ---");
-        System.out.println("middlePoint(p1, p2) (expected (1.5, 2.0)): " + mid12);
-        Point mid34 = p3.middlePoint(p4);
-        System.out.println("middlePoint(p3, p4) (expected (1.5, 1.5)): " + mid34);
-        System.out.println();
+        System.out.println("Middle of p1 and p2: " + p1.middlePoint(p2).describe() + " (should be (1.5, 2.0))");
+        System.out.println("Middle of p3 and p4: " + p3.middlePoint(p4).describe() + " (should be (1.5, 1.5))");
 
-        // 5. equals()
         Point p5 = new Point(3.0, 4.0);
-        System.out.println("--- equals() ---");
-        System.out.println("p2.equals(p5) (expected true):  " + p2.equals(p5));
-        System.out.println("p2.equals(p3) (expected false): " + p2.equals(p3));
-        System.out.println();
+        System.out.println("p2 equals p5: " + p2.isEqualTo(p5) + " (should be true)");
+        System.out.println("p2 equals p3: " + p2.isEqualTo(p3) + " (should be false)");
 
-        // Vector tests
-
-        // 6. Create five vectors and display them
         Vector v1 = new Vector(new Point(0.0, 0.0), new Point(1.0, 0.0));
         Vector v2 = new Vector(new Point(1.0, 2.0), new Point(3.0, 4.0));
         Vector v3 = new Vector(new Point(3.0, 0.0), new Point(4.0, 0.0));
         Vector v4 = new Vector(new Point(0.0, 3.0), new Point(1.0, 3.0));
         Vector v5 = new Vector(new Point(1.0, 1.0), new Point(2.0, 2.0));
-        System.out.println("--- Vectors ---");
-        System.out.println("v1: " + v1);
-        System.out.println("v2: " + v2);
-        System.out.println("v3: " + v3);
-        System.out.println("v4: " + v4);
-        System.out.println("v5: " + v5);
-        System.out.println();
+        System.out.println("v1 = " + v1.describe());
+        System.out.println("v2 = " + v2.describe());
+        System.out.println("v3 = " + v3.describe());
+        System.out.println("v4 = " + v4.describe());
+        System.out.println("v5 = " + v5.describe());
 
-        // 7. add()
-        Vector addV = v2.add(v5);
-        System.out.println("--- add() ---");
-        System.out.println("v2.add(v5): " + addV);
-        System.out.println("Expected origin (2.0, 3.0), end (5.0, 6.0)");
-        System.out.println();
+        System.out.println("v2 + v5 = " + v2.add(v5).describe() + " (should be (2.0, 3.0) -> (5.0, 6.0))");
+        System.out.println("v2 - v5 = " + v2.subtract(v5).describe() + " (should be (0.0, 1.0) -> (1.0, 2.0))");
+        System.out.println("v2 * 2 = " + v2.scalarProduct(2.0).describe() + " (should be (2.0, 4.0) -> (6.0, 8.0))");
 
-        // 8. subtract()
-        Vector subV = v2.subtract(v5);
-        System.out.println("--- subtract() ---");
-        System.out.println("v2.subtract(v5): " + subV);
-        System.out.println("Expected origin (0.0, 1.0), end (1.0, 2.0)");
-        System.out.println();
+        System.out.println("Centroid of v1, v3, v4: " + v1.centroid(v3, v4).describe() + " (should be (1.0, 1.0))");
 
-        // 9. scalarProduct()
-        Vector scalV = v2.scalarProduct(2.0);
-        System.out.println("--- scalarProduct() ---");
-        System.out.println("v2.scalarProduct(2.0): " + scalV);
-        System.out.println("Expected origin (2.0, 4.0), end (6.0, 8.0)");
-        System.out.println();
-
-        // 10. centroid() of v1, v3, v4
-        Point centroid = v1.centroid(v3, v4);
-        System.out.println("--- centroid() ---");
-        System.out.println("centroid of v1, v3, v4 (expected (1.0, 1.0)): " + centroid);
-        System.out.println();
-
-        // 11. equals()
-        Vector v2copy = new Vector(new Point(1.0, 2.0), new Point(3.0, 4.0));
-        System.out.println("--- equals() ---");
-        System.out.println("v2.equals(v2copy) (expected true):  " + v2.equals(v2copy));
-        System.out.println("v2.equals(v5) (expected false): " + v2.equals(v5));
-        System.out.println();
+        Vector v6 = new Vector(new Point(1.0, 2.0), new Point(3.0, 4.0));
+        System.out.println("v2 equals v6: " + v2.isEqualTo(v6) + " (should be true)");
+        System.out.println("v2 equals v5: " + v2.isEqualTo(v5) + " (should be false)");
     }
 }

@@ -2,24 +2,8 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * {@link Library} test suite.
- * <p>
- * This class performs unit testing on the {@link Library} class to verify the
- * correctness of book management, dynamic array resizing, navigation, and
- * string representation.
- * </p>
- * <p><b>Covered scenarios:</b></p>
- * <ul>
- * <li>Constructor – {@code currentBookIndex} defaults to {@code -1}; empty array with given capacity.</li>
- * <li>{@link Library#addBook(Book)} – books fill available slots sequentially.</li>
- * <li>{@link Library#addBook(Book)} – array doubles in size when full.</li>
- * <li>{@link Library#getCurrentBook()} – returns the book at the current index.</li>
- * <li>{@link Library#nextBook()} – advances the index and returns the next book.</li>
- * <li>{@link Library#nextBook()} – returns {@code null} past the last book.</li>
- * <li>{@link Library#previousBook()} – moves the index backward and returns the previous book.</li>
- * <li>{@link Library#previousBook()} – returns {@code null} when already at the first book.</li>
- * <li>{@link Library#toString()} – contains library name and book count; does not list book details.</li>
- * </ul>
+ * Tests the {@link Library} class: the constructor, adding books with an array that doubles
+ * when full, going through the books in both directions and the description.
  *
  * @author Juan Carlos Alfaro Jiménez
  * @see Library
@@ -28,200 +12,148 @@ import static org.junit.Assert.*;
 public class Tests {
 
     /**
-     * Creates a minimal {@link Book} with a single placeholder page.
+     * Creates a book with a single page, by a generic author.
      *
-     * @param title the book title.
-     * @param isbn the unique {@code ISBN} used to identify this book.
-     * @return a ready-to-use {@link Book} instance.
+     * @param title the title of the book.
+     * @return a new book with that title.
      */
-    private Book makeBook(String title, String isbn) {
-        return new Book(title, "Generic Author", 2020, isbn, new String[]{"Page content"});
+    private static Book createBook(String title) {
+        String[] pages = {"Page"};
+        return new Book(title, "Generic Author", 2020, "ISBN-" + title, pages);
     }
 
     /**
-     * Verifies that the constructor sets the library {@code name}, initializes the
-     * {@code books} array to the given capacity, and sets {@code currentBookIndex} to {@code -1}.
+     * Creates a library with room for the given number of books and adds the given books.
+     *
+     * @param capacity the number of books the library has room for at first.
+     * @param titles the titles of the books to add, in order.
+     * @return the library, with its books added.
+     */
+    private static Library createLibrary(int capacity, String[] titles) {
+        Library library = new Library("Test Library", capacity);
+        for (String title : titles) {
+            library.addBook(createBook(title));
+        }
+        return library;
+    }
+
+    /**
+     * Checks that the constructor stores the name, creates an empty array of the given
+     * length and selects no book.
      */
     @Test
     public void testConstructor() {
-        Library lib = new Library("City Library", 3);
+        Library library = new Library("City Library", 3);
 
-        assertEquals("Library name must match", "City Library", lib.name);
-        assertNotNull("Books array must not be null", lib.books);
-        assertEquals("Books array capacity must match", 3, lib.books.length);
-        assertEquals("currentBookIndex must default to -1", -1, lib.currentBookIndex);
+        assertEquals("The name should be City Library", "City Library", library.name);
+        assertEquals("The array should have room for 3 books", 3, library.books.length);
+        for (Book book : library.books) {
+            assertNull("A new library should have no books", book);
+        }
+        assertEquals("No book should be selected", -1, library.currentBookIndex);
+        assertNull("There should be no current book", library.getCurrentBook());
     }
 
     /**
-     * Verifies that {@link Library#addBook(Book)} places books in the first available
-     * slot sequentially.
-     * <p>
-     * <b>Scenario:</b> Add two books to a library with capacity {@code 3}.
-     * Both books must be stored at indices {@code 0} and {@code 1} respectively.
-     * </p>
+     * Checks that {@link Library#addBook} fills the array in order, from the first position,
+     * without changing its length while there is room.
      */
     @Test
-    public void testAddBookStoresBook() {
-        Library lib = new Library("Test Library", 3);
-        Book book1 = makeBook("Book One", "ISBN-1");
-        Book book2 = makeBook("Book Two", "ISBN-2");
+    public void testAddBook() {
+        String[] titles = {"One", "Two"};
+        Library library = createLibrary(3, titles);
 
-        lib.addBook(book1);
-        lib.addBook(book2);
-
-        assertNotNull("books[0] must not be null after first addBook()", lib.books[0]);
-        assertNotNull("books[1] must not be null after second addBook()", lib.books[1]);
-        assertEquals("books[0] title must be 'Book One'", "Book One", lib.books[0].title);
-        assertEquals("books[1] title must be 'Book Two'", "Book Two", lib.books[1].title);
+        assertEquals("The array should still have room for 3", 3, library.books.length);
+        assertEquals("The first book should be One", "One", library.books[0].title);
+        assertEquals("The second book should be Two", "Two", library.books[1].title);
+        assertNull("The third position should be empty", library.books[2]);
     }
 
     /**
-     * Verifies that the {@code books} array doubles in size when it is full and a new
-     * book is added.
-     * <p>
-     * <b>Scenario:</b> Create a library with capacity {@code 2}. Add {@code 3} books –
-     * the third insertion must trigger the doubling, making the array length ≥ {@code 4},
-     * and the new book must be stored successfully.
-     * </p>
+     * Checks that {@link Library#addBook} with a full array doubles its length and keeps the
+     * books already added in their positions.
      */
     @Test
-    public void testAddBookDoublesArray() {
-        Library lib = new Library("Small Library", 2);
+    public void testAddBookDoubles() {
+        String[] titles = {"A", "B", "C"};
+        Library library = createLibrary(2, titles);
 
-        lib.addBook(makeBook("Book A", "ISBN-A"));
-        lib.addBook(makeBook("Book B", "ISBN-B"));
+        assertEquals("The array should double to 4", 4, library.books.length);
+        assertEquals("The first book should be A", "A", library.books[0].title);
+        assertEquals("The second book should be B", "B", library.books[1].title);
+        assertEquals("The third book should be C", "C", library.books[2].title);
+        assertNull("The fourth position should be empty", library.books[3]);
 
-        int sizeBeforeDoubling = lib.books.length;
-        assertEquals("Array should be full (length 2) before third insertion", 2, sizeBeforeDoubling);
-
-        lib.addBook(makeBook("Book C", "ISBN-C")); // triggers doubling
-
-        assertTrue("Array length must at least double after overflow", lib.books.length >= 4);
-        assertNotNull("Third book must be stored after doubling", lib.books[2]);
-        assertEquals("Third book title must be 'Book C'", "Book C", lib.books[2].title);
+        library.addBook(createBook("D"));
+        library.addBook(createBook("E"));
+        assertEquals("The array should double again to 8", 8, library.books.length);
+        assertEquals("The fifth book should be E", "E", library.books[4].title);
     }
 
     /**
-     * Verifies that {@link Library#getCurrentBook()} returns the book at the current
-     * index after the index has been set by navigation.
-     * <p>
-     * <b>Scenario:</b> Add two books, call {@code nextBook()} to move to index {@code 0},
-     * then verify {@code getCurrentBook()} returns the first book.
-     * </p>
-     */
-    @Test
-    public void testGetCurrentBook() {
-        Library lib = new Library("Nav Library", 3);
-        lib.addBook(makeBook("First Book", "ISBN-F"));
-        lib.addBook(makeBook("Second Book", "ISBN-S"));
-
-        lib.nextBook(); // moves currentBookIndex to 0
-
-        Book current = lib.getCurrentBook();
-        assertNotNull("getCurrentBook() must not return null when a book is selected", current);
-        assertEquals("Current book must be 'First Book'", "First Book", current.title);
-    }
-
-    /**
-     * Verifies that {@link Library#nextBook()} advances the index and returns the
-     * correct book on each call.
-     * <p>
-     * <b>Scenario:</b> Start at index {@code -1}; two consecutive calls must return
-     * the first and second book.
-     * </p>
+     * Checks that {@link Library#nextBook} selects and returns the books in order, and
+     * returns {@code null} past the last one without changing the selection.
      */
     @Test
     public void testNextBook() {
-        Library lib = new Library("Nav Library", 3);
-        lib.addBook(makeBook("Alpha", "ISBN-1"));
-        lib.addBook(makeBook("Beta", "ISBN-2"));
+        String[] titles = {"Alpha", "Beta"};
+        Library library = createLibrary(3, titles);
 
-        Book first = lib.nextBook();  // index -1 -> 0
-        Book second = lib.nextBook(); // index  0 -> 1
-
-        assertNotNull("First nextBook() call must not return null", first);
-        assertNotNull("Second nextBook() call must not return null", second);
-        assertEquals("First nextBook() must return 'Alpha'", "Alpha", first.title);
-        assertEquals("Second nextBook() must return 'Beta'", "Beta", second.title);
+        assertEquals("The first next book should be Alpha", "Alpha", library.nextBook().title);
+        assertEquals("The current book should be Alpha", "Alpha", library.getCurrentBook().title);
+        assertEquals("The second next book should be Beta", "Beta", library.nextBook().title);
+        assertNull("There should be no book after Beta", library.nextBook());
+        assertEquals("Beta should stay selected", "Beta", library.getCurrentBook().title);
+        assertEquals("currentBookIndex should stay at 1", 1, library.currentBookIndex);
     }
 
     /**
-     * Verifies that {@link Library#nextBook()} returns {@code null} when called
-     * beyond the last book.
-     * <p>
-     * <b>Scenario:</b> Library has {@code 1} book. After moving to it with
-     * {@code nextBook()}, a subsequent call must return {@code null}.
-     * </p>
-     */
-    @Test
-    public void testNextBookPastEnd() {
-        Library lib = new Library("One-Book Library", 2);
-        lib.addBook(makeBook("Only Book", "ISBN-O"));
-
-        lib.nextBook(); // index 0 – the only book
-        Book result = lib.nextBook(); // beyond last
-
-        assertNull("nextBook() must return null when no more books exist", result);
-    }
-
-    /**
-     * Verifies that {@link Library#previousBook()} moves the index backward and
-     * returns the correct book.
-     * <p>
-     * <b>Scenario:</b> Navigate to the second book, then call {@code previousBook()}
-     * to return to the first.
-     * </p>
+     * Checks that {@link Library#previousBook} selects and returns the books backward, and
+     * returns {@code null} before the first one without changing the selection.
      */
     @Test
     public void testPreviousBook() {
-        Library lib = new Library("Nav Library", 3);
-        lib.addBook(makeBook("Alpha", "ISBN-1"));
-        lib.addBook(makeBook("Beta", "ISBN-2"));
+        String[] titles = {"Alpha", "Beta", "Gamma"};
+        Library library = createLibrary(3, titles);
+        library.nextBook();
+        library.nextBook();
+        library.nextBook();
 
-        lib.nextBook(); // 0
-        lib.nextBook(); // 1
-
-        Book prev = lib.previousBook(); // back to 0
-
-        assertNotNull("previousBook() must not return null when a previous book exists", prev);
-        assertEquals("previousBook() must return 'Alpha'", "Alpha", prev.title);
+        assertEquals("The first previous book should be Beta", "Beta", library.previousBook().title);
+        assertEquals("The second previous book should be Alpha", "Alpha", library.previousBook().title);
+        assertNull("There should be no book before Alpha", library.previousBook());
+        assertEquals("Alpha should stay selected", "Alpha", library.getCurrentBook().title);
     }
 
     /**
-     * Verifies that {@link Library#previousBook()} returns {@code null} when already
-     * positioned at the first book.
-     * <p>
-     * <b>Scenario:</b> Navigate to the first book with {@code nextBook()}, then call
-     * {@code previousBook()} – no previous book exists.
-     * </p>
+     * Checks that both directions return {@code null} in a library without books, and that
+     * {@link Library#previousBook} does too when no book is selected yet.
      */
     @Test
-    public void testPreviousBookBeforeStart() {
-        Library lib = new Library("Nav Library", 2);
-        lib.addBook(makeBook("Alpha", "ISBN-1"));
+    public void testNavigationEdges() {
+        Library empty = new Library("Empty", 2);
+        assertNull("An empty library should have no next book", empty.nextBook());
+        assertNull("An empty library should have no previous book", empty.previousBook());
+        assertEquals("No book should be selected", -1, empty.currentBookIndex);
 
-        lib.nextBook(); // index 0 – first (and only) book
-        Book result = lib.previousBook(); // nothing before index 0
-
-        assertNull("previousBook() must return null when already at the first book", result);
+        String[] titles = {"Alpha"};
+        Library library = createLibrary(2, titles);
+        assertNull("With no book selected, there should be no previous book", library.previousBook());
     }
 
     /**
-     * Verifies that {@link Library#toString()} includes the library {@code name}.
-     * <p>
-     * <b>Requirement:</b> The returned {@link String} must contain the library name.
-     * Individual book details must <em>not</em> appear.
-     * </p>
+     * Checks that {@link Library#describe} includes the name of the library but not the data
+     * of its books.
      */
     @Test
-    public void testToString() {
-        Library lib = new Library("Grand Library", 5);
-        lib.addBook(makeBook("Book One", "ISBN-1"));
-        lib.addBook(makeBook("Book Two", "ISBN-2"));
+    public void testDescribe() {
+        String[] titles = {"Book One", "Book Two"};
+        Library library = createLibrary(5, titles);
 
-        String str = lib.toString();
+        String text = library.describe();
 
-        assertNotNull("toString() must not return null", str);
-        assertTrue("toString() must contain the library name", str.contains("Grand Library"));
+        assertTrue("It should include the name", text.contains("Test Library"));
+        assertTrue("It should include the number of books", text.contains("2"));
+        assertFalse("It should not include the titles of the books", text.contains("Book One"));
     }
 }

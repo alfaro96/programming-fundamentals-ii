@@ -74,6 +74,75 @@
   /* Stage */
   --stage-note-size: 0.58em; /* the takeaway at the bottom */
 
+  /* Memory diagram: the stack's variables and the heap's objects, joined by arrows */
+  --memory-size: 0.5em; /* every size below is an em of this */
+  --memory-row: 3em; /* a variable's or attribute's row: the arrows are drawn from row to row */
+  --memory-rows: 4; /* rows for variables; an object with three attributes needs four */
+  --memory-row-text: 4.4em; /* a row that holds a small object, such as a string, with its padding */
+  --memory-pad: 0.8em; /* frame edge to its content */
+  --memory-gap: 0.5em; /* between rows */
+  --memory-arrow: 4em; /* room between the frames for the arrows */
+  --memory-head: 0.5em; /* arrowhead width and height */
+  --memory-link: 1.6em; /* the dashed arrow from a variable's name to what it holds */
+  --memory-none: 1.6em; /* a reference to nothing, short of the heap */
+  --memory-tint: 10%; /* frame background, share of its color */
+  --memory-cell-padding: 0.4em 0.8em;
+  --color-memory-stack: var(--color-heading);
+  --color-memory-heap: var(--color-state); /* objects hold the data */
+  --color-memory-null: var(--color-accent-orange); /* null: no object yet, not an error by itself */
+
+  /* Phone screens: a mobile app, one screen per object */
+  --phones-gap: 1.6em; /* between phones, em of the slide */
+  --phone-text-size: 0.4em; /* every size below is an em of this */
+  --phone-height: 37em; /* from under the subtitle down to the bottom gutter */
+  --phone-ratio: 71.6 / 147.6; /* an iPhone's body, width by height in mm */
+  --phone-bezel: 0.6em; /* the dark frame around the screen */
+  --phone-radius: 2.2em; /* outer corner; the screen's is this minus the bezel */
+  --phone-padding: 1.1em; /* screen edge to its content */
+  --phone-gap: 1.4em; /* between the blocks of a screen */
+  --phone-status-size: 0.8em; /* the status bar: clock, camera and signal, wifi and battery */
+  --phone-status-gap: 0.35em; /* between the status icons and either side of the camera, em of the status bar */
+  --phone-island-width: 5em; /* the camera pill in the middle, em of the status bar */
+  --phone-island-height: 1.8em;
+  --phone-lens-size: 0.9em; /* the camera in the pill, em of the status bar */
+  --color-phone-lens: color-mix(in srgb, var(--color-heading) 75%, var(--color-bg));
+  --phone-home-width: 40%; /* the bar at the bottom of the screen, share of its width */
+  --phone-home-height: 0.3em;
+  --phone-inline-gap: 0.5em; /* an icon or avatar to the text beside it */
+  --color-phone-changed: var(--color-accent-yellow); /* a value that has just changed, while its step lasts */
+  --phone-tap-ring: 0.2em; /* the ring round a tapped button, and its gap */
+  --phone-tap-scale: 0.94; /* a tapped button, pressed in */
+  --phone-greeting-size: 0.95em; /* "Hello," over the holder's name */
+  --phone-name-size: 1.4em;
+  --phone-avatar-size: 2.4em; /* the initials disc in the header */
+  --phone-initials-size: 0.85em; /* em of the screen text, inside the disc */
+  --phone-avatar-tint: 14%; /* initials disc background, share of the brand color */
+  --phone-panel-padding: 0.9em;
+  --phone-panel-radius: 1em;
+  --phone-panel-gap: 0.3em; /* between the lines of the account panel */
+  --phone-label-size: 0.85em; /* account type and "Available balance" */
+  --phone-iban-size: 0.7em; /* a notch smaller, so all 24 characters fit on one line */
+  --phone-balance-size: 2.3em;
+  --phone-balance-gap: 0.1em; /* above and below the balance, em of the balance */
+  --phone-actions-gap: 0.6em; /* between the two buttons */
+  --phone-button-padding: 0.8em 0.35em; /* em of the button text; narrow sides keep both in an iPhone width */
+  --phone-icon-size: 1.2em; /* em of the button text */
+  --color-phone-bezel: var(--color-bg-panel);
+  --color-phone-brand: var(--color-heading); /* initials, account panel and buttons */
+  --phone-beside-gap: 2.5em; /* a phone to the cards beside it, em of the slide */
+  --phone-beside-width: 16em; /* the column of cards beside a phone, em of the slide */
+  --phone-slot-padding: 0.25em 0.6em; /* an empty field, em of its label */
+  --phone-slot-radius: 0.4em;
+  --phone-slot-tint: 18%; /* a marked field's background, share of its color */
+  --phone-family-text-size: 0.27em; /* smaller phones, so a class and its objects fit on one slide */
+  --phone-family-gap: 1.2em; /* the class to the arrow to its objects, em of the slide */
+  --phone-family-phones-gap: 0.8em; /* between the objects, em of the slide */
+  --phone-arrow-size: 1.6em; /* em of the slide */
+  --phone-caption-size: 0.5em; /* the label over each group, em of the slide */
+  --phone-caption-gap: 0.6em; /* label to its phones, em of the slide */
+  --color-state: var(--color-accent-orange); /* what an object holds: its data */
+  --color-behavior: var(--color-accent-teal); /* what an object does: its operations */
+
   /* Toolbox: a frame holding columns of tool cards, with a band at the bottom */
   --toolbox-padding: 0.6em;
   --toolbox-gap: 0.45em; /* between columns, cards and the band */
@@ -96,6 +165,7 @@
   --rules-gap: 0.6em; /* between cards */
   --code-dim: 0.4; /* reveal's own opacity for the lines out of focus */
   --code-cards-gap: 1.2em; /* code blocks to the cards under them */
+  --code-cards-gap-compact: 0.6em; /* the same with compact code, which leaves less room */
   --rules-columns: 3; /* when the cards form a grid */
   --rule-padding: 0.4em 0.6em;
   --rule-text-size: 0.48em;
@@ -120,6 +190,7 @@
   /* Data table */
   --table-size: 0.52em;
   --table-cell-padding: 0.45em 0.7em; /* em of the table text */
+  --table-cell-padding-compact: 0.25em 0.7em; /* the same next to compact code, which leaves less room */
 
   /* Widening chain: types joined by arrows both ways */
   --widening-size: 0.75em;
@@ -163,6 +234,9 @@
 
   /* Card, code and output, one example per row */
   --runs-gap: 0.6em; /* between rows and between columns */
+  --code-compact-size: 0.47em; /* code with long lines or many: fits with no scrolling */
+  --code-dense-size: 0.4em; /* a whole class next to more code: smaller still, to keep its blank lines */
+  --code-run-fade: 0.2s; /* the output fading in, as reveal's own fragments do */
 
   /* Slide number */
   --slide-number-size: 0.5em;
@@ -430,6 +504,11 @@ html:not(.print-handout) .reveal .code-pair .hljs.fragment:not(.has-highlights) 
   opacity: var(--code-dim);
 }
 
+/* Code written line by line: the lines after the current one are not there yet */
+.reveal .code-build .hljs.has-highlights tr.highlight-line ~ tr:not(.highlight-line) {
+  visibility: hidden;
+}
+
 /* C and Java side by side: all the code readable, only the differences highlighted */
 .reveal .code-diff .hljs.has-highlights tr:not(.highlight-line) {
   opacity: 1;
@@ -514,6 +593,31 @@ html.print-handout .reveal pre:has(code.fragment) .hljs.has-highlights tr.highli
   row-gap: var(--terminals-gap);
 }
 
+/* A program with what it prints under it */
+.reveal .code-run {
+  display: flex;
+  flex-direction: column;
+  gap: var(--runs-gap);
+}
+
+/* As in .runs: reveal's min-height: 100% would make the code spill over its block's bottom border.
+   No 12-line cap either: the output under it already leaves no room for more */
+.reveal .code-run pre code {
+  min-height: 0;
+  max-height: none;
+}
+
+/* The output, and a takeaway marked the same way, show with the code's last step:
+   as fragments of their own, reveal would number them first */
+.reveal .code-run-output {
+  opacity: 0;
+  transition: opacity var(--code-run-fade);
+}
+
+.reveal .stage:has(.code-run pre > code.fragment:last-child.visible) .code-run-output {
+  opacity: 1;
+}
+
 /* Card, code and output per row; the code column takes its widest line */
 .reveal .runs {
   display: grid;
@@ -546,6 +650,12 @@ html.print-handout .reveal pre:has(code.fragment) .hljs.has-highlights tr.highli
   font-size: 0.55em;
 }
 
+/* An output too long for its cell, like an exception, wraps instead of being cut */
+.reveal .runs pre code.console {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
 .reveal .column h4 {
   color: var(--color-muted);
   font-family: var(--font-body);
@@ -556,6 +666,548 @@ html.print-handout .reveal pre:has(code.fragment) .hljs.has-highlights tr.highli
 
 .reveal .column pre code {
   font-size: 0.55em;
+}
+
+/* Code too long or too wide for the usual size, side by side or not, so no 12-line cap either */
+.reveal .code-compact pre code {
+  max-height: none;
+  font-size: var(--code-compact-size);
+}
+
+.reveal .code-dense pre code {
+  font-size: var(--code-dense-size);
+}
+
+/* Phone screens: a mobile app, one screen per object; the slide is in em, the phone in its own */
+
+.reveal .phones {
+  display: flex;
+  justify-content: center;
+  gap: var(--phones-gap);
+}
+
+.reveal .phone {
+  display: flex;
+  box-sizing: border-box; /* the ratio is the whole body, bezel included */
+  height: var(--phone-height);
+  aspect-ratio: var(--phone-ratio);
+  padding: var(--phone-bezel);
+  background: var(--color-phone-bezel);
+  border-radius: var(--phone-radius);
+  box-shadow: var(--card-shadow);
+  font-size: var(--phone-text-size);
+  line-height: 1.3;
+}
+
+.reveal .phone-screen {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--phone-gap);
+  padding: var(--phone-padding);
+  background: var(--color-bg);
+  border-radius: calc(var(--phone-radius) - var(--phone-bezel));
+}
+
+.reveal .phone p {
+  margin: 0;
+}
+
+.reveal .phone svg {
+  flex: none;
+  fill: currentColor;
+}
+
+/* Phone chrome, as an iPhone: clock, camera pill and status icons on top, home bar at the bottom */
+.reveal .phone-status {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); /* equal sides keep the camera centered */
+  align-items: center;
+  column-gap: var(--phone-status-gap);
+  font-size: var(--phone-status-size);
+  font-weight: 600;
+}
+
+.reveal .phone-island {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  width: var(--phone-island-width);
+  height: var(--phone-island-height);
+  padding-inline: calc((var(--phone-island-height) - var(--phone-lens-size)) / 2);
+  border-radius: 50vmax;
+  background: var(--color-phone-bezel);
+}
+
+/* The camera lens, at the right end of the pill as on an iPhone */
+.reveal .phone-island::after {
+  content: "";
+  width: var(--phone-lens-size);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--color-phone-lens);
+}
+
+.reveal .phone-icons {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--phone-status-gap);
+}
+
+.reveal .phone-icons svg {
+  width: auto; /* from the viewBox */
+  height: 1em;
+}
+
+.reveal .phone-home {
+  align-self: center;
+  width: var(--phone-home-width);
+  height: var(--phone-home-height);
+  border-radius: 50vmax;
+  background: var(--color-phone-bezel);
+}
+
+/* The app's top bar: the holder's initials on the right */
+.reveal .phone-header {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.reveal .phone-avatar {
+  display: grid;
+  place-items: center;
+  width: var(--phone-avatar-size);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--color-phone-brand) var(--phone-avatar-tint), var(--color-bg));
+  color: var(--color-phone-brand);
+  font-weight: 600;
+}
+
+.reveal .phone-avatar span {
+  font-size: var(--phone-initials-size);
+}
+
+.reveal .phone-greeting {
+  color: var(--color-muted);
+  font-size: var(--phone-greeting-size);
+}
+
+.reveal .phone-name {
+  font-size: var(--phone-name-size);
+  font-weight: 700;
+}
+
+.reveal .phone-account {
+  display: grid;
+  gap: var(--phone-panel-gap);
+  padding: var(--phone-panel-padding);
+  background: var(--color-phone-brand);
+  border-radius: var(--phone-panel-radius);
+  color: var(--color-bg);
+}
+
+.reveal .phone-label {
+  font-size: var(--phone-label-size);
+  opacity: 0.85;
+}
+
+.reveal .phone-iban {
+  display: flex;
+  align-items: center;
+  gap: var(--phone-inline-gap);
+  font-size: var(--phone-iban-size);
+  white-space: nowrap;
+}
+
+/* A padlock after a value that can never change, in the color that marks what a step adds */
+.reveal .phone-lock {
+  width: auto; /* from the viewBox */
+  height: 1em;
+  color: var(--color-phone-changed); /* phone icons fill with currentColor */
+}
+
+.reveal .phone-balance {
+  margin-block: var(--phone-balance-gap);
+  font-size: var(--phone-balance-size);
+  font-weight: 700;
+}
+
+/* The operations every account offers, at the bottom within thumb's reach, as apps do */
+.reveal .phone-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--phone-actions-gap);
+  margin-top: auto;
+}
+
+.reveal .phone-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--phone-inline-gap);
+  padding: var(--phone-button-padding);
+  border: var(--rule-hairline) solid var(--color-phone-brand);
+  border-radius: 50vmax; /* a pill, whatever the height */
+  color: var(--color-phone-brand);
+  font-weight: 600;
+}
+
+.reveal .phone-button-main {
+  background: var(--color-phone-brand);
+  color: var(--color-bg);
+}
+
+.reveal .phone-button svg {
+  width: var(--phone-icon-size);
+  height: var(--phone-icon-size);
+}
+
+/* A value replaced in place by a later step: the old one fades out as the new one fades in */
+.reveal .phone-swap {
+  display: inline-grid;
+}
+
+.reveal .phone-swap > * {
+  grid-area: 1 / 1;
+}
+
+/* A button tapped on a step: pressed in, with a ring, while its step is the current one */
+.reveal .phone-tap.current-fragment {
+  outline: var(--phone-tap-ring) solid var(--color-phone-changed);
+  outline-offset: var(--phone-tap-ring);
+  transform: scale(var(--phone-tap-scale));
+}
+
+/* A value singled out from a step on, in the same color as a changed one */
+.reveal .phone-mark.visible {
+  color: var(--color-phone-changed);
+}
+
+/* A field that appears on a step takes no room until then, so its card grows when it shows */
+.reveal .phone-arrived.fragment:not(.visible) {
+  display: none;
+}
+
+/* A field that appears on a step stands out like a changed value, while that step is the current one */
+.reveal .phone-arrived.current-fragment {
+  color: var(--color-phone-changed);
+  opacity: 1;
+}
+
+/* A part of the screen singled out from a step on: a ring around it */
+.reveal .phone-ring.visible {
+  outline: var(--phone-tap-ring) solid var(--color-phone-changed);
+  outline-offset: var(--rule-hairline); /* close, so it does not reach the lines around */
+}
+
+/* The new value stands out while its step is the current one */
+.reveal .phone-swap .phone-changed.current-fragment {
+  color: var(--color-phone-changed);
+}
+
+/* A phone with a column of cards beside it */
+.reveal .phone-beside {
+  display: grid;
+  grid-template-columns: auto var(--phone-beside-width);
+  justify-content: center;
+  align-items: center;
+  gap: var(--phone-beside-gap);
+}
+
+.reveal .phone-beside-cards {
+  display: grid;
+  gap: var(--rules-gap);
+}
+
+.reveal .phone-beside-cards blockquote {
+  margin: 0;
+  font-size: var(--stage-note-size);
+}
+
+/* A class and the objects made from it: groups of phones joined by an arrow */
+.reveal .phone-family {
+  --phone-text-size: var(--phone-family-text-size);
+  --phones-gap: var(--phone-family-phones-gap);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: var(--phone-family-gap);
+}
+
+.reveal .phone-group {
+  display: grid;
+  gap: var(--phone-caption-gap);
+}
+
+.reveal .phone-caption {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: var(--phone-caption-size);
+  text-align: center;
+}
+
+.reveal .phone-caption strong:first-child {
+  display: block;
+  color: var(--color-heading);
+  font-size: 1.4em;
+}
+
+/* Centered on the phones, below the captions */
+.reveal .phone-arrow {
+  align-self: center;
+  width: var(--phone-arrow-size);
+  margin-top: var(--phone-caption-gap);
+  fill: var(--color-muted);
+}
+
+/* An empty field: the template without its value, only the name of what goes there */
+.reveal .phone-slot {
+  padding: var(--phone-slot-padding);
+  border: var(--rule-hairline) dashed var(--color-card-edge);
+  border-radius: var(--phone-slot-radius);
+  color: var(--color-muted);
+  font-weight: 600;
+}
+
+.reveal .phone-account .phone-slot {
+  border-color: color-mix(in srgb, var(--color-bg) 50%, transparent);
+  color: color-mix(in srgb, var(--color-bg) 80%, transparent);
+}
+
+/* Once a card shows, the parts of the phone it names take its color; .phone-marked has both from the start */
+.reveal .phone-beside:has(.rule-state.visible) .phone-slot,
+.reveal .phone-marked .phone-slot {
+  border-color: var(--color-state);
+  background: color-mix(in srgb, var(--color-state) var(--phone-slot-tint), transparent);
+  color: var(--color-state);
+}
+
+.reveal .phone-beside:has(.rule-state.visible) .phone-account .phone-slot,
+.reveal .phone-marked .phone-account .phone-slot {
+  color: var(--color-bg);
+}
+
+.reveal .phone-beside:has(.rule-behavior.visible) .phone-button,
+.reveal .phone-marked .phone-button {
+  border-color: var(--color-behavior);
+  color: var(--color-behavior);
+}
+
+.reveal .phone-beside:has(.rule-behavior.visible) .phone-button-main,
+.reveal .phone-marked .phone-button-main {
+  background: var(--color-behavior);
+  color: var(--color-bg);
+}
+
+/* Memory diagram: two frames on one grid of fixed rows, so arrows can be drawn from row to row.
+   Columns: pad, the stack's variables, pad, arrow, pad, the heap's object, pad.
+   Rows: pad, titles, four rows (the object's class and its three attributes), the object's own pad, pad */
+
+.reveal .memory-layout {
+  display: grid;
+  grid-template-rows: auto 1fr; /* the diagram is centered between the code and the note */
+  justify-items: center;
+}
+
+.reveal .memory-layout > .memory {
+  align-self: center;
+}
+
+.reveal .memory-layout pre code {
+  min-height: 0; /* as in .runs: otherwise the code spills over its block's bottom border */
+}
+
+.reveal .memory {
+  display: grid;
+  grid-template-columns: var(--memory-pad) auto var(--memory-pad) var(--memory-arrow) var(--memory-pad) auto var(--memory-pad);
+  grid-template-rows: var(--memory-pad) auto repeat(var(--memory-rows), var(--memory-row)) var(--memory-pad) var(--memory-pad);
+  row-gap: var(--memory-gap);
+  font-size: var(--memory-size);
+}
+
+.reveal .memory-frame {
+  grid-row: 1 / -1;
+  border: var(--rule-hairline) solid var(--frame-tone);
+  background: color-mix(in srgb, var(--frame-tone) var(--memory-tint), var(--color-bg));
+}
+
+.reveal .memory-stack {
+  --frame-tone: var(--color-memory-stack);
+  grid-column: 1 / 4;
+}
+
+.reveal .memory-heap {
+  --frame-tone: var(--color-memory-heap);
+  grid-column: 5 / 8;
+}
+
+.reveal .memory-title {
+  grid-row: 2;
+  margin: 0;
+  color: var(--frame-tone);
+  font-weight: 700;
+  text-align: center;
+}
+
+.reveal .memory-title.memory-stack {
+  grid-column: 2;
+  background: none;
+  border: none;
+}
+
+.reveal .memory-title.memory-heap {
+  grid-column: 6;
+  background: none;
+  border: none;
+}
+
+/* Up to three variables, one per row */
+.reveal .memory-row-1 {
+  grid-row: 3;
+}
+
+.reveal .memory-row-2 {
+  grid-row: 4;
+}
+
+.reveal .memory-row-3 {
+  grid-row: 5;
+}
+
+/* A variable: its name, a dashed arrow, and what it holds */
+.reveal .memory-var {
+  grid-column: 2;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+}
+
+.reveal .memory-link {
+  display: flex;
+  align-items: center;
+  width: var(--memory-link);
+}
+
+.reveal .memory-link::before {
+  content: "";
+  flex: 1;
+  border-top: var(--rule-hairline) dashed var(--color-text);
+}
+
+.reveal .memory-link::after {
+  content: "";
+  border-block: calc(var(--memory-head) / 3) solid transparent;
+  border-left: calc(var(--memory-head) / 2) solid var(--color-text);
+}
+
+.reveal .memory-cell {
+  padding: var(--memory-cell-padding);
+  border: var(--rule-hairline) solid var(--color-code-edge);
+  background: var(--color-bg);
+  font-family: var(--font-code);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.reveal .memory-null {
+  color: var(--color-memory-null);
+}
+
+.reveal .memory-value {
+  color: var(--color-code-keyword);
+}
+
+/* The object takes the heap's four rows: its class, then one row per attribute */
+.reveal .memory-object {
+  grid-column: 6;
+  grid-row: 3 / 8;
+  display: grid;
+  grid-template-columns: auto auto auto;
+  grid-template-rows: repeat(4, var(--memory-row)) var(--memory-pad); /* air under the last attribute */
+  row-gap: var(--memory-gap);
+  align-items: center;
+  padding-inline: var(--memory-pad);
+  border: var(--rule-hairline) solid var(--color-memory-heap);
+  background: color-mix(in srgb, var(--color-memory-heap) var(--memory-tint), var(--color-bg));
+}
+
+.reveal .memory-object > p {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-family: var(--font-code);
+  font-weight: 700;
+  text-align: center;
+}
+
+/* A reference to nothing: from its value, a dashed stub that ends in a bar, short of the heap */
+.reveal .memory-none {
+  grid-column: 3 / 5;
+  justify-self: start;
+  align-self: center;
+  display: flex;
+  align-items: center;
+  width: var(--memory-none);
+}
+
+.reveal .memory-none::before {
+  content: "";
+  flex: 1;
+  border-top: var(--rule-hairline) dashed var(--color-memory-null);
+}
+
+.reveal .memory-none::after {
+  content: "";
+  height: var(--memory-head);
+  border-left: var(--rule-accent) solid var(--color-memory-null);
+}
+
+/* Variables that point to small objects, one per row, such as strings */
+.reveal .memory-short {
+  --memory-rows: 2;
+  --memory-row: var(--memory-row-text); /* taller rows, for the padding round each small object */
+}
+
+.reveal .memory-rows-3 {
+  --memory-rows: 3;
+}
+
+/* A small object shared by the variables of rows 1 and 2: it spans both, so both arrows reach it */
+.reveal .memory-text.memory-rows-1-2 {
+  grid-row: 3 / 5;
+  align-self: stretch;
+  display: grid;
+  align-content: center;
+}
+
+/* A small object that sits on its variable's row: a box with its value */
+.reveal .memory-text {
+  grid-column: 6;
+  align-self: center;
+  padding: var(--memory-pad);
+  border: var(--rule-hairline) solid var(--color-memory-heap);
+  background: color-mix(in srgb, var(--color-memory-heap) var(--memory-tint), var(--color-bg));
+}
+
+/* A reference: a straight arrow from its value to the object */
+.reveal .memory-arrow {
+  grid-column: 3 / 6;
+  align-self: center;
+  display: flex;
+  align-items: center;
+}
+
+.reveal .memory-arrow::before {
+  content: "";
+  flex: 1;
+  border-top: var(--rule-accent) solid var(--color-text);
+}
+
+.reveal .memory-arrow::after {
+  content: "";
+  border-block: calc(var(--memory-head) / 2) solid transparent;
+  border-left: var(--memory-head) solid var(--color-text);
 }
 
 /* Lecturer business card */
@@ -996,6 +1648,15 @@ html.print-handout .reveal pre:has(code.fragment) .hljs.has-highlights tr.highli
   row-gap: var(--code-cards-gap);
 }
 
+.reveal .code-over-cards.code-compact {
+  row-gap: var(--code-cards-gap-compact);
+}
+
+/* As in .runs: reveal's min-height: 100% would make a block straight in the grid spill over its border */
+.reveal .code-over-cards > pre code {
+  min-height: 0;
+}
+
 /* A heading over the cards: the grid gap alone separates it */
 .reveal .rules > h4 {
   margin-bottom: 0;
@@ -1016,6 +1677,24 @@ html.print-handout .reveal pre:has(code.fragment) .hljs.has-highlights tr.highli
 
 .reveal .rule-error {
   --rule-tone: var(--color-accent-red);
+}
+
+/* A word in running text about what an object holds or does, in the same colors */
+.reveal .text-state {
+  color: var(--color-state);
+}
+
+.reveal .text-behavior {
+  color: var(--color-behavior);
+}
+
+/* What an object holds and what it does, in the colors the phone screens mark them with */
+.reveal .rule-state {
+  --rule-tone: var(--color-state);
+}
+
+.reveal .rule-behavior {
+  --rule-tone: var(--color-behavior);
 }
 
 .reveal .rule p {
@@ -1135,6 +1814,11 @@ html.print-handout .reveal pre:has(code.fragment) .hljs.has-highlights tr.highli
   border-bottom: var(--rule-hairline) solid var(--color-code-edge);
 }
 
+.reveal .code-compact .data-table th,
+.reveal .code-compact .data-table td {
+  padding: var(--table-cell-padding-compact);
+}
+
 .reveal .data-table thead th {
   color: var(--color-heading);
   border-bottom-color: var(--color-heading);
@@ -1194,9 +1878,8 @@ html.print-handout .reveal pre:has(code.fragment) .hljs.has-highlights tr.highli
   color: var(--color-accent-2);
 }
 
-/* The question columns are centered over their marks */
-.reveal .verdict-table thead th:nth-child(2),
-.reveal .verdict-table thead th:nth-child(3) {
+/* A question column is centered over its marks */
+.reveal .verdict-table thead th.mark-head {
   text-align: center;
 }
 

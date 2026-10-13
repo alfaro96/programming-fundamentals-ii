@@ -1,231 +1,273 @@
 /**
- * Represents a mathematical polynomial composed of {@link Monomial} objects.
- * This implementation maps array indices directly to monomial exponents.
+ * Represents a polynomial <i>P</i>(<i>X</i>) = <i>c</i><sub>0</sub> + <i>c</i><sub>1</sub><i>X</i> +
+ * <i>c</i><sub>2</sub><i>X</i><sup>2</sup> + &hellip; + <i>c</i><sub><i>n</i></sub><i>X</i><sup><i>n</i></sup>
+ * as an array of {@link Monomial} objects.
+ * <p>
+ * Each monomial is stored at the position of its exponent, so the array only has room for
+ * exponents from 0 to {@link #maxSize} &minus; 1. A position without a monomial holds
+ * {@code null}, which stands for a coefficient of 0: no position ever holds a monomial whose
+ * coefficient is 0, so {@link #numMonomials} counts only the ones that matter.
+ * <p>
+ * The monomials are never changed once stored, only replaced, so the operations can share
+ * them and always return new polynomials.
  *
  * @author Juan Carlos Alfaro Jiménez
+ * @see Monomial
  */
-public class Polynomial {
+class Polynomial {
 
-   /** Array of monomials where the index corresponds to the exponent. */
-   public Monomial[] monomials;
+    /**
+     * The largest difference between two coefficients that are still considered equal.
+     */
+    static final double EPSILON = 1e-9;
 
-   /** The maximum capacity of the polynomial. */
-   public int maxSize;
+    /**
+     * The monomials of the polynomial, each one at the position of its exponent.
+     */
+    Monomial[] monomials;
 
-   /** The current number of monomials in the polynomial. */
-   public int numMonomials;
+    /**
+     * The length of {@link #monomials}: the highest exponent it has room for, plus one.
+     */
+    int maxSize;
 
-   /**
-    * Constructs an empty polynomial with a specified capacity.
-    *
-    * @param maxSize The maximum size for the monomial array.
-    */
-   public Polynomial(int maxSize) {
-      this.maxSize = maxSize;
-      this.monomials = new Monomial[maxSize];
-      this.numMonomials = 0;
-   }
+    /**
+     * The number of positions of {@link #monomials} that hold a monomial.
+     */
+    int numMonomials;
 
-   /**
-    * Constructs a polynomial from an array of coefficients.
-    *
-    * @param coefficients Array where the index is the exponent.
-    */
-   public Polynomial(double[] coefficients) {
-      this.maxSize = coefficients.length;
-      this.monomials = new Monomial[this.maxSize];
-      this.numMonomials = 0;
-      for (int i = 0; i < coefficients.length; i++) {
-         if (coefficients[i] != 0) {
-            this.monomials[i] = new Monomial(coefficients[i], i);
-            this.numMonomials++;
-         }
-      }
-   }
+    /**
+     * Creates a polynomial with no monomials, with room for exponents from 0 to
+     * {@code maxSize} &minus; 1.
+     *
+     * @param maxSize the length of the array of monomials.
+     */
+    Polynomial(int maxSize) {
+        this.maxSize = maxSize;
+        this.monomials = new Monomial[maxSize];
+        this.numMonomials = 0;
+    }
 
-   /**
-    * Constructs a polynomial from an array of {@link Monomial} objects.
-    *
-    * @param monomials Input array of {@link Monomial}.
-    */
-   public Polynomial(Monomial[] monomials) {
-      this.maxSize = monomials.length;
-      this.monomials = new Monomial[this.maxSize];
-      this.numMonomials = 0;
-      for (int i = 0; i < monomials.length; i++) {
-         if (monomials[i] != null) {
-            this.monomials[i] = new Monomial(monomials[i].coefficient, monomials[i].exponent);
-            this.numMonomials++;
-         }
-      }
-   }
+    /**
+     * Creates a polynomial from its coefficients: the one at position <i>i</i> is that of
+     * <i>X</i><sup><i>i</i></sup>. A coefficient of 0 gives no monomial.
+     *
+     * @param coefficients the coefficients, from that of <i>X</i><sup>0</sup> upward.
+     */
+    Polynomial(double[] coefficients) {
+        this(coefficients.length);
+        for (int i = 0; i < coefficients.length; i++) {
+            this.addMonomial(new Monomial(coefficients[i], i));
+        }
+    }
 
-   /**
-    * Returns the monomial associated with a given exponent.
-    *
-    * @param exponent The exponent index to retrieve.
-    * @return The {@link Monomial} at that position, or {@code null} if it does not exist.
-    */
-   public Monomial getMonomial(int exponent) {
-      if (exponent >= 0 && exponent < this.maxSize) {
-         return this.monomials[exponent];
-      }
-      return null;
-   }
-
-   /**
-    * Adds a monomial to the polynomial at the position matching its exponent.
-    * If a monomial already exists at that position, it is overwritten.
-    *
-    * @param m The {@link Monomial} to add.
-    */
-   public void addMonomial(Monomial m) {
-      if (m != null && m.exponent < this.maxSize) {
-         if (this.monomials[m.exponent] == null) {
-            this.numMonomials++;
-         }
-         this.monomials[m.exponent] = m;
-      }
-   }
-
-   /**
-    * Adds another polynomial to the current one.
-    * Returns a <b>new</b> polynomial representing the sum.
-    *
-    * @param other The {@link Polynomial} to add.
-    * @return A new {@link Polynomial} instance.
-    */
-   public Polynomial add(Polynomial other) {
-      int newSize = Math.max(this.maxSize, other.maxSize);
-      Polynomial result = new Polynomial(newSize);
-
-      for (int i = 0; i < newSize; i++) {
-         Monomial m1 = this.getMonomial(i);
-         Monomial m2 = other.getMonomial(i);
-
-         if (m1 != null && m2 != null) {
-            // Add coefficients if both exist
-            result.addMonomial(m1.addition(m2));
-         } else if (m1 != null) {
-            // Copy m1 if m2 is null
-            result.addMonomial(new Monomial(m1.coefficient, m1.exponent));
-         } else if (m2 != null) {
-            // Copy m2 if m1 is null
-            result.addMonomial(new Monomial(m2.coefficient, m2.exponent));
-         }
-      }
-      return result;
-   }
-
-   /**
-    * Multiplies the polynomial by a scalar value.
-    * Returns a <b>new</b> polynomial.
-    *
-    * @param scalar The numerical value to multiply by.
-    * @return A new {@link Polynomial} instance.
-    */
-   public Polynomial scalarProduct(double scalar) {
-      Polynomial result = new Polynomial(this.maxSize);
-      for (int i = 0; i < this.maxSize; i++) {
-         if (this.monomials[i] != null) {
-            result.addMonomial(this.monomials[i].scalarProduct(scalar));
-         }
-      }
-      return result;
-   }
-
-   /**
-    * Multiplies the current polynomial by another polynomial.
-    * Returns a <b>new</b> polynomial representing the product.
-    *
-    * @param other The {@link Polynomial} to multiply with.
-    * @return A new {@link Polynomial} instance.
-    */
-   public Polynomial product(Polynomial other) {
-      // The degree of the product is roughly the sum of the max sizes
-      int newSize = this.maxSize + other.maxSize;
-      Polynomial result = new Polynomial(newSize);
-
-      for (int i = 0; i < this.maxSize; i++) {
-         if (this.monomials[i] != null) {
-            for (int j = 0; j < other.maxSize; j++) {
-               if (other.monomials[j] != null) {
-                  Monomial productMonomial = this.monomials[i].product(other.monomials[j]);
-
-                  // Check if we need to accumulate
-                  Monomial existing = result.getMonomial(productMonomial.exponent);
-                  if (existing != null) {
-                     result.addMonomial(existing.addition(productMonomial));
-                  } else {
-                     result.addMonomial(productMonomial);
-                  }
-               }
+    /**
+     * Creates a polynomial from an array of monomials, in any order and possibly with
+     * {@code null} positions. Each monomial goes to the position of its exponent, and two
+     * with the same exponent are added.
+     * <p>
+     * The array of the polynomial has room for the highest exponent among the monomials.
+     * Monomials with a negative exponent are left out, since a polynomial has none.
+     *
+     * @param monomials the monomials of the polynomial.
+     */
+    Polynomial(Monomial[] monomials) {
+        int highest = -1;
+        for (Monomial m : monomials) {
+            if (m != null && m.exponent > highest) {
+                highest = m.exponent;
             }
-         }
-      }
-      return result;
-   }
+        }
+        this.maxSize = highest + 1;
+        this.monomials = new Monomial[this.maxSize];
+        this.numMonomials = 0;
+        for (Monomial m : monomials) {
+            if (m != null) {
+                this.addMonomial(m);
+            }
+        }
+    }
 
-   /**
-    * Solves the polynomial for a specific value of  $ X $.
-    *
-    * @param xValue The value to substitute for $ X $.
-    * @return The numerical result.
-    */
-   public double solve(double xValue) {
-      double result = 0;
-      for (Monomial m : this.monomials) {
-         if (m != null) {
-            result += m.evaluate(xValue);
-         }
-      }
-      return result;
-   }
+    /**
+     * Returns the monomial with the given exponent.
+     *
+     * @param exponent the exponent of the monomial.
+     * @return the monomial, or {@code null} if the polynomial has none with that exponent.
+     */
+    Monomial getMonomial(int exponent) {
+        if (exponent < 0 || exponent >= this.maxSize) {
+            return null;
+        }
+        return this.monomials[exponent];
+    }
 
-   /**
-    * Returns a human-legible representation of the polynomial.
-    *
-    * @return Formatted string of the equation.
-    */
-   @Override
-   public String toString() {
-      if (this.numMonomials == 0) return "0";
-      StringBuilder sb = new StringBuilder();
-      for (int i = 0; i < this.maxSize; i++) {
-         if (this.monomials[i] != null) {
-            if (sb.length() > 0 && this.monomials[i].coefficient > 0) sb.append(" + ");
-            sb.append(this.monomials[i].toString());
-         }
-      }
-      return sb.toString();
-   }
+    /**
+     * Adds a monomial to the polynomial, at the position of its exponent. If there is already
+     * a monomial there, it is replaced by the sum of both.
+     * <p>
+     * If the coefficient of the result is 0, the position is left empty. If the array has no
+     * room for the exponent, the polynomial does not change.
+     *
+     * @param m the monomial to add.
+     */
+    void addMonomial(Monomial m) {
+        if (m.exponent < 0 || m.exponent >= this.maxSize) {
+            return;
+        }
+        Monomial sum = m;
+        if (this.monomials[m.exponent] != null) {
+            // The old monomial leaves its position, and the sum takes it unless it is 0
+            sum = this.monomials[m.exponent].addition(m);
+            this.monomials[m.exponent] = null;
+            this.numMonomials--;
+        }
+        if (Math.abs(sum.coefficient) >= EPSILON) {
+            this.monomials[m.exponent] = sum;
+            this.numMonomials++;
+        }
+    }
 
-   /**
-    * Checks if two polynomials are equal by verifying if all their respective monomials are equal.
-    *
-    * @param o The object to compare with.
-    * @return {@code true} if both are polynomials and satisfy equality conditions.
-    */
-   @Override
-   public boolean equals(Object o) {
-      if (this == o) return true;
-      if (!(o instanceof Polynomial)) return false;
+    /**
+     * Replaces the monomial with the same exponent as the given one, or removes it if the
+     * coefficient of the given one is 0. If the polynomial has no monomial with that exponent,
+     * it does not change.
+     *
+     * @param m the new monomial.
+     */
+    void replaceMonomial(Monomial m) {
+        if (this.getMonomial(m.exponent) == null) {
+            return;
+        }
+        if (Math.abs(m.coefficient) < EPSILON) {
+            this.monomials[m.exponent] = null;
+            this.numMonomials--;
+        } else {
+            this.monomials[m.exponent] = m;
+        }
+    }
 
-      Polynomial other = (Polynomial) o;
-      int checkSize = Math.max(this.maxSize, other.maxSize);
+    /**
+     * Adds another polynomial to this one: the monomials with the same exponent are added.
+     *
+     * @param other the polynomial to add.
+     * @return a new polynomial with the sum.
+     */
+    Polynomial add(Polynomial other) {
+        Polynomial result = new Polynomial(Math.max(this.maxSize, other.maxSize));
+        for (Monomial m : this.monomials) {
+            if (m != null) {
+                result.addMonomial(m);
+            }
+        }
+        for (Monomial m : other.monomials) {
+            if (m != null) {
+                result.addMonomial(m);
+            }
+        }
+        return result;
+    }
 
-      for (int i = 0; i < checkSize; i++) {
-         Monomial m1 = this.getMonomial(i);
-         Monomial m2 = other.getMonomial(i);
+    /**
+     * Multiplies this polynomial by a number: every monomial is multiplied by it.
+     *
+     * @param scalar the number to multiply by.
+     * @return a new polynomial with the product.
+     */
+    Polynomial scalarProduct(double scalar) {
+        Polynomial result = new Polynomial(this.maxSize);
+        for (Monomial m : this.monomials) {
+            if (m != null) {
+                result.addMonomial(m.scalarProduct(scalar));
+            }
+        }
+        return result;
+    }
 
-         if (m1 == null && m2 == null) continue;
-         if (m1 == null || m2 == null) return false;
+    /**
+     * Multiplies this polynomial by another one: every monomial of this polynomial is
+     * multiplied by every monomial of the other, and the products are added.
+     *
+     * @param other the polynomial to multiply by.
+     * @return a new polynomial with the product.
+     */
+    Polynomial product(Polynomial other) {
+        Polynomial result = new Polynomial(this.maxSize + other.maxSize);
+        for (Monomial m1 : this.monomials) {
+            if (m1 != null) {
+                for (Monomial m2 : other.monomials) {
+                    if (m2 != null) {
+                        result.addMonomial(m1.product(m2));
+                    }
+                }
+            }
+        }
+        return result;
+    }
 
-         // Using direct double comparison with epsilon logic for coefficients
-         if (Math.abs(m1.coefficient - m2.coefficient) > 1e-9) {
-            return false;
-         }
-      }
-      return true;
-   }
+    /**
+     * Evaluates the polynomial, replacing <i>X</i> with the given value.
+     *
+     * @param x the value of <i>X</i>.
+     * @return the sum of the values of every monomial at {@code x}.
+     */
+    double solve(double x) {
+        double result = 0;
+        for (Monomial m : this.monomials) {
+            if (m != null) {
+                result = result + m.evaluate(x);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Returns the monomials of the polynomial from the lowest exponent up, joined by
+     * {@code " + "}, such as {@code "1.0X^0 + 3.0X^2"}, or {@code "0"} if it has none.
+     * <p>
+     * The text is built in a {@link StringBuilder}, which grows instead of being copied for
+     * each monomial.
+     *
+     * @return the written form of the polynomial.
+     */
+    String describe() {
+        if (this.numMonomials == 0) {
+            return "0";
+        }
+        StringBuilder text = new StringBuilder();
+        for (Monomial m : this.monomials) {
+            if (m != null) {
+                if (text.length() > 0) {
+                    text.append(" + ");
+                }
+                text.append(m.describe());
+            }
+        }
+        return text.toString();
+    }
+
+    /**
+     * Checks whether this polynomial and another one are equal: for every exponent, their
+     * coefficients differ by less than {@link #EPSILON}. A missing monomial counts as a
+     * coefficient of 0, so the length of the arrays does not matter.
+     *
+     * @param other the polynomial to compare with.
+     * @return {@code true} if both polynomials are equal, {@code false} otherwise.
+     */
+    boolean isEqualTo(Polynomial other) {
+        int size = Math.max(this.maxSize, other.maxSize);
+        for (int i = 0; i < size; i++) {
+            double c1 = 0;
+            double c2 = 0;
+            if (this.getMonomial(i) != null) {
+                c1 = this.getMonomial(i).coefficient;
+            }
+            if (other.getMonomial(i) != null) {
+                c2 = other.getMonomial(i).coefficient;
+            }
+            if (Math.abs(c1 - c2) >= EPSILON) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

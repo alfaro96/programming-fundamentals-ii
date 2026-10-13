@@ -27,18 +27,18 @@ The two round buttons at the bottom left open a pen to draw over the slide and a
 
 ## Settings
 
-`reveal-md.json5` holds the deck settings, each with a comment saying what it is for: the canvas size (which the slides, the PDF pages and the screenshots all take), the reveal.js options, the scripts and stylesheets it loads from `theme/`, the page template and the images folder. It is read only once, when `npm run dev` starts, so restart it after changing anything there. The scripts read it too, through `scripts/config.mjs`, so keep it as JSON plus `//` comments, with no trailing commas.
+`reveal-md.json5` holds the deck settings, each with a comment saying what it is for: the canvas size, 16:9 (which the slides, the class PDF and the screenshots take), the taller height of the 4:3 print PDF, the reveal.js options, the scripts and stylesheets it loads from `theme/`, the page template and the images folder. It is read only once, when `npm run dev` starts, so restart it after changing anything there. The scripts read it too, through `scripts/config.mjs`, so keep it as JSON plus `//` comments, with no trailing commas.
 
 ## Export
 
 ```bash
-npm run pdf        # both PDF versions below, one file per unit, at the canvas size in reveal-md.json5
-npm run pdf:class  # class PDF in production/class/: one page per step, as shown in class
-npm run pdf:print  # print PDF in production/print/: one page per slide, every step visible, for students
+npm run pdf        # both PDF versions below, one file per unit, sized from reveal-md.json5
+npm run pdf:class  # class PDF in production/class/: 16:9, one page per step, as shown in class
+npm run pdf:print  # print PDF in production/print/: 4:3, one page per slide, every step visible, to print
 npm run build      # web version in production/web/, with an index page, host it anywhere
 ```
 
-Each PDF is named after its unit file (e.g. `unit_1-introduction_java.pdf`).
+Each PDF is named after its unit file (e.g. `unit_1-introduction_java.pdf`). The print version keeps the width of the canvas and grows to `printHeight`, so every slide keeps its layout and the extra room falls above the bottom note.
 
 To check how a unit looks without opening a browser, `npm run preview` screenshots every slide into `production/preview/screen/<unit>/`; `npm run preview -- print <unit>` or `npm run preview -- class <unit>` does the same with the PDF pages. It uses the Puppeteer that `npm run pdf` downloads, so run that once first.
 
