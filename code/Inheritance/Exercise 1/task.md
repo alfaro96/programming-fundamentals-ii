@@ -21,5 +21,5 @@ Given the `Employee` class **provided in the template**, extend it to create thr
   * Works the same hours and earns the same salary as an `Employee`.
 
 Create a `Main` class that:
-* Stores ten random employees, of any type, in an array.
+* Stores ten employees in an array, mixing the four types in any order.
 * Iterates through the array, calling and displaying the output of all the defined methods for each employee. *(Hint: You will need to check the specific type of the object to call the additional methods).*

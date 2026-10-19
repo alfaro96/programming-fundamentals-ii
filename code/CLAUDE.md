@@ -30,6 +30,7 @@ Students open it in IntelliJ IDEA with the JetBrains Academy plugin.
 * All Java code must compile with Java 17 and every `edu` task must pass its own tests with the reference solution.
 * Keep the level of the slides: students come from C and meet Java syntax in unit 1. Do not use constructs the unit has not introduced yet.
 * Inside a class, the object's own attributes and methods are always reached through `this` (`this.balance`, `this.deposit(amount)`), even with no name clash, as the slides do from unit 2's "Constructors" on. Static ones go by their name alone, since a static method has no `this`.
+* From unit 3 on, attributes are `private` and classes, constructors and methods `public`, as the slides do from unit 3's "Private attributes" on; before it, no access modifiers but `public static void main`.
 * `build/`, `out/`, `doc/` (Javadoc), `latex/`, `.gradle/` and `.idea/` are generated and ignored by git; never edit them.
 
 ## Javadoc

@@ -13,7 +13,7 @@ files:
     visible: true
     placeholders:
       - offset: 0
-        length: 2366
+        length: 1899
         placeholder_text: "/* TODO: Implement SingleFamily class. */"
   - name: src/housing/Chalet.java
     visible: true

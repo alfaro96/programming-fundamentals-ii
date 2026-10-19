@@ -637,8 +637,8 @@ What happens in memory when a program creates objects. The stack keeps the varia
 
 <div class="memory-layout code-compact stage-top">
 
-<!-- Code and diagram step together from 0 -->
-<pre><code class="java" data-trim data-line-numbers="1|2|3|4" data-fragment-index="0">
+<!-- Code and diagram step together from 0; the empty span in the note holds index 2, which only the code uses -->
+<pre><code class="java" data-trim data-line-numbers="1|2|3|4|2" data-fragment-index="0">
 Account ana = new Account();
 Account other = ana;
 other.deposit(100.00);
@@ -663,14 +663,14 @@ System.out.println(ana.balance);
 </div>
 </div>
 
-<blockquote class="stage-note fragment" data-fragment-index="2">
+<blockquote class="stage-note fragment" data-fragment-index="3"><span class="fragment" data-fragment-index="2"></span>
 Assigning one object variable to another copies the <strong>reference</strong>, not the object: both reach <strong>the same object</strong>.
 </blockquote>
 
 </div>
 
 Note:
-A difference with C that causes real bugs. On entry, one account, as on the previous slide. Step 1, other = ana: ask them what they expect, thinking of C, where assigning a struct copies all its fields. In Java the variable only holds a reference, so the assignment copies the address, 0x7ad4: two arrows, one object. Step 2, a deposit through other: the balance of that one object becomes 100.0. Step 3, printing ana.balance: ask them what it prints; 100.0, because ana and other are two names for the same account. The same happens when an object is passed to a method: the method gets the reference and can change the object, with no & and no pointers in sight. Last, the takeaway.
+A difference with C that causes real bugs. On entry, one account, as on the previous slide. Step 1, other = ana: ask them what they expect, thinking of C, where assigning a struct copies all its fields. In Java the variable only holds a reference, so the assignment copies the address, 0x7ad4: two arrows, one object. Step 2, a deposit through other: the balance of that one object becomes 100.0. Step 3, printing ana.balance: ask them what it prints; 100.0, because ana and other are two names for the same account. The same happens when an object is passed to a method: the method gets the reference and can change the object, with no & and no pointers in sight. Last, the takeaway, with the assignment marked.
 
 ---
 
@@ -842,6 +842,25 @@ class Account {
 
 Note:
 Ana's account from Creating objects, created both ways, with main inside the class as before. On entry, how it was done until now: new, and then each attribute by hand with the dot. Step 1, the version with the constructor, with what changes marked in both: the same three values, in the order of the constructor's parameters, go straight to new, as they went between the braces of the C initializer; one value per line only because the call is long. Step 2, the first card, with only new Account() marked, explains the left-hand side: they never wrote a constructor before, yet new Account() worked, because a class with no constructor gets an empty one from Java, the default constructor. Step 3, the catch, in red, with cause and effect marked: the line that stands for the constructor on the right, and the new Account() on the left that it breaks: as soon as the class has a constructor of its own, Java no longer adds the default one, so the left-hand version stops compiling with this class; new Account() with no values does not exist any more. Step 4, the takeaway, with the comparison marked again, the gain: with three accounts, three lines instead of twelve, and since the constructor asks for every value, none can be left out by mistake.
+
+---
+
+<div class="stage">
+
+## Exercises
+
+### What you can solve so far
+
+<div class="rules stage-top">
+<div class="rule">
+<p><strong><a href="https://github.com/alfaro96/programming-fundamentals-ii/tree/main/code/Classes%2C%20objects%2C%20and%20methods/Exercise%201">Exercise 1</a></strong>Monomials: a class with its attributes, a constructor and methods that evaluate it.</p>
+</div>
+</div>
+
+</div>
+
+Note:
+The first exercise of the course that can be solved with what has been seen up to here: a class, its objects and a constructor. They are in the JetBrains Academy course, in the Classes, objects, and methods lesson; each title opens it on GitHub.
 
 ---
 
@@ -1216,33 +1235,27 @@ The two words together. On entry, BANK_CODE: static, so there is one for the who
 
 ### What each keyword changes
 
-<!-- Each row: the attribute first, to ask the class; then its keywords and answers -->
+<!-- The attributes stay; each row's answers fill in at once, after asking the class -->
 <table class="data-table stage-body">
 <thead>
 <tr><th>Attribute</th><th>Keywords</th><th>How many</th><th>Can it change?</th></tr>
 </thead>
 <tbody>
 <tr><th scope="row"><code>balance</code></th><td class="fragment custom" data-fragment-index="0">none</td><td class="fragment custom" data-fragment-index="0">One per object</td><td class="fragment custom" data-fragment-index="0">Yes</td></tr>
-</tbody>
-<tbody class="fragment" data-fragment-index="1">
-<tr><th scope="row"><code>iban</code></th><td class="fragment custom" data-fragment-index="2"><code>final</code></td><td class="fragment custom" data-fragment-index="2">One per object</td><td class="fragment custom" data-fragment-index="2">No</td></tr>
-</tbody>
-<tbody class="fragment" data-fragment-index="3">
-<tr><th scope="row"><code>interestRate</code></th><td class="fragment custom" data-fragment-index="4"><code>static</code></td><td class="fragment custom" data-fragment-index="4">One for the class</td><td class="fragment custom" data-fragment-index="4">Yes</td></tr>
-</tbody>
-<tbody class="fragment" data-fragment-index="5">
-<tr><th scope="row"><code>BANK_CODE</code></th><td class="fragment custom" data-fragment-index="6"><code>static final</code></td><td class="fragment custom" data-fragment-index="6">One for the class</td><td class="fragment custom" data-fragment-index="6">No</td></tr>
+<tr><th scope="row"><code>iban</code></th><td class="fragment custom" data-fragment-index="1"><code>final</code></td><td class="fragment custom" data-fragment-index="1">One per object</td><td class="fragment custom" data-fragment-index="1">No</td></tr>
+<tr><th scope="row"><code>interestRate</code></th><td class="fragment custom" data-fragment-index="2"><code>static</code></td><td class="fragment custom" data-fragment-index="2">One for the class</td><td class="fragment custom" data-fragment-index="2">Yes</td></tr>
+<tr><th scope="row"><code>BANK_CODE</code></th><td class="fragment custom" data-fragment-index="3"><code>static final</code></td><td class="fragment custom" data-fragment-index="3">One for the class</td><td class="fragment custom" data-fragment-index="3">No</td></tr>
 </tbody>
 </table>
 
-<blockquote class="stage-note fragment" data-fragment-index="7">
+<blockquote class="stage-note fragment" data-fragment-index="4">
 <strong><code>static</code></strong> decides <strong>how many</strong> there are; <strong><code>final</code></strong>, whether it can <strong>change</strong>.
 </blockquote>
 
 </div>
 
 Note:
-The section in one table, with the account's own attributes. Each row starts with the attribute alone: ask the class which keywords it has, how many copies there are and whether it can change, and only then show the answer. On entry, balance: an ordinary attribute, one per object, and it changes. Then iban: final keeps one per object but fixes it. Then interestRate: static makes it one for the class, and it can still change. Last, BANK_CODE: both together make a constant. The takeaway sums it up: the two words answer two different questions, so they combine freely.
+The section in one table, with the account's own attributes. The four attributes are there from the start; for each, ask the class which keywords it has, how many copies there are and whether it can change, and only then fill in its row. On entry, balance: an ordinary attribute, one per object, and it changes. Then iban: final keeps one per object but fixes it. Then interestRate: static makes it one for the class, and it can still change. Last, BANK_CODE: both together make a constant. The takeaway sums it up: the two words answer two different questions, so they combine freely.
 
 ---
 
@@ -1643,6 +1656,28 @@ The whole class Account on the left, and on the right a main that calls it in ev
 
 ---
 
+<div class="stage">
+
+## Exercises
+
+### What you can solve now
+
+<div class="rules rules-grid rules-pair stage-top">
+<div class="rule">
+<p><strong><a href="https://github.com/alfaro96/programming-fundamentals-ii/tree/main/code/Classes%2C%20objects%2C%20and%20methods/Exercise%204">Exercise 4</a></strong>Points and vectors: two classes that work together, with a constant and overloaded constructors.</p>
+</div>
+<div class="rule">
+<p><strong><a href="https://github.com/alfaro96/programming-fundamentals-ii/tree/main/code/Classes%2C%20objects%2C%20and%20methods/Exercise%207">Exercise 7</a></strong>Matrices: an array of arrays as an attribute, several constructors and the usual operations.</p>
+</div>
+</div>
+
+</div>
+
+Note:
+The exercises that need overloaded constructors, from the section just seen, and the static final constants of the one before. They are in the JetBrains Academy course, in the Classes, objects, and methods lesson; each title opens it on GitHub.
+
+---
+
 <!-- .slide: class="contents" data-section="5" -->
 
 Note:
@@ -1826,8 +1861,9 @@ Two ways of getting a String, drawn as with new. On entry, a literal, text writt
 
 <div class="memory-layout code-compact stage-top">
 
-<!-- Code and diagram step together from 0: at step 0 the shared object gives way to the two a and b refer to -->
-<pre><code class="java" data-trim data-line-numbers="1-2|3|4" data-fragment-index="0">
+<!-- Code and diagram step together from 0: at step 0 the shared object gives way to the two a and b refer to.
+     The empty span in the note holds index 1, which only the code uses -->
+<pre><code class="java" data-trim data-line-numbers="1-2|3|4|3" data-fragment-index="0">
 String a = "Ana";
 String b = "Ana";
 a = "Luis";
@@ -1849,14 +1885,14 @@ System.out.println(b);
 </div>
 </div>
 
-<blockquote class="stage-note fragment" data-fragment-index="1">
+<blockquote class="stage-note fragment" data-fragment-index="2"><span class="fragment" data-fragment-index="1"></span>
 Assigning a variable makes it refer to <strong>another object</strong>: the object stays as it was, and so do the <strong>other variables</strong>.
 </blockquote>
 
 </div>
 
 Note:
-The question the slide above leaves open: if a and b share one object, does changing a change b? It helps to know how literals work: Java keeps each different literal only once, in a part of the heap called the string pool, so every "Ana" written anywhere in the program is the same object, with one address, and every "Luis" is another one, with its own. On entry, a and b sharing the pool's "Ana". Step 1, a = "Luis": the "Ana" object is not touched; a gets the address of the "Luis" object, 0x3f80, and that is all an assignment ever does to a variable of a class type, change where it points. The drawing moves "Ana" next to b only to keep the arrows straight: it is the same object, at the same address, and b still refers to it. Step 2, printing b: ask them what it prints; Ana. Sharing is safe because a String never changes: no method can alter the pool's "Ana" behind b's back. With an Account it was different: other.deposit changed the object both variables shared, because an Account can change. Last, the takeaway, which holds for any object.
+The question the slide above leaves open: if a and b share one object, does changing a change b? It helps to know how literals work: Java keeps each different literal only once, in a part of the heap called the string pool, so every "Ana" written anywhere in the program is the same object, with one address, and every "Luis" is another one, with its own. On entry, a and b sharing the pool's "Ana". Step 1, a = "Luis": the "Ana" object is not touched; a gets the address of the "Luis" object, 0x3f80, and that is all an assignment ever does to a variable of a class type, change where it points. The drawing moves "Ana" next to b only to keep the arrows straight: it is the same object, at the same address, and b still refers to it. Step 2, printing b: ask them what it prints; Ana. Sharing is safe because a String never changes: no method can alter the pool's "Ana" behind b's back. With an Account it was different: other.deposit changed the object both variables shared, because an Account can change. Last, the takeaway, with the assignment marked, which holds for any object.
 
 --
 
@@ -2032,6 +2068,34 @@ To build text step by step, a <strong><code>StringBuilder</code></strong>: it <s
 
 Note:
 The other side of immutability. Joining strings with + in a loop builds a new String on every pass and throws the previous one away; for a few pieces it does not matter, for thousands it does. On entry, a StringBuilder, created with new like any object: a text that can change. Step 1, append adds to the end of the same object, and returns it, so calls can be chained. Step 2, toString turns it into a String when it is finished; ask what it prints. Step 3, 1 2 3, with a space at the end.
+
+---
+
+<div class="stage">
+
+## Exercises
+
+### The rest of the unit
+
+<div class="rules rules-grid rules-pair stage-top">
+<div class="rule">
+<p><strong><a href="https://github.com/alfaro96/programming-fundamentals-ii/tree/main/code/Classes%2C%20objects%2C%20and%20methods/Exercise%202">Exercise 2</a></strong>People: an array of objects as an attribute, two constructors and some error cases.</p>
+</div>
+<div class="rule">
+<p><strong><a href="https://github.com/alfaro96/programming-fundamentals-ii/tree/main/code/Classes%2C%20objects%2C%20and%20methods/Exercise%203">Exercise 3</a></strong>Books: their data and their pages, deciding the parameters and the return type of each method.</p>
+</div>
+<div class="rule">
+<p><strong><a href="https://github.com/alfaro96/programming-fundamentals-ii/tree/main/code/Classes%2C%20objects%2C%20and%20methods/Exercise%205">Exercise 5</a></strong>Polynomials: a class built on the monomials of Exercise 1.</p>
+</div>
+<div class="rule">
+<p><strong><a href="https://github.com/alfaro96/programming-fundamentals-ii/tree/main/code/Classes%2C%20objects%2C%20and%20methods/Exercise%206">Exercise 6</a></strong>A library: a class that holds several books, those of Exercise 3.</p>
+</div>
+</div>
+
+</div>
+
+Note:
+The exercises that also work with text: comparing strings with equals, or building them with StringBuilder. They are in the JetBrains Academy course, in the Classes, objects, and methods lesson; each title opens it on GitHub.
 
 ---
 

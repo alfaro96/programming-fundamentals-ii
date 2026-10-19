@@ -64,7 +64,7 @@ public class Restaurant extends Commerce {
     }
 
     /**
-     * Copy constructor. Creates a deep copy of the given
+     * Copy constructor. Creates a copy of the given
      * {@link Restaurant}.
      *
      * @param other the instance to copy
@@ -84,7 +84,7 @@ public class Restaurant extends Commerce {
      *
      * @return The number of tables
      */
-    public int getNumTables() { return numTables; }
+    public int getNumTables() { return this.numTables; }
 
     /**
      * Sets the number of tables.
@@ -98,7 +98,7 @@ public class Restaurant extends Commerce {
      *
      * @return The total capacity
      */
-    public int getCapacity() { return capacity; }
+    public int getCapacity() { return this.capacity; }
 
     /**
      * Sets the seating capacity.
@@ -115,7 +115,7 @@ public class Restaurant extends Commerce {
      */
     public void setDailyMenu(String menu, int day) {
         if (day >= 0 && day < DAYS_IN_WEEK) {
-            dailyMenus[day] = menu;
+            this.dailyMenus[day] = menu;
         }
     }
 
@@ -127,7 +127,7 @@ public class Restaurant extends Commerce {
      */
     public String getDailyMenu(int day) {
         if (day >= 0 && day < DAYS_IN_WEEK) {
-            return dailyMenus[day];
+            return this.dailyMenus[day];
         }
         return null;
     }
@@ -147,8 +147,8 @@ public class Restaurant extends Commerce {
         }
         return "Restaurant{" +
                super.toString() +
-               ", numTables=" + numTables +
-               ", capacity=" + capacity +
+               ", numTables=" + this.numTables +
+               ", capacity=" + this.capacity +
                ", dailyMenus=" + dailyMenus +
                '}';
     }
@@ -164,7 +164,7 @@ public class Restaurant extends Commerce {
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
-        if (object == null || getClass() != object.getClass()) return false;
+        if (object == null || this.getClass() != object.getClass()) return false;
         Restaurant other = (Restaurant) object;
         for (int i = 0; i < DAYS_IN_WEEK; i++) {
             if (!this.dailyMenus[i].equals(other.dailyMenus[i])) {
@@ -174,22 +174,4 @@ public class Restaurant extends Commerce {
         return true;
     }
 
-    /**
-     * Creates and returns a deep copy of this {@link Restaurant}.
-     *
-     * @return A cloned {@link Restaurant} instance
-     */
-    @Override
-    public Restaurant clone() {
-        try {
-            Restaurant cloned = (Restaurant) super.clone();
-            cloned.dailyMenus = new String[DAYS_IN_WEEK];
-            for (int i = 0; i < DAYS_IN_WEEK; i++) {
-                cloned.dailyMenus[i] = dailyMenus[i];
-            }
-            return cloned;
-        } catch (CloneNotSupportedException e) {
-            return new Restaurant(this);
-        }
-    }
 }

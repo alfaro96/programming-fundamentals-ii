@@ -272,35 +272,39 @@ public class Tests {
     assertEquals(2, small.getCommerces().length);
   }
 
+
+
+
   /**
-   * Verifies that {@link CommerceAssociation#clone()} returns a different object
-   * reference but one that is logically equal to the original.
+   * Verifies that the copy constructor creates a different object.
    */
   @Test
-  public void testAssociationCloneIsNotSameReference() {
-    CommerceAssociation copy = association.clone();
+  public void testAssociationCopyIsNotSameReference() {
+    CommerceAssociation copy = new CommerceAssociation(association);
     assertNotSame(association, copy);
   }
 
   /**
-   * Verifies that the original and its clone satisfy
+   * Verifies that the original and its copy satisfy
    * {@link CommerceAssociation#equals(Object object)}.
    */
   @Test
-  public void testAssociationCloneEquals() {
-    CommerceAssociation copy = association.clone();
+  public void testAssociationCopyEquals() {
+    CommerceAssociation copy = new CommerceAssociation(association);
     assertEquals(association, copy);
   }
 
   /**
-   * Verifies that modifying the clone's president does not affect
-   * the original (deep copy of primitive and {@code String} fields).
+   * Verifies that the copy has an array of its own: replacing a restaurant in it
+   * leaves the original as it was.
    */
   @Test
-  public void testAssociationCloneIsDeep() {
-    CommerceAssociation copy = association.clone();
-    copy.setPresident("Another Person");
-    assertNotEquals(association.getPresident(), copy.getPresident());
+  public void testAssociationCopyHasItsOwnArray() {
+    CommerceAssociation copy = new CommerceAssociation(association);
+    CarDealership newDealership = new CarDealership("AutoCenter Copia", "Calle Copia 1", "A99999999");
+    copy.replaceRestaurant(restaurant1, newDealership);
+    assertSame(restaurant1, association.getCommerces()[0]);
+    assertSame(newDealership, copy.getCommerces()[0]);
   }
 
   /**

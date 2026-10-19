@@ -9,12 +9,12 @@ Implement a package called `housing` containing the following class hierarchy an
   * An abstract method `double tax()`.
   * An abstract `toString()` method.
 
-* **`SingleFamily`** class that extends `Housing` and implements the `Comparable<SingleFamily>` interface, containing:
+* **`SingleFamily`** class that extends `Housing`, containing:
   * An attribute `int numberOfFloors`.
   * An attribute `double basementSize`.
   * A single constructor that initializes all attributes, including inherited ones.
   * A method `double tax()`, where the tax is calculated as 20% of the price.
-  * The `compareTo()` method, comparing by `tax()` and the class name.
+  * A method `boolean paysMoreTaxThan(SingleFamily other)`, which returns `true` if this home pays more tax than `other`.
   * The `toString()` method.
 
 * **Additional classes** that inherit as follows (ensure each has a proper constructor to initialize all its attributes):

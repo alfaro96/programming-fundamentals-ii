@@ -1,6 +1,6 @@
 # Inheritance, abstract classes, and overriding
 
-## 1. Goals
+## Goals
 
 The **main focus** of this laboratory assignment is to **transition** from **class diagrams** to **functional classes** using abstraction and inheritance. You will **develop** the skills necessary to define **hierarchical object structures**, **implement specific behaviors**, and **manage arrays of objects** using the principles of object-oriented programming.
 
@@ -11,13 +11,9 @@ By the **end** of this **session**, **you will** be able to:
 * **Override methods** to re-implement parent behaviors in child classes.
 * **Manage object arrays**, including dynamic resizing (doubling size) and array compaction.
 
----
+## Tasks
 
-## 2. Tasks
-
-### 2.1. Implementation
-
-#### 2.1.1. `Commerce`
+### `Commerce`
 
 1. **Attributes**:
     * `name`, `address`, and `cif` of type `String`.
@@ -35,17 +31,15 @@ By the **end** of this **session**, **you will** be able to:
     * `topSalesMonth()`: **Returns** the **month** (index) with the **highest volume of sales**. You can use `salesInMonth()` to compute the values for each month.
     * `updateSales()`: **Overload** this method to provide two different implementations:
         * **Given** a **month**, a **day**, and a **sale amount**, **updates** (adds to) the sales amount for the specified date.
-        * **Given** **only** a **sale amount**, **updates** the sales amount for the **current month and day**. **Note**: Use the `java.time` libraries to retrieve the current date.
+        * **Given** **only** a **sale amount**, **updates** the sales amount for the **current month and day**. **Note**: the current date is obtained with `java.time.LocalDate`: `LocalDate.now().getMonthValue()` gives the month (from `1` to `12`) and `LocalDate.now().getDayOfMonth()` the day (from `1` to `31`), after `import java.time.LocalDate;`.
 
 5. **Employee management methods**:
     * `hireEmployee()`: **Given** a new `Employee`, **adds** it to the array. **If** the array is **full**, you must **double its size** before adding the new employee.
     * `fireEmployee()`: **Given** the **DNI** of an employee, **finds** it in the array, **removes** it, and **returns** the object. The array **must be compacted** after removal (i.e., there should be no empty `null` positions between existing elements).
 
-6. **Standard overrides**: **Implement** the specific printing methods (`toStringMonthlySales()` and `toStringDailySales()`), and **override** the standard `toString()`, `equals()`, and `clone()` methods according to the standard rules of object-oriented programming.
+6. **Standard overrides**: **Implement** the specific printing methods (`toStringMonthlySales()` and `toStringDailySales()`), and **override** the standard `toString()` and `equals()` methods according to the standard rules of object-oriented programming.
 
----
-
-#### 2.1.2. `CarDealership`
+### `CarDealership`
 
 1. **Attributes**:
     * `vehiclesOnSale`: An **array** of `SaleVehicle` objects.
@@ -64,11 +58,9 @@ By the **end** of this **session**, **you will** be able to:
     * `addSale()`: **Adds** a `SaleVehicle` to the array of vehicles on sale.
     * `sellVehicle()`: **Given** a car `identifier`, **checks** the array of vehicles for sale. **If** found, **removes** it, **increases** the daily sales of today with its price, and **returns** it. The array **must be compacted** after removal.
 
-6. **Standard overrides**: **Implement** the specific printing methods (`toStringVehiclesOnSale()` and `toStringVehiclesForRepair()`), along with the standard `toString()`, `clone()`, and `equals()`. **Two car dealerships** are considered equivalent if they share a memory position **or** if they have exactly the same vehicles in repair and for sale.
+6. **Standard overrides**: **Implement** the specific printing methods (`toStringVehiclesOnSale()` and `toStringVehiclesForRepair()`), along with the standard `toString()` and `equals()`. **Two car dealerships** are considered equivalent if they share a memory position **or** if they have exactly the same vehicles in repair and for sale.
 
----
-
-#### 2.1.3. `Restaurant`
+### `Restaurant`
 
 1. **Attributes**:
     * `dailyMenus`: An **array** of `String` objects representing the menu for each day.
@@ -83,11 +75,9 @@ By the **end** of this **session**, **you will** be able to:
     * `setDailyMenu()`: **Given** a menu (as a `String`) and a day of the week, **stores** the specified menu in the `dailyMenus` array.
     * `getDailyMenu()`: **Given** a day of the week, **returns** the appropriate menu as a `String`.
 
-5. **Standard overrides**: **Override** the standard `toString()`, `equals()`, and `clone()` methods according to the standard rules of object-oriented programming. **Two restaurants** are considered equivalent if they share a memory position **or** if they have exactly the same daily menus.
+5. **Standard overrides**: **Override** the standard `toString()` and `equals()` methods according to the standard rules of object-oriented programming. **Two restaurants** are considered equivalent if they share a memory position **or** if they have exactly the same daily menus.
 
----
-
-#### 2.1.4. `Employee`
+### `Employee`
 
 1. **Attributes**:
     * `DNI`, `name`, `address`, `phoneNumber`, `email`, `startingDate`, and `position`, all of type `String`.
@@ -97,11 +87,9 @@ By the **end** of this **session**, **you will** be able to:
 
 3. **Getters and setters**: **Implement** the necessary getter and setter methods. **Generate** only the ones strictly required to access or modify the internal state of the class appropriately.
 
-4. **Standard overrides**: **Override** the `toString()`, `equals()`, and `clone()` methods according to the standard rules of object-oriented programming.
+4. **Standard overrides**: **Override** the `toString()` and `equals()` methods according to the standard rules of object-oriented programming.
 
----
-
-#### 2.1.5. `Vehicle`
+### `Vehicle`
 
 1. **Attributes**: **Define** the following **private** attributes:
     * `brand` and `model`, both of type `String`.
@@ -110,11 +98,9 @@ By the **end** of this **session**, **you will** be able to:
 
 3. **Getters and Setters**: **Implement** the necessary getter and setter methods. **Generate** only the ones strictly required to access or modify the internal state of the class appropriately.
 
-4. **Standard overrides**: **Override** the `toString()`, `equals()`, and `clone()` methods. As an abstract class, these methods will be inherited and adapted by its child classes.
+4. **Standard overrides**: **Override** the `toString()` and `equals()` methods. As an abstract class, these methods will be inherited and adapted by its child classes.
 
----
-
-#### 2.1.6. `RepairVehicle`
+### `RepairVehicle`
 
 1. **Attributes**:
     * `damage` and `numberPlate`, both of type `String`.
@@ -125,11 +111,9 @@ By the **end** of this **session**, **you will** be able to:
 
 3. **Getters and setters**: **Implement** the necessary getter and setter methods. **Generate** only the ones strictly required to access or modify the internal state of the class appropriately.
 
-4. **Standard overrides**: **Override** the `toString()`, `equals()`, and `clone()` methods according to the standard rules of object-oriented programming, ensuring they include both the superclass's and the subclass's specific attributes.
+4. **Standard overrides**: **Override** the `toString()` and `equals()` methods according to the standard rules of object-oriented programming, ensuring they include both the superclass's and the subclass's specific attributes.
 
----
-
-#### 2.1.7. `SaleVehicle`
+### `SaleVehicle`
 
 1. **Attributes**:
     * `price` of type `double`.
@@ -140,11 +124,9 @@ By the **end** of this **session**, **you will** be able to:
 
 3. **Getters and setters**: **Implement** the necessary getter and setter methods. **Generate** only the ones strictly required to access or modify the internal state of the class appropriately.
 
-4. **Standard overrides**: **Override** the `toString()`, `equals()`, and `clone()` methods according to the standard rules of object-oriented programming, combining parent properties with these new specific fields.
+4. **Standard overrides**: **Override** the `toString()` and `equals()` methods according to the standard rules of object-oriented programming, combining parent properties with these new specific fields.
 
----
-
-#### 2.1.8. `CommerceAssociation`
+### `CommerceAssociation`
 
 1. **Attributes**:
     * `commerces`: An **array** of `Commerce` objects.
@@ -153,6 +135,7 @@ By the **end** of this **session**, **you will** be able to:
 2. **Constructors**:
     * A **default constructor** that creates an array of commerces with a size of `20`.
     * A **parameterized constructor** that takes, as arguments, the **size** of the array of commerces and the values for all other attributes to initialize them.
+    * A **copy constructor**, which receives another `CommerceAssociation` and creates a new association with the same data: `public CommerceAssociation(CommerceAssociation other)`. It copies `address` and `president` from `other`, and **creates a new array** of the same size into which it copies, one by one, the commerces of `other`. Assigning `this.commerces = other.commerces` would not do: both associations would share one array, so adding a commerce to one would change the other. The commerces themselves can be shared.
 
 3. **Getters and setters**: **Implement** the necessary getter and setter methods. **Generate** only the ones strictly required to access or modify the internal state of the class appropriately.
 
@@ -161,14 +144,14 @@ By the **end** of this **session**, **you will** be able to:
     * `replaceRestaurant()`: **Finds** a previously created restaurant within the association. **If** it is found, **replaces** it with a given car dealership.
     * `printDealershipEmployees()`: A method that **shows on screen** the employees of those commerces that are car dealerships.
 
-5. **Standard overrides**: **Override** the `toString()`, `equals()`, and `clone()` methods according to the standard rules of object-oriented programming.
+5. **Standard overrides**: **Override** the `toString()` and `equals()` methods according to the standard rules of object-oriented programming.
 
-#### 2.1.9. `Main`
+### `Main`
 
 1. **Object creation**: **Create** two `Restaurant` objects and two `CarDealership` objects.
 2. **Employee management**: **Add** two employees to the restaurants and three employees to the car dealerships.
 3. **Association initialization**: **Create** an object of type `CommerceAssociation`.
 4. **Adding commerces**: **Add** the two restaurants and the two car dealerships to the association.
 5. **Print dealership employees**: **Show on screen** the data of the employees working at the car dealerships within the association by calling the appropriate method of the `CommerceAssociation` class.
-6. **Object cloning**: **Create** a copy of the `CommerceAssociation` object.
+6. **Object copy**: **Create** a copy of the `CommerceAssociation` object with its copy constructor, and **check** that it is equal to the original but not the same object.
 7. **Commerce replacement**: **Replace** one of the restaurants in the association with a **new** car dealership.

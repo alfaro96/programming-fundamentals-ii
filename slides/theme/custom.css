@@ -142,6 +142,39 @@
   --phone-caption-gap: 0.6em; /* label to its phones, em of the slide */
   --color-state: var(--color-accent-orange); /* what an object holds: its data */
   --color-behavior: var(--color-accent-teal); /* what an object does: its operations */
+  --phone-device-icon: 1.3em; /* a device's icon in the header disc, em of the screen text */
+  --phone-power-dot: 0.6em; /* the dot before "On" or "Off" */
+  --phone-level-height: 0.5em; /* the bar under a level, such as a light's brightness */
+  --phone-level-track: 30%; /* the bar's empty part, share of the panel text color */
+  --phone-own-padding: 1.2em; /* the part of the template each kind of device fills its own way */
+  --phone-tiles-gap: 0.7em; /* between the tiles of the home screen */
+  --phone-tile-padding: 0.8em;
+  --phone-tile-gap: 0.9em; /* a tile's icon to its text */
+  --phone-tile-radius: 1em;
+
+  /* File explorer: a project's folders and files, as an editor's side bar shows them */
+  --explorer-size: 0.48em; /* every size below is an em of this */
+  --explorer-indent: 1.2em; /* per folder level */
+  --explorer-icon: 1.15em;
+  --explorer-row-padding: 0.1em 0.8em;
+  --explorer-radius: 0.5em;
+  --color-explorer-bg: color-mix(in srgb, var(--color-heading) 4%, var(--color-bg));
+  --color-explorer-folder: color-mix(in srgb, var(--color-accent-yellow) 70%, var(--color-accent-orange));
+  --color-explorer-java: var(--color-accent-orange);
+  --color-explorer-active: color-mix(in srgb, var(--color-heading) 14%, var(--color-bg)); /* the file open on a step */
+  --explorer-chevron-shape: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 6l4 4 4-4' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  --explorer-folder-shape: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M1.5 3.5A1 1 0 0 1 2.5 2.5h3.6l1.5 1.5h5.9a1 1 0 0 1 1 1v7.5a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1z'/%3E%3C/svg%3E");
+  --explorer-java-shape: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M6 1.5c-1 1 1 2 0 3.2M8.6 1.5c-1 1 1 2 0 3.2' fill='none' stroke='black' stroke-width='1.1' stroke-linecap='round'/%3E%3Cpath d='M2.5 7h9v3.2A3.3 3.3 0 0 1 8.2 13.5H5.8A3.3 3.3 0 0 1 2.5 10.2z'/%3E%3Cpath d='M11.5 8h.8a1.6 1.6 0 0 1 0 3.2h-1' fill='none' stroke='black' stroke-width='1.1'/%3E%3Cpath d='M2 14.5h10' stroke='black' stroke-width='1.1' stroke-linecap='round'/%3E%3C/svg%3E");
+
+  /* Class hierarchy: class boxes joined to their superclass by a line ending in a hollow arrowhead */
+  --hierarchy-size: 0.5em; /* every size below is an em of this */
+  --hierarchy-gap: 1.2em; /* between sibling classes */
+  --hierarchy-link: 1.4em; /* each half of a line: superclass to the bar, and the bar to a subclass */
+  --hierarchy-head: 1.1em; /* the arrowhead at the superclass, width and height */
+  --hierarchy-head-shape: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M6 1.5 11 10.5H1z' fill='none' stroke='black' stroke-width='1.4' stroke-linejoin='round'/%3E%3C/svg%3E");
+  --class-box-padding: 0.35em 0.6em;
+  --class-box-tint: 6%; /* background, share of the heading blue */
+  --class-keyword-size: 0.8em; /* abstract or interface over the name, em of the box text */
 
   /* Toolbox: a frame holding columns of tool cards, with a band at the bottom */
   --toolbox-padding: 0.6em;
@@ -618,12 +651,36 @@ html.print-handout .reveal pre:has(code.fragment) .hljs.has-highlights tr.highli
   opacity: 1;
 }
 
+/* An output that gives way to another on a later step (e.g. an error), in the same place */
+.reveal .output-swap {
+  display: grid;
+}
+
+.reveal .output-swap > * {
+  grid-area: 1 / 1;
+}
+
+/* An error the compiler or the program prints: the terminal tinted and barred in red, as an error card */
+.reveal .console-error pre {
+  border-left-color: var(--color-accent-red);
+}
+
+.reveal .console-error pre,
+.reveal .console-error pre code {
+  background: color-mix(in srgb, var(--color-accent-red) var(--rule-tint), var(--color-code-bg));
+}
+
 /* Card, code and output per row; the code column takes its widest line */
 .reveal .runs {
   display: grid;
   grid-template-columns: minmax(0, 3fr) auto minmax(0, 2fr);
   grid-auto-rows: 1fr; /* every row as tall as the tallest, so the cards match */
   gap: var(--runs-gap);
+}
+
+/* Rows as tall as their own content, when one row's code is much longer than the rest */
+.reveal .runs.runs-fit {
+  grid-auto-rows: auto;
 }
 
 /* Every cell fills its row and centers its content, so a row reads across at one height */
@@ -651,7 +708,8 @@ html.print-handout .reveal pre:has(code.fragment) .hljs.has-highlights tr.highli
 }
 
 /* An output too long for its cell, like an exception, wraps instead of being cut */
-.reveal .runs pre code.console {
+.reveal .runs pre code.console,
+.reveal .code-run-output pre code.console {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
@@ -1001,6 +1059,116 @@ html.print-handout .reveal pre:has(code.fragment) .hljs.has-highlights tr.highli
   color: var(--color-bg);
 }
 
+/* The part each kind fills, in the blue of its card (rule-own) once that card shows */
+.reveal .phone-beside:has(.rule-own.visible) .phone-own {
+  border-color: var(--color-heading);
+  background: color-mix(in srgb, var(--color-heading) var(--phone-slot-tint), transparent);
+  color: var(--color-heading);
+}
+
+/* A device's icon in the header disc, in place of a holder's initials */
+.reveal .phone-avatar svg {
+  width: var(--phone-device-icon);
+  height: var(--phone-device-icon);
+}
+
+/* Whether a device is on: a dot before the word, in the brand color when it is */
+.reveal .phone-power {
+  display: flex;
+  align-items: center;
+  gap: var(--phone-inline-gap);
+  color: var(--color-muted);
+  font-weight: 600;
+}
+
+.reveal .phone-power::before {
+  content: "";
+  width: var(--phone-power-dot);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.reveal .phone-power-on {
+  color: var(--color-phone-brand);
+}
+
+/* A level from 0 to 100 as a bar: a <progress>, its value in the markdown */
+.reveal .phone-level {
+  appearance: none;
+  width: 100%;
+  height: var(--phone-level-height);
+  border: none;
+  border-radius: 50vmax;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--color-bg) var(--phone-level-track), transparent);
+}
+
+.reveal .phone-level::-webkit-progress-bar {
+  background: transparent;
+}
+
+.reveal .phone-level::-webkit-progress-value {
+  border-radius: 50vmax;
+  background: var(--color-bg);
+}
+
+.reveal .phone-level::-moz-progress-bar {
+  border-radius: 50vmax;
+  background: var(--color-bg);
+}
+
+/* A swap that holds blocks, such as two level bars, rather than a word */
+.reveal .phone-swap-block {
+  display: grid;
+}
+
+/* A button across both columns of the actions */
+.reveal .phone-button-wide {
+  grid-column: 1 / -1;
+}
+
+/* What each kind of device adds, left open in the template */
+.reveal .phone-own {
+  display: grid;
+  place-items: center;
+  padding: var(--phone-own-padding);
+  border: var(--rule-hairline) dashed var(--color-card-edge);
+  border-radius: var(--phone-panel-radius);
+  color: var(--color-muted);
+  font-weight: 600;
+  text-align: center;
+}
+
+/* The home screen: a tile per device, with its icon, its name and its status under it */
+.reveal .phone-tiles {
+  display: grid;
+  gap: var(--phone-tiles-gap);
+}
+
+.reveal .phone-tile {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  column-gap: var(--phone-tile-gap);
+  padding: var(--phone-tile-padding);
+  border: var(--rule-hairline) solid var(--color-card-edge);
+  border-radius: var(--phone-tile-radius);
+}
+
+.reveal .phone-tile > .phone-avatar {
+  grid-row: 1 / 3;
+}
+
+.reveal .phone-tile-name {
+  font-weight: 600;
+}
+
+.reveal .phone-tile .phone-label {
+  color: var(--color-muted);
+  opacity: 1;
+}
+
 /* Memory diagram: two frames on one grid of fixed rows, so arrows can be drawn from row to row.
    Columns: pad, the stack's variables, pad, arrow, pad, the heap's object, pad.
    Rows: pad, titles, four rows (the object's class and its three attributes), the object's own pad, pad */
@@ -1208,6 +1376,223 @@ html.print-handout .reveal pre:has(code.fragment) .hljs.has-highlights tr.highli
   content: "";
   border-block: calc(var(--memory-head) / 2) solid transparent;
   border-left: var(--memory-head) solid var(--color-text);
+}
+
+/* Class hierarchy: a class box with its subclasses under it, nested for more levels.
+   The line from the superclass ends in a hollow arrowhead, as in UML */
+
+.reveal .hierarchy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: var(--hierarchy-size);
+}
+
+.reveal .hierarchy .hierarchy {
+  font-size: 1em; /* nested levels keep the size */
+}
+
+/* Subclasses in columns of one width, so the middle one sits under the superclass's line */
+.reveal .hierarchy-children {
+  position: relative;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  column-gap: var(--hierarchy-gap);
+  width: max-content; /* never squeezed, or the 1fr columns stop being equal */
+  align-items: start;
+  padding-top: var(--hierarchy-link);
+}
+
+/* From the superclass down to the bar: the arrowhead, then the line under it */
+.reveal .hierarchy-children::before {
+  content: "";
+  position: absolute;
+  top: var(--hierarchy-head);
+  left: 50%;
+  height: calc(var(--hierarchy-link) - var(--hierarchy-head));
+  border-left: var(--rule-hairline) solid var(--color-heading);
+  transform: translateX(-50%);
+}
+
+.reveal .hierarchy-children::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: var(--hierarchy-head);
+  height: var(--hierarchy-head);
+  background: var(--color-heading);
+  mask: var(--hierarchy-head-shape) center / contain no-repeat;
+  transform: translateX(-50%);
+}
+
+.reveal .hierarchy-children > .hierarchy {
+  position: relative;
+  padding-top: var(--hierarchy-link);
+}
+
+/* Sibling boxes as wide as their columns, so the gaps between them match */
+.reveal .hierarchy-children > .hierarchy:not(:only-child) > .class-box {
+  align-self: stretch;
+}
+
+/* The bar joining the subclasses, from the first one's middle to the last one's */
+.reveal .hierarchy-children > .hierarchy::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: calc(var(--hierarchy-gap) / -2); /* across half the gap on each side, to meet the next one */
+  right: calc(var(--hierarchy-gap) / -2);
+  border-top: var(--rule-hairline) solid var(--color-heading);
+}
+
+.reveal .hierarchy-children > .hierarchy:first-child::before {
+  left: 50%;
+}
+
+.reveal .hierarchy-children > .hierarchy:last-child::before {
+  right: 50%;
+}
+
+.reveal .hierarchy-children > .hierarchy:only-child::before {
+  content: none;
+}
+
+/* From the bar down to each subclass */
+.reveal .hierarchy-children > .hierarchy::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  height: var(--hierarchy-link);
+  border-left: var(--rule-hairline) solid var(--color-heading);
+  transform: translateX(-50%);
+}
+
+/* A class: its name, its attributes and its methods, each part under a line */
+.reveal .class-box {
+  display: grid;
+  border: var(--rule-hairline) solid var(--color-heading);
+  background: color-mix(in srgb, var(--color-heading) var(--class-box-tint), var(--color-bg));
+}
+
+.reveal .class-box > p {
+  display: grid;
+  margin: 0;
+  padding: var(--class-box-padding);
+}
+
+.reveal .class-box > p + p {
+  border-top: var(--rule-hairline) solid var(--color-code-edge);
+}
+
+.reveal .class-name {
+  justify-items: center;
+}
+
+.reveal .class-name code {
+  color: var(--color-heading);
+  font-weight: 700;
+}
+
+/* abstract or interface, over the name */
+.reveal .class-keyword {
+  color: var(--color-muted);
+  font-size: var(--class-keyword-size);
+  font-style: italic;
+}
+
+.reveal .class-attributes code {
+  color: var(--color-state);
+}
+
+.reveal .class-methods code {
+  color: var(--color-behavior);
+}
+
+/* An interface: a contract, not a class, so its box is dashed */
+.reveal .class-box-interface {
+  border-style: dashed;
+}
+
+/* File explorer: a panel with a title and one row per folder or file, indented by level
+   (explorer-depth-1 to 3). Folders show open, with a chevron; .java files get a cup */
+.reveal .explorer {
+  font-family: var(--font-body);
+  font-size: var(--explorer-size);
+  background: var(--color-explorer-bg);
+  border: var(--rule-hairline) solid var(--color-code-edge);
+  border-radius: var(--explorer-radius);
+  padding-bottom: 0.4em;
+  overflow: hidden;
+}
+
+.reveal .explorer-title {
+  margin: 0;
+  padding: 0.6em 0.8em 0.4em;
+  color: var(--color-muted);
+  font-size: 0.8em;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.reveal .explorer-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+  margin: 0;
+  padding: var(--explorer-row-padding);
+  color: var(--color-text);
+  line-height: 1.4;
+}
+
+/* Cards under it, as far from it as from each other */
+.reveal .explorer + .rules {
+  margin-top: var(--rules-gap);
+}
+
+.reveal .explorer-depth-1 {
+  padding-left: calc(0.8em + var(--explorer-indent));
+}
+
+.reveal .explorer-depth-2 {
+  padding-left: calc(0.8em + 2 * var(--explorer-indent));
+}
+
+.reveal .explorer-depth-3 {
+  padding-left: calc(0.8em + 3 * var(--explorer-indent));
+}
+
+/* Icons: a chevron and a folder before a folder; before a file, a gap the chevron's width and a cup */
+.reveal .explorer-row::before,
+.reveal .explorer-row::after {
+  content: "";
+  flex: none;
+  width: var(--explorer-icon);
+  height: var(--explorer-icon);
+  order: -1;
+}
+
+.reveal .explorer-folder::before {
+  background: var(--color-muted);
+  mask: var(--explorer-chevron-shape) center / contain no-repeat;
+}
+
+.reveal .explorer-folder::after {
+  background: var(--color-explorer-folder);
+  mask: var(--explorer-folder-shape) center / contain no-repeat;
+}
+
+.reveal .explorer-java::after {
+  background: var(--color-explorer-java);
+  mask: var(--explorer-java-shape) center / contain no-repeat;
+}
+
+/* The file whose code is on screen, while its step is the current one, as an editor marks the open file */
+.reveal .explorer-row.current-fragment {
+  background: var(--color-explorer-active);
 }
 
 /* Lecturer business card */
@@ -1871,6 +2256,11 @@ html.print-handout .reveal pre:has(code.fragment) .hljs.has-highlights tr.highli
 
 .reveal .mark-none {
   --mark-tone: var(--color-muted);
+}
+
+/* A mark in a column of text answers lines up with them */
+.reveal .data-table .mark.mark-start {
+  text-align: start;
 }
 
 /* What is judged is code, not a type: the usual code color */

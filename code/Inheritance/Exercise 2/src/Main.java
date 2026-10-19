@@ -1,12 +1,19 @@
-import antiques.*;
+import antiques.Collection;
+import antiques.Furniture;
+import antiques.Painting;
 
 /**
- * Main application class to test the {@link Antique} {@link Collection}  matrix operations.
+ * Tests the matrix operations of a {@link Collection} of antiques.
  *
  * @author Juan Carlos Alfaro Jiménez
  */
 public class Main {
 
+    /**
+     * Fills a collection, deletes some furniture and shows the result.
+     *
+     * @param args the command line arguments, not used.
+     */
     public static void main(String[] args) {
         // 1. Create a collection with a matrix of 4 centuries and 4 columns
         Collection myCollection = new Collection(4, 4);
@@ -42,5 +49,9 @@ public class Main {
         // 3. Display the resulting matrix matching the second table
         System.out.println("\nState after deletions:");
         myCollection.displayMatrix();
+
+        // 4. Print one painting and one piece of furniture
+        System.out.println(myCollection.getAntiqueAt(0, 0));
+        System.out.println(myCollection.getAntiqueAt(1, 1));
     }
 }

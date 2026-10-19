@@ -65,7 +65,7 @@ public class RepairVehicle extends Vehicle {
     }
 
     /**
-     * Copy constructor. Creates a deep copy of the given
+     * Copy constructor. Creates a copy of the given
      * {@link RepairVehicle}.
      *
      * @param other The instance to copy
@@ -83,7 +83,7 @@ public class RepairVehicle extends Vehicle {
      *
      * @return The damage {@code String}
      */
-    public String getDamage() { return damage; }
+    public String getDamage() { return this.damage; }
 
     /**
      * Sets the damage description.
@@ -97,7 +97,7 @@ public class RepairVehicle extends Vehicle {
      *
      * @return The number plate {@code String}
      */
-    public String getNumberPlate() { return numberPlate; }
+    public String getNumberPlate() { return this.numberPlate; }
 
     /**
      * Sets the number plate of the vehicle.
@@ -111,7 +111,7 @@ public class RepairVehicle extends Vehicle {
      *
      * @return {@code true} if the vehicle is repaired; {@code false} otherwise
      */
-    public boolean isRepaired() { return repaired; }
+    public boolean isRepaired() { return this.repaired; }
 
     /**
      * Sets the repair status of the vehicle.
@@ -125,7 +125,7 @@ public class RepairVehicle extends Vehicle {
      *
      * @return The priority value
      */
-    public int getPriority() { return priority; }
+    public int getPriority() { return this.priority; }
 
     /**
      * Sets the repair priority of the vehicle. The value must be
@@ -150,10 +150,10 @@ public class RepairVehicle extends Vehicle {
     public String toString() {
         return "RepairVehicle{" +
                super.toString() +
-               ", damage='" + damage + '\'' +
-               ", numberPlate='" + numberPlate + '\'' +
-               ", repaired=" + repaired +
-               ", priority=" + priority +
+               ", damage='" + this.damage + '\'' +
+               ", numberPlate='" + this.numberPlate + '\'' +
+               ", repaired=" + this.repaired +
+               ", priority=" + this.priority +
                '}';
     }
 
@@ -170,20 +170,7 @@ public class RepairVehicle extends Vehicle {
         if (this == object) return true;
         if (!super.equals(object)) return false;
         RepairVehicle other = (RepairVehicle) object;
-        return numberPlate != null && numberPlate.equals(other.numberPlate);
+        return this.numberPlate != null && this.numberPlate.equals(other.numberPlate);
     }
 
-    /**
-     * Creates and returns a deep copy of this {@link RepairVehicle}.
-     *
-     * @return A cloned {@link RepairVehicle} instance
-     */
-    @Override
-    public RepairVehicle clone() {
-        try {
-            return (RepairVehicle) super.clone();
-        } catch (CloneNotSupportedException e) {
-            return new RepairVehicle(this);
-        }
-    }
 }

@@ -1,8 +1,6 @@
-import java.util.Random;
-
 /**
  * Main application class to demonstrate polymorphism and inheritance.
- * Creates an array of random employees and executes their methods.
+ * Creates an array of employees of every type and executes their methods.
  *
  * @author Juan Carlos Alfaro Jiménez
  */
@@ -14,28 +12,11 @@ public class Main {
      * @param args Command line arguments (not used).
      */
     public static void main(String[] args) {
-        Employee[] employees = new Employee[10];
-        Random random = new Random();
-
-        // 1. Store ten random employees in the array
-        for (int i = 0; i < employees.length; i++) {
-            int choice = random.nextInt(4);
-
-            switch (choice) {
-                case 0:
-                    employees[i] = new Employee();
-                    break;
-                case 1:
-                    employees[i] = new Lawyer();
-                    break;
-                case 2:
-                    employees[i] = new Secretary();
-                    break;
-                case 3:
-                    employees[i] = new Janitor();
-                    break;
-            }
-        }
+        // 1. Store ten employees of the four types in an array
+        Employee[] employees = {
+                new Employee(), new Lawyer(), new Secretary(), new Janitor(), new Lawyer(),
+                new Janitor(), new Employee(), new Secretary(), new Lawyer(), new Janitor()
+        };
 
         // 2. Iterate through the array and call methods
         for (int i = 0; i < employees.length; i++) {

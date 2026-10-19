@@ -19,7 +19,7 @@ import commerces.Restaurant;
  * @see Restaurant
  * @see CarDealership
  */
-public class CommerceAssociation implements Cloneable {
+public class CommerceAssociation {
 
     /** Default maximum number of commerces in the association. */
     private static final int DEFAULT_CAPACITY = 20;
@@ -62,8 +62,8 @@ public class CommerceAssociation implements Cloneable {
     }
 
     /**
-     * Copy constructor. Creates a deep copy of the given
-     * {@link CommerceAssociation}.
+     * Copy constructor. Creates a copy of the given
+     * {@link CommerceAssociation}, with an array of its own; the commerces in it are shared.
      *
      * @param other The instance to copy
      */
@@ -72,11 +72,7 @@ public class CommerceAssociation implements Cloneable {
         this.president = other.president;
         this.commerces = new Commerce[other.commerces.length];
         for (int i = 0; i < other.commerceCount; i++) {
-            try {
-                this.commerces[i] = other.commerces[i].clone();
-            } catch (CloneNotSupportedException e) {
-                this.commerces[i] = other.commerces[i];
-            }
+            this.commerces[i] = other.commerces[i];
         }
         this.commerceCount = other.commerceCount;
     }
@@ -88,15 +84,11 @@ public class CommerceAssociation implements Cloneable {
      * @return The array of member {@link Commerce} objects
      */
     public Commerce[] getCommerces() {
-        Commerce[] commerces = new Commerce[commerceCount];
-        for (int i = 0; i < commerceCount; i++) {
-            try {
-                commerces[i] = this.commerces[i].clone();
-            } catch (CloneNotSupportedException e) {
-                commerces[i] = this.commerces[i];
-            }
+        Commerce[] copy = new Commerce[this.commerceCount];
+        for (int i = 0; i < this.commerceCount; i++) {
+            copy[i] = this.commerces[i];
         }
-        return commerces;
+        return copy;
     }
 
     /**
@@ -104,7 +96,7 @@ public class CommerceAssociation implements Cloneable {
      *
      * @return The address {@code String}
      */
-    public String getAddress() { return address; }
+    public String getAddress() { return this.address; }
 
     /**
      * Sets the address of the association.
@@ -118,7 +110,7 @@ public class CommerceAssociation implements Cloneable {
      *
      * @return The president's name
      */
-    public String getPresident() { return president; }
+    public String getPresident() { return this.president; }
 
     /**
      * Sets the name of the association president.
@@ -139,11 +131,11 @@ public class CommerceAssociation implements Cloneable {
      * @param commerce The commerce to add
      */
     public void addCommerce(Commerce commerce) {
-        if (commerceCount >= commerces.length) return;
-        for (int i = 0; i < commerceCount; i++) {
-            if (commerces[i].equals(commerce)) return;
+        if (this.commerceCount >= this.commerces.length) return;
+        for (int i = 0; i < this.commerceCount; i++) {
+            if (this.commerces[i].equals(commerce)) return;
         }
-        commerces[commerceCount++] = commerce;
+        this.commerces[this.commerceCount++] = commerce;
     }
 
     /**
@@ -156,10 +148,10 @@ public class CommerceAssociation implements Cloneable {
      * @param carDealership The car dealership to put in its place
      */
     public void replaceRestaurant(Restaurant restaurant, CarDealership carDealership) {
-        for (int i = 0; i < commerceCount; i++) {
-            if (commerces[i] instanceof Restaurant &&
-                commerces[i].equals(restaurant)) {
-                commerces[i] = carDealership;
+        for (int i = 0; i < this.commerceCount; i++) {
+            if (this.commerces[i] instanceof Restaurant &&
+                this.commerces[i].equals(restaurant)) {
+                this.commerces[i] = carDealership;
                 return;
             }
         }
@@ -173,8 +165,8 @@ public class CommerceAssociation implements Cloneable {
      * name followed by each employee's {@link Employee#toString()} output.</p>
      */
     public void printDealershipEmployees() {
-        for (int i = 0; i < commerceCount; i++) {
-            if (commerces[i] instanceof CarDealership cd) {
+        for (int i = 0; i < this.commerceCount; i++) {
+            if (this.commerces[i] instanceof CarDealership cd) {
                 System.out.println("=== CarDealership: " + cd.getName() + " ===");
                 for (Employee e : cd.getEmployees()) {
                     System.out.println("  " + e);
@@ -192,12 +184,12 @@ public class CommerceAssociation implements Cloneable {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("CommerceAssociation{");
-        sb.append("address='").append(address).append('\'');
-        sb.append(", president='").append(president).append('\'');
+        sb.append("address='").append(this.address).append('\'');
+        sb.append(", president='").append(this.president).append('\'');
         sb.append(", commerces=[");
-        for (int i = 0; i < commerceCount; i++) {
-            sb.append(commerces[i].getName());
-            if (i < commerceCount - 1) sb.append(", ");
+        for (int i = 0; i < this.commerceCount; i++) {
+            sb.append(this.commerces[i].getName());
+            if (i < this.commerceCount - 1) sb.append(", ");
         }
         sb.append("]}");
         return sb.toString();
@@ -213,31 +205,13 @@ public class CommerceAssociation implements Cloneable {
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
-        if (object == null || getClass() != object.getClass()) return false;
+        if (object == null || this.getClass() != object.getClass()) return false;
         CommerceAssociation other = (CommerceAssociation) object;
-        boolean sameAddress = (address == null ? other.address == null
-                                               : address.equals(other.address));
-        boolean samePresident = (president == null ? other.president == null
-                                                   : president.equals(other.president));
+        boolean sameAddress = (this.address == null ? other.address == null
+                                               : this.address.equals(other.address));
+        boolean samePresident = (this.president == null ? other.president == null
+                                                   : this.president.equals(other.president));
         return sameAddress && samePresident;
     }
 
-    /**
-     * Creates and returns a deep copy of this {@link CommerceAssociation}.
-     *
-     * @return A cloned {@link CommerceAssociation} instance
-     */
-    @Override
-    public CommerceAssociation clone() {
-        try {
-            CommerceAssociation cloned = (CommerceAssociation) super.clone();
-            cloned.commerces = new Commerce[this.commerces.length];
-            for (int i = 0; i < this.commerceCount; i++) {
-                cloned.commerces[i] = this.commerces[i].clone();
-            }
-            return cloned;
-        } catch (CloneNotSupportedException e) {
-            return new CommerceAssociation(this);
-        }
-    }
 }

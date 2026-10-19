@@ -111,10 +111,9 @@ public class Main {
         association.printDealershipEmployees();
         System.out.println();
 
-        // 6. Clone the association
+        // 6. Copy the association with its copy constructor
 
-        CommerceAssociation associationCopy = association.clone();
-        System.out.println("Association cloned successfully.");
+        CommerceAssociation associationCopy = new CommerceAssociation(association);
         System.out.println("Original equals copy: " + association.equals(associationCopy));
         System.out.println("Same object: " + (association == associationCopy));
         System.out.println();

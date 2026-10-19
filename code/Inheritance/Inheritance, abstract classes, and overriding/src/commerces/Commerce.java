@@ -20,7 +20,7 @@ import java.time.LocalDate;
  * @see Restaurant
  * @see Employee
  */
-public abstract class Commerce implements Cloneable {
+public abstract class Commerce {
 
     /** Number of months in the sales matrix. */
     protected static final int MONTHS = 12;
@@ -115,7 +115,7 @@ public abstract class Commerce implements Cloneable {
     }
 
     /**
-     * Copy constructor. Creates a deep copy of the given
+     * Copy constructor. Creates a copy of the given
      * {@link Commerce}.
      *
      * @param other The {@link Commerce} instance to copy
@@ -125,7 +125,7 @@ public abstract class Commerce implements Cloneable {
         this.address = other.address;
         this.identifier = other.identifier;
 
-        // Deep-copy dailySales matrix
+        // Copy the dailySales matrix
         this.dailySales = new double[MONTHS][DAYS_PER_MONTH];
         for (int i = 0; i < MONTHS; i++) {
             for  (int j = 0; j < DAYS_PER_MONTH; j++) {
@@ -133,16 +133,16 @@ public abstract class Commerce implements Cloneable {
             }
         }
 
-        // Deep-copy stock array
+        // Copy the stock array
         this.stock = new double[other.stock.length];
-        for (int i = 0; i < stock.length; i++) {
+        for (int i = 0; i < this.stock.length; i++) {
             this.stock[i] = other.stock[i];
         }
 
-        // Deep-copy employees array
+        // Copy the employees array; the employees themselves are shared
         this.employees = new Employee[other.employees.length];
         for (int i = 0; i < other.employeeCount; i++) {
-            this.employees[i] = other.employees[i].clone();
+            this.employees[i] = other.employees[i];
         }
         this.employeeCount = other.employeeCount;
     }
@@ -152,7 +152,7 @@ public abstract class Commerce implements Cloneable {
      *
      * @return The name {@code String}
      */
-    public String getName() { return name; }
+    public String getName() { return this.name; }
 
     /**
      * Sets the commercial name of the business.
@@ -166,7 +166,7 @@ public abstract class Commerce implements Cloneable {
      *
      * @return The address {@code String}
      */
-    public String getAddress() { return address; }
+    public String getAddress() { return this.address; }
 
     /**
      * Sets the physical address of the business.
@@ -180,7 +180,7 @@ public abstract class Commerce implements Cloneable {
      *
      * @return The identifier {@code String}
      */
-    public String getIdentifier() { return identifier; }
+    public String getIdentifier() { return this.identifier; }
 
     /**
      * Sets the tax identification code (CIF).
@@ -194,7 +194,7 @@ public abstract class Commerce implements Cloneable {
      *
      * @return The stock array
      */
-    public double[] getStock() { return stock; }
+    public double[] getStock() { return this.stock; }
 
     /**
      * Sets the stock array.
@@ -209,11 +209,11 @@ public abstract class Commerce implements Cloneable {
      * @return The array of current employees
      */
     public Employee[] getEmployees() {
-        Employee[] employees = new Employee[employeeCount];
+        Employee[] copy = new Employee[this.employeeCount];
         for (int i = 0; i < this.employeeCount; i++) {
-            employees[i] = this.employees[i].clone();
+            copy[i] = this.employees[i];
         }
-        return employees;
+        return copy;
     }
 
     /**
@@ -221,7 +221,7 @@ public abstract class Commerce implements Cloneable {
      *
      * @return The employee count
      */
-    public int getEmployeeCount() { return employeeCount; }
+    public int getEmployeeCount() { return this.employeeCount; }
 
     /**
      * Calculates and returns the total sum of all values stored in
@@ -233,7 +233,7 @@ public abstract class Commerce implements Cloneable {
         double total = 0.0;
         for (int m = 0; m < MONTHS; m++) {
             for (int d = 0; d < DAYS_PER_MONTH; d++) {
-                total += dailySales[m][d];
+                total += this.dailySales[m][d];
             }
         }
         return total;
@@ -248,7 +248,7 @@ public abstract class Commerce implements Cloneable {
     public double salesInMonth(int month) {
         double total = 0.0;
         for (int d = 0; d < DAYS_PER_MONTH; d++) {
-            total += dailySales[month][d];
+            total += this.dailySales[month][d];
         }
         return total;
     }
@@ -262,9 +262,9 @@ public abstract class Commerce implements Cloneable {
      */
     public int topSalesMonth() {
         int topMonth = 0;
-        double topSales = salesInMonth(0);
+        double topSales = this.salesInMonth(0);
         for (int m = 1; m < MONTHS; m++) {
-            double s = salesInMonth(m);
+            double s = this.salesInMonth(m);
             if (s > topSales) {
                 topSales = s;
                 topMonth = m;
@@ -281,7 +281,7 @@ public abstract class Commerce implements Cloneable {
      * @param amount The sale amount to add
      */
     public void updateSales(int month, int day, double amount) {
-        dailySales[month][day] += amount;
+        this.dailySales[month][day] += amount;
     }
 
     /**
@@ -295,7 +295,7 @@ public abstract class Commerce implements Cloneable {
         LocalDate today = LocalDate.now();
         int month = today.getMonthValue() - 1; // 0-based
         int day = today.getDayOfMonth() - 1;   // 0-based
-        dailySales[month][day] += amount;
+        this.dailySales[month][day] += amount;
     }
 
     /**
@@ -305,14 +305,14 @@ public abstract class Commerce implements Cloneable {
      * @param employee The {@link Employee} to hire
      */
     public void hireEmployee(Employee employee) {
-        if (employeeCount == employees.length) {
-            Employee[] newEmployees = new Employee[employees.length * 2];
-            for (int i = 0; i < employees.length; i++) {
-                newEmployees[i] = employees[i];
+        if (this.employeeCount == this.employees.length) {
+            Employee[] newEmployees = new Employee[this.employees.length * 2];
+            for (int i = 0; i < this.employees.length; i++) {
+                newEmployees[i] = this.employees[i];
             }
-            employees = newEmployees;
+            this.employees = newEmployees;
         }
-        employees[employeeCount++] = employee;
+        this.employees[this.employeeCount++] = employee;
     }
 
     /**
@@ -323,14 +323,14 @@ public abstract class Commerce implements Cloneable {
      * @return The removed {@link Employee}, or {@code null} if not found
      */
     public Employee fireEmployee(String identifier) {
-        for (int i = 0; i < employeeCount; i++) {
-            if (employees[i].getIdentifier().equals(identifier)) {
-                Employee removed = employees[i];
+        for (int i = 0; i < this.employeeCount; i++) {
+            if (this.employees[i].getIdentifier().equals(identifier)) {
+                Employee removed = this.employees[i];
                 // Compact: shift left
-                for (int j = i; j < employeeCount - 1; j++) {
-                    employees[j] = employees[j + 1];
+                for (int j = i; j < this.employeeCount - 1; j++) {
+                    this.employees[j] = this.employees[j + 1];
                 }
-                employees[--employeeCount] = null;
+                this.employees[--this.employeeCount] = null;
                 return removed;
             }
         }
@@ -347,7 +347,7 @@ public abstract class Commerce implements Cloneable {
         String[] months = {"January", "February", "March", "April", "May", "June",
                            "July", "August", "September", "October", "November", "December"};
         for (int m = 0; m < MONTHS; m++) {
-            sb.append(String.format("  %s: %.2f%n", months[m], salesInMonth(m)));
+            sb.append("  ").append(months[m]).append(": ").append(this.salesInMonth(m)).append("\n");
         }
         return sb.toString();
     }
@@ -362,9 +362,9 @@ public abstract class Commerce implements Cloneable {
         StringBuilder sb = new StringBuilder("Daily sales:\n");
         for (int m = 0; m < MONTHS; m++) {
             for (int d = 0; d < DAYS_PER_MONTH; d++) {
-                if (dailySales[m][d] > 0) {
-                    sb.append(String.format("  Month %02d, day %02d: %.2f%n",
-                              m + 1, d + 1, dailySales[m][d]));
+                if (this.dailySales[m][d] > 0) {
+                    sb.append("  Month ").append(m + 1).append(", day ").append(d + 1)
+                      .append(": ").append(this.dailySales[m][d]).append("\n");
                 }
             }
         }
@@ -379,10 +379,10 @@ public abstract class Commerce implements Cloneable {
      */
     @Override
     public String toString() {
-        return "Commerce{name='" + name + '\'' +
-               ", address='" + address + '\'' +
-               ", identifier='" + identifier + '\'' +
-               ", employees=" + employeeCount +
+        return "Commerce{name='" + this.name + '\'' +
+               ", address='" + this.address + '\'' +
+               ", identifier='" + this.identifier + '\'' +
+               ", employees=" + this.employeeCount +
                '}';
     }
 
@@ -395,39 +395,9 @@ public abstract class Commerce implements Cloneable {
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
-        if (object == null || getClass() != object.getClass()) return false;
+        if (object == null || this.getClass() != object.getClass()) return false;
         Commerce other = (Commerce) object;
-        return identifier != null && identifier.equals(other.identifier);
+        return this.identifier != null && this.identifier.equals(other.identifier);
     }
 
-    /**
-     * Creates and returns a deep copy of this {@link Commerce}.
-     * Subclasses should override this method to include their own
-     * additional fields.
-     *
-     * @return A cloned {@link Commerce} instance
-     * @throws CloneNotSupportedException If cloning is not supported
-     */
-    @Override
-    public Commerce clone() throws CloneNotSupportedException {
-        Commerce cloned = (Commerce) super.clone();
-        // Deep-copy dailySales
-        cloned.dailySales = new double[MONTHS][DAYS_PER_MONTH];
-        for (int i = 0; i < MONTHS; i++) {
-            for (int  j = 0; j < DAYS_PER_MONTH; j++) {
-                cloned.dailySales[i][j] = dailySales[i][j];
-            }
-        }
-        // Deep-copy stock
-        cloned.stock = new double[stock.length];
-        for (int i = 0; i < stock.length; i++) {
-            cloned.stock[i] = this.stock[i];
-        }
-        // Deep-copy employees
-        cloned.employees = new Employee[this.employees.length];
-        for (int i = 0; i < this.employeeCount; i++) {
-            cloned.employees[i] = this.employees[i].clone();
-        }
-        return cloned;
-    }
 }

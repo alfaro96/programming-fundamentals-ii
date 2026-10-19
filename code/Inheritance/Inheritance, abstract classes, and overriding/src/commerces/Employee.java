@@ -9,7 +9,7 @@ package commerces;
  * @author Juan Carlos Alfaro Jiménez
  * @see Commerce
  */
-public class Employee implements Cloneable {
+public class Employee {
 
     /** National identification number of the employee. */
     private String identifier;
@@ -99,7 +99,7 @@ public class Employee implements Cloneable {
      *
      * @return The identifier string
      */
-    public String getIdentifier() { return identifier; }
+    public String getIdentifier() { return this.identifier; }
 
     /**
      * Sets the identifier of the employee.
@@ -113,7 +113,7 @@ public class Employee implements Cloneable {
      *
      * @return The employee's name
      */
-    public String getName() { return name; }
+    public String getName() { return this.name; }
 
     /**
      * Sets the full name of the employee.
@@ -127,7 +127,7 @@ public class Employee implements Cloneable {
      *
      * @return The address {@code String}
      */
-    public String getAddress() { return address; }
+    public String getAddress() { return this.address; }
 
     /**
      * Sets the home address of the employee.
@@ -141,7 +141,7 @@ public class Employee implements Cloneable {
      *
      * @return The phone number {@code String}
      */
-    public String getPhoneNumber() { return phoneNumber; }
+    public String getPhoneNumber() { return this.phoneNumber; }
 
     /**
      * Sets the phone number of the employee.
@@ -155,7 +155,7 @@ public class Employee implements Cloneable {
      *
      * @return The email string
      */
-    public String getEmail() { return email; }
+    public String getEmail() { return this.email; }
 
     /**
      * Sets the email address of the employee.
@@ -169,7 +169,7 @@ public class Employee implements Cloneable {
      *
      * @return The starting date string
      */
-    public String getStartingDate() { return startingDate; }
+    public String getStartingDate() { return this.startingDate; }
 
     /**
      * Sets the employment start date.
@@ -183,7 +183,7 @@ public class Employee implements Cloneable {
      *
      * @return The position {@code String}
      */
-    public String getPosition() { return position; }
+    public String getPosition() { return this.position; }
 
     /**
      * Sets the job position of the employee.
@@ -197,7 +197,7 @@ public class Employee implements Cloneable {
      *
      * @return The salary value
      */
-    public double getSalary() { return salary; }
+    public double getSalary() { return this.salary; }
 
     /**
      * Sets the monthly salary of the employee.
@@ -214,14 +214,14 @@ public class Employee implements Cloneable {
     @Override
     public String toString() {
         return "Employee{" +
-               "Identifier='" + identifier + '\'' +
-               ", name='" + name + '\'' +
-               ", address='" + address + '\'' +
-               ", phoneNumber='" + phoneNumber + '\'' +
-               ", email='" + email + '\'' +
-               ", startingDate='" + startingDate + '\'' +
-               ", position='" + position + '\'' +
-               ", salary=" + salary +
+               "Identifier='" + this.identifier + '\'' +
+               ", name='" + this.name + '\'' +
+               ", address='" + this.address + '\'' +
+               ", phoneNumber='" + this.phoneNumber + '\'' +
+               ", email='" + this.email + '\'' +
+               ", startingDate='" + this.startingDate + '\'' +
+               ", position='" + this.position + '\'' +
+               ", salary=" + this.salary +
                '}';
     }
 
@@ -235,22 +235,9 @@ public class Employee implements Cloneable {
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
-        if (object == null || getClass() != object.getClass()) return false;
+        if (object == null || this.getClass() != object.getClass()) return false;
         Employee other = (Employee) object;
-        return identifier != null && identifier.equals(other.identifier);
+        return this.identifier != null && this.identifier.equals(other.identifier);
     }
 
-    /**
-     * Creates and returns a deep copy of this {@link Employee}.
-     *
-     * @return A cloned {@link Employee} instance
-     */
-    @Override
-    public Employee clone() {
-        try {
-            return (Employee) super.clone();
-        } catch (CloneNotSupportedException e) {
-            return new Employee(this);
-        }
-    }
 }

@@ -11,7 +11,7 @@ package vehicles;
  * @see RepairVehicle
  * @see SaleVehicle
  */
-public abstract class Vehicle implements Cloneable {
+public abstract class Vehicle {
 
     /** Brand (manufacturer) of the vehicle. */
     private String brand;
@@ -54,7 +54,7 @@ public abstract class Vehicle implements Cloneable {
      *
      * @return The brand string
      */
-    public String getBrand() { return brand; }
+    public String getBrand() { return this.brand; }
 
     /**
      * Sets the brand of the vehicle.
@@ -68,7 +68,7 @@ public abstract class Vehicle implements Cloneable {
      *
      * @return The model string
      */
-    public String getModel() { return model; }
+    public String getModel() { return this.model; }
 
     /**
      * Sets the model of the vehicle.
@@ -86,7 +86,7 @@ public abstract class Vehicle implements Cloneable {
      */
     @Override
     public String toString() {
-        return "Vehicle{brand='" + brand + "', model='" + model + "'}";
+        return "Vehicle{brand='" + this.brand + "', model='" + this.model + "'}";
     }
 
     /**
@@ -99,22 +99,10 @@ public abstract class Vehicle implements Cloneable {
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
-        if (object == null || getClass() != object.getClass()) return false;
+        if (object == null || this.getClass() != object.getClass()) return false;
         Vehicle other = (Vehicle) object;
-        return (brand == null ? other.brand == null : brand.equals(other.brand)) &&
-               (model == null ? other.model == null : model.equals(other.model));
+        return (this.brand == null ? other.brand == null : this.brand.equals(other.brand)) &&
+               (this.model == null ? other.model == null : this.model.equals(other.model));
     }
 
-    /**
-     * Creates and returns a deep copy of this {@link Vehicle}.
-     * Concrete subclasses should override this method to clone their
-     * own fields as well.
-     *
-     * @return A cloned {@code Vehicle} instance
-     * @throws CloneNotSupportedException If cloning is not supported
-     */
-    @Override
-    public Vehicle clone() throws CloneNotSupportedException {
-        return (Vehicle) super.clone();
-    }
 }

@@ -74,7 +74,7 @@ public class CarDealership extends Commerce {
     }
 
     /**
-     * Copy constructor. Creates a deep copy of the given
+     * Copy constructor. Creates a copy of the given
      * {@link CarDealership}.
      *
      * @param other The instance to copy
@@ -83,13 +83,13 @@ public class CarDealership extends Commerce {
         super(other);
         this.vehiclesOnSale = new SaleVehicle[other.vehiclesOnSale.length];
         for (int i = 0; i < other.saleCount; i++) {
-            this.vehiclesOnSale[i] = other.vehiclesOnSale[i].clone();
+            this.vehiclesOnSale[i] = other.vehiclesOnSale[i];
         }
         this.saleCount = other.saleCount;
 
         this.vehiclesForRepair = new RepairVehicle[other.vehiclesForRepair.length];
         for (int i = 0; i < other.repairCount; i++) {
-            this.vehiclesForRepair[i] = other.vehiclesForRepair[i].clone();
+            this.vehiclesForRepair[i] = other.vehiclesForRepair[i];
         }
         this.repairCount = other.repairCount;
     }
@@ -100,11 +100,11 @@ public class CarDealership extends Commerce {
      * @return An array of {@link SaleVehicle} currently on sale
      */
     public SaleVehicle[] getVehiclesOnSale() {
-        SaleVehicle[] vehiclesOnSale = new SaleVehicle[this.vehiclesOnSale.length];
-        for (int i = 0; i < saleCount; i++) {
-            vehiclesOnSale[i] = this.vehiclesOnSale[i].clone();
+        SaleVehicle[] copy = new SaleVehicle[this.vehiclesOnSale.length];
+        for (int i = 0; i < this.saleCount; i++) {
+            copy[i] = this.vehiclesOnSale[i];
         }
-        return vehiclesOnSale;
+        return copy;
     }
 
     /**
@@ -113,11 +113,11 @@ public class CarDealership extends Commerce {
      * @return An array of {@link RepairVehicle} awaiting or undergoing repair
      */
     public RepairVehicle[] getVehiclesForRepair() {
-        RepairVehicle[] vehiclesForRepair = new RepairVehicle[this.vehiclesForRepair.length];
-        for (int i = 0; i < vehiclesForRepair.length; i++) {
-            vehiclesForRepair[i] = this.vehiclesForRepair[i].clone();
+        RepairVehicle[] copy = new RepairVehicle[this.vehiclesForRepair.length];
+        for (int i = 0; i < copy.length; i++) {
+            copy[i] = this.vehiclesForRepair[i];
         }
-        return vehiclesForRepair;
+        return copy;
     }
 
     /**
@@ -128,22 +128,22 @@ public class CarDealership extends Commerce {
      * @param vehicle The vehicle to add to the repair queue
      */
     public void addVehicleForRepair(RepairVehicle vehicle) {
-        if (repairCount >= vehiclesForRepair.length) return;
+        if (this.repairCount >= this.vehiclesForRepair.length) return;
 
         // Find insertion position (first vehicle with lower priority)
-        int pos = repairCount;
-        for (int i = 0; i < repairCount; i++) {
-            if (vehiclesForRepair[i].getPriority() > vehicle.getPriority()) {
+        int pos = this.repairCount;
+        for (int i = 0; i < this.repairCount; i++) {
+            if (this.vehiclesForRepair[i].getPriority() > vehicle.getPriority()) {
                 pos = i;
                 break;
             }
         }
         // Shift right to make room
-        for (int i = repairCount; i > pos; i--) {
-            vehiclesForRepair[i] = vehiclesForRepair[i - 1];
+        for (int i = this.repairCount; i > pos; i--) {
+            this.vehiclesForRepair[i] = this.vehiclesForRepair[i - 1];
         }
-        vehiclesForRepair[pos] = vehicle;
-        repairCount++;
+        this.vehiclesForRepair[pos] = vehicle;
+        this.repairCount++;
     }
 
     /**
@@ -152,9 +152,9 @@ public class CarDealership extends Commerce {
      * @param numberPlate The number plate of the vehicle to mark repaired
      */
     public void repairVehicle(String numberPlate) {
-        for (int i = 0; i < repairCount; i++) {
-            if (vehiclesForRepair[i].getNumberPlate().equals(numberPlate)) {
-                vehiclesForRepair[i].setRepaired(true);
+        for (int i = 0; i < this.repairCount; i++) {
+            if (this.vehiclesForRepair[i].getNumberPlate().equals(numberPlate)) {
+                this.vehiclesForRepair[i].setRepaired(true);
                 return;
             }
         }
@@ -169,14 +169,14 @@ public class CarDealership extends Commerce {
      * @return The picked-up {@link RepairVehicle}, or {@code null}
      */
     public RepairVehicle pickupVehicle(String numberPlate) {
-        for (int i = 0; i < repairCount; i++) {
-            RepairVehicle rv = vehiclesForRepair[i];
+        for (int i = 0; i < this.repairCount; i++) {
+            RepairVehicle rv = this.vehiclesForRepair[i];
             if (rv.getNumberPlate().equals(numberPlate) && rv.isRepaired()) {
                 // Compact
-                for (int j = i; j < repairCount - 1; j++) {
-                    vehiclesForRepair[j] = vehiclesForRepair[j + 1];
+                for (int j = i; j < this.repairCount - 1; j++) {
+                    this.vehiclesForRepair[j] = this.vehiclesForRepair[j + 1];
                 }
-                vehiclesForRepair[--repairCount] = null;
+                this.vehiclesForRepair[--this.repairCount] = null;
                 return rv;
             }
         }
@@ -190,8 +190,8 @@ public class CarDealership extends Commerce {
      * @param vehicle The vehicle to add
      */
     public void addSale(SaleVehicle vehicle) {
-        if (saleCount < vehiclesOnSale.length) {
-            vehiclesOnSale[saleCount++] = vehicle;
+        if (this.saleCount < this.vehiclesOnSale.length) {
+            this.vehiclesOnSale[this.saleCount++] = vehicle;
         }
     }
 
@@ -206,15 +206,15 @@ public class CarDealership extends Commerce {
      * @return The sold {@link SaleVehicle}, or {@code null} if not found
      */
     public SaleVehicle sellVehicle(String identifier) {
-        for (int i = 0; i < saleCount; i++) {
-            if (vehiclesOnSale[i].getIdentifier().equals(identifier)) {
-                SaleVehicle sold = vehiclesOnSale[i];
+        for (int i = 0; i < this.saleCount; i++) {
+            if (this.vehiclesOnSale[i].getIdentifier().equals(identifier)) {
+                SaleVehicle sold = this.vehiclesOnSale[i];
                 // Compact
-                for (int j = i; j < saleCount - 1; j++) {
-                    vehiclesOnSale[j] = vehiclesOnSale[j + 1];
+                for (int j = i; j < this.saleCount - 1; j++) {
+                    this.vehiclesOnSale[j] = this.vehiclesOnSale[j + 1];
                 }
-                vehiclesOnSale[--saleCount] = null;
-                updateSales(sold.getPrice());
+                this.vehiclesOnSale[--this.saleCount] = null;
+                this.updateSales(sold.getPrice());
                 return sold;
             }
         }
@@ -229,8 +229,8 @@ public class CarDealership extends Commerce {
      */
     public String toStringVehiclesOnSale() {
         StringBuilder sb = new StringBuilder("Vehicles on sale:\n");
-        for (int i = 0; i < saleCount; i++) {
-            sb.append("  ").append(vehiclesOnSale[i]).append('\n');
+        for (int i = 0; i < this.saleCount; i++) {
+            sb.append("  ").append(this.vehiclesOnSale[i]).append('\n');
         }
         return sb.toString();
     }
@@ -243,8 +243,8 @@ public class CarDealership extends Commerce {
      */
     public String toStringVehiclesForRepair() {
         StringBuilder sb = new StringBuilder("Vehicles for repair:\n");
-        for (int i = 0; i < repairCount; i++) {
-            sb.append("  ").append(vehiclesForRepair[i]).append('\n');
+        for (int i = 0; i < this.repairCount; i++) {
+            sb.append("  ").append(this.vehiclesForRepair[i]).append('\n');
         }
         return sb.toString();
     }
@@ -260,8 +260,8 @@ public class CarDealership extends Commerce {
     public String toString() {
         return "CarDealership{" +
                super.toString() +
-               ", saleCount=" + saleCount +
-               ", repairCount=" + repairCount +
+               ", saleCount=" + this.saleCount +
+               ", repairCount=" + this.repairCount +
                '}';
     }
 
@@ -277,38 +277,16 @@ public class CarDealership extends Commerce {
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
-        if (object == null || getClass() != object.getClass()) return false;
+        if (object == null || this.getClass() != object.getClass()) return false;
         CarDealership other = (CarDealership) object;
-        if (saleCount != other.saleCount || repairCount != other.repairCount) return false;
-        for (int i = 0; i < saleCount; i++) {
-            if (!vehiclesOnSale[i].equals(other.vehiclesOnSale[i])) return false;
+        if (this.saleCount != other.saleCount || this.repairCount != other.repairCount) return false;
+        for (int i = 0; i < this.saleCount; i++) {
+            if (!this.vehiclesOnSale[i].equals(other.vehiclesOnSale[i])) return false;
         }
-        for (int i = 0; i < repairCount; i++) {
-            if (!vehiclesForRepair[i].equals(other.vehiclesForRepair[i])) return false;
+        for (int i = 0; i < this.repairCount; i++) {
+            if (!this.vehiclesForRepair[i].equals(other.vehiclesForRepair[i])) return false;
         }
         return true;
     }
 
-    /**
-     * Creates and returns a deep copy of this {@link CarDealership}.
-     *
-     * @return A cloned {@link CarDealership} instance
-     */
-    @Override
-    public CarDealership clone() {
-        try {
-            CarDealership cloned = (CarDealership) super.clone();
-            cloned.vehiclesOnSale = new SaleVehicle[this.vehiclesOnSale.length];
-            for (int i = 0; i < this.saleCount; i++) {
-                cloned.vehiclesOnSale[i] = this.vehiclesOnSale[i].clone();
-            }
-            cloned.vehiclesForRepair = new RepairVehicle[this.vehiclesForRepair.length];
-            for (int i = 0; i < this.repairCount; i++) {
-                cloned.vehiclesForRepair[i] = this.vehiclesForRepair[i].clone();
-            }
-            return cloned;
-        } catch (CloneNotSupportedException e) {
-            return new CarDealership(this);
-        }
-    }
 }

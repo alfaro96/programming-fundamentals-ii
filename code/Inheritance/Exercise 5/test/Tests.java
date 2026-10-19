@@ -51,20 +51,21 @@ public class Tests {
   }
 
   /**
-   * Verifies the {@link Comparable} implementation inside SingleFamily.
+   * Verifies {@link SingleFamily#paysMoreTaxThan}, also when both taxes are equal.
    */
   @Test
-  public void testSingleFamilyCompareTo() {
+  public void testSingleFamilyPaysMoreTaxThan() {
     SingleFamily cheapHome = new SingleFamily(100000.0, 1, 20.0); // Tax: 20000
     SingleFamily expensiveHome = new SingleFamily(200000.0, 2, 40.0); // Tax: 40000
 
-    assertTrue("cheapHome should be less than expensiveHome based on tax",
-            cheapHome.compareTo(expensiveHome) < 0);
+    assertTrue("expensiveHome should pay more tax than cheapHome",
+            expensiveHome.paysMoreTaxThan(cheapHome));
+    assertFalse("cheapHome should not pay more tax than expensiveHome",
+            cheapHome.paysMoreTaxThan(expensiveHome));
 
     Chalet chaletTie = new Chalet(100000.0, 2, 50.0, 100.0); // Tax: 20000
-    // Same tax, but "Chalet" comes before "SingleFamily" alphabetically
-    assertTrue("Chalet should come before SingleFamily if taxes are equal",
-            chaletTie.compareTo(cheapHome) < 0);
+    assertFalse("With equal taxes, neither pays more",
+            chaletTie.paysMoreTaxThan(cheapHome));
   }
 
   /**

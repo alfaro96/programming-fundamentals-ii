@@ -7,53 +7,53 @@ files:
     visible: true
     placeholders:
       - offset: 0
-        length: 5725
+        length: 5400
         placeholder_text: "/* TODO: Implement RepairVehicle class. */"
   - name: src/vehicles/SaleVehicle.java
     visible: true
     placeholders:
       - offset: 0
-        length: 4325
+        length: 4000
         placeholder_text: "/* TODO: Implement SaleVehicle class. */"
   - name: src/vehicles/Vehicle.java
     visible: true
     placeholders:
       - offset: 0
-        length: 3312
+        length: 2910
         placeholder_text: "/* TODO: Implement Vehicle class. */"
   - name: src/commerces/Employee.java
     visible: true
     placeholders:
       - offset: 0
-        length: 7291
+        length: 7020
         placeholder_text: "/* TODO: Implement Employee class. */"
   - name: src/commerces/Commerce.java
     visible: true
     placeholders:
       - offset: 0
-        length: 13899
+        length: 12966
         placeholder_text: "/* TODO: Implement Commerce class. */"
   - name: src/commerces/Restaurant.java
     visible: true
     placeholders:
       - offset: 0
-        length: 5828
+        length: 5284
         placeholder_text: "/* TODO: Implement Restaurant class. */"
   - name: src/commerces/CarDealership.java
     visible: true
     placeholders:
       - offset: 0
-        length: 11152
+        length: 10389
         placeholder_text: "/* TODO: Implement CarDealership class. */"
   - name: src/associations/CommerceAssociation.java
     visible: true
     placeholders:
       - offset: 0
-        length: 8199
+        length: 7391
         placeholder_text: "/* TODO: Implement CommerceAssociation class. */"
   - name: src/Main.java
     visible: true
     placeholders:
       - offset: 0
-        length: 5353
+        length: 5331
         placeholder_text: "/* TODO: Implement Main class. */"

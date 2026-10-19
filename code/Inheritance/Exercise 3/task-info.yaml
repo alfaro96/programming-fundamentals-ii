@@ -7,7 +7,7 @@ files:
     visible: true
     placeholders:
       - offset: 0
-        length: 2383
+        length: 2393
         placeholder_text: "/* TODO: Implement GeometricFigure class. */"
   - name: src/shapes/polygons/RegularPolygon.java
     visible: true

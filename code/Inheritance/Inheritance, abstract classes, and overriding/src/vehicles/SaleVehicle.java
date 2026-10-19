@@ -53,7 +53,7 @@ public class SaleVehicle extends Vehicle {
     }
 
     /**
-     * Copy constructor. Creates a deep copy of the given
+     * Copy constructor. Creates a copy of the given
      * {@link SaleVehicle}.
      *
      * @param other The instance to copy
@@ -70,7 +70,7 @@ public class SaleVehicle extends Vehicle {
      *
      * @return The price
      */
-    public double getPrice() { return price; }
+    public double getPrice() { return this.price; }
 
     /**
      * Sets the listed sale price.
@@ -84,7 +84,7 @@ public class SaleVehicle extends Vehicle {
      *
      * @return The discount
      */
-    public int getDiscount() { return discount; }
+    public int getDiscount() { return this.discount; }
 
     /**
      * Sets the discount percentage.
@@ -98,7 +98,7 @@ public class SaleVehicle extends Vehicle {
      *
      * @return The identifier {@code String}
      */
-    public String getIdentifier() { return identifier; }
+    public String getIdentifier() { return this.identifier; }
 
     /**
      * Sets the catalogue identifier of this vehicle.
@@ -117,9 +117,9 @@ public class SaleVehicle extends Vehicle {
     public String toString() {
         return "SaleVehicle{" +
                super.toString() +
-               ", price=" + price +
-               ", discount=" + discount +
-               ", identifier='" + identifier + '\'' +
+               ", price=" + this.price +
+               ", discount=" + this.discount +
+               ", identifier='" + this.identifier + '\'' +
                '}';
     }
 
@@ -136,20 +136,7 @@ public class SaleVehicle extends Vehicle {
         if (this == object) return true;
         if (!super.equals(object)) return false;
         SaleVehicle other = (SaleVehicle) object;
-        return identifier != null && identifier.equals(other.identifier);
+        return this.identifier != null && this.identifier.equals(other.identifier);
     }
 
-    /**
-     * Creates and returns a deep copy of this {@link SaleVehicle}.
-     *
-     * @return A cloned {@link SaleVehicle} instance
-     */
-    @Override
-    public SaleVehicle clone() {
-        try {
-            return (SaleVehicle) super.clone();
-        } catch (CloneNotSupportedException e) {
-            return new SaleVehicle(this);
-        }
-    }
 }

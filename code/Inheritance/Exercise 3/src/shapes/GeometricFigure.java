@@ -58,7 +58,7 @@ public abstract class GeometricFigure {
      * @return A {@code String} representing the fill color.
      */
     public String getFillColor() {
-        return fillColor;
+        return this.fillColor;
     }
 
     /**
@@ -76,7 +76,7 @@ public abstract class GeometricFigure {
      * @return A {@code String} representing the border color.
      */
     public String getBorderColor() {
-        return borderColor;
+        return this.borderColor;
     }
 
     /**

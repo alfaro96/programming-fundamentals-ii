@@ -2,16 +2,16 @@ package antiques;
 
 /**
  * Represents a generic antique in the collection.
- * Serves as an abstract base class for specific types of antiques.
+ * Serves as the superclass of the specific types of antiques.
  *
  * @author Juan Carlos Alfaro Jiménez
  */
-public abstract class Antique {
+public class Antique {
 
     /** The identifier of the antique. */
     protected String id;
 
-    /** * The creation year of the antique. */
+    /** The creation year of the antique. */
     protected int year;
 
     /**
@@ -36,10 +36,12 @@ public abstract class Antique {
     }
 
     /**
-     * Abstract method to force subclasses to provide their own string representation.
+     * Returns a string representation of the antique.
      *
-     * @return A descriptive string of the antique.
+     * @return a string containing the identifier and the year of the antique.
      */
     @Override
-    public abstract String toString();
+    public String toString() {
+        return "Antique[" + this.id + " | Year: " + this.year + "]";
+    }
 }

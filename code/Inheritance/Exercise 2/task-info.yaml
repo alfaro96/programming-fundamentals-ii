@@ -6,30 +6,33 @@ files:
   - name: src/antiques/Antique.java
     visible: true
     placeholders:
-      - offset: 0
-        length: 1053
-        placeholder_text: "/* TODO: Implement Antique class. */"
+      - offset: 252
+        length: 9
+        placeholder_text: private
+      - offset: 323
+        length: 9
+        placeholder_text: private
   - name: src/antiques/Painting.java
     visible: true
     placeholders:
       - offset: 0
         length: 885
-        placeholder_text: "/* TODO: Implement Painting class. */"
+        placeholder_text: "/* TODO: Implement the Painting class. */"
   - name: src/antiques/Furniture.java
     visible: true
     placeholders:
       - offset: 0
         length: 881
-        placeholder_text: "/* TODO: Implement Furniture class. */"
+        placeholder_text: "/* TODO: Implement the Furniture class. */"
   - name: src/antiques/Collection.java
     visible: true
     placeholders:
-      - offset: 0
-        length: 3937
-        placeholder_text: "/* TODO: Implement Collection class. */"
+      - offset: 559
+        length: 2065
+        placeholder_text: "    /* TODO: Implement addFurniture and deleteFurniture. */"
   - name: src/Main.java
     visible: true
     placeholders:
       - offset: 0
-        length: 1949
-        placeholder_text: "/* TODO: Implement Main class. */"
+        length: 2321
+        placeholder_text: "/* TODO: Implement the Main class. */"

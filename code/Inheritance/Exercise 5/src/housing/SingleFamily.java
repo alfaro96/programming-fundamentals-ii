@@ -2,11 +2,11 @@ package housing;
 
 /**
  * Represents a single-family home.
- * Extends {@link Housing} and allows comparison based on taxes and class name.
+ * Extends {@link Housing} and can tell whether it pays more tax than another one.
  *
  * @author Juan Carlos Alfaro Jiménez
  */
-public class SingleFamily extends Housing implements Comparable<SingleFamily> {
+public class SingleFamily extends Housing {
 
     /** The number of floors in the house. */
     private int numberOfFloors;
@@ -39,23 +39,13 @@ public class SingleFamily extends Housing implements Comparable<SingleFamily> {
     }
 
     /**
-     * Compares this single-family home to another based on their tax amount.
-     * If the taxes are equal, it resolves the tie by comparing the class names alphabetically.
+     * Checks whether this single-family home pays more tax than another one.
      *
-     * @param other The other {@link SingleFamily} to compare against.
-     * @return A negative integer, zero, or a positive integer as this object is less than,
-     * equal to, or greater than the specified object.
+     * @param other the other {@link SingleFamily} to compare against.
+     * @return {@code true} if the tax of this home is greater than the tax of {@code other}.
      */
-    @Override
-    public int compareTo(SingleFamily other) {
-        int taxComparison = Double.compare(this.tax(), other.tax());
-
-        if (taxComparison != 0) {
-            return taxComparison;
-        }
-
-        // Tie-breaker: Compare by class name (e.g., "Chalet" vs "SingleFamily")
-        return this.getClass().getSimpleName().compareTo(other.getClass().getSimpleName());
+    public boolean paysMoreTaxThan(SingleFamily other) {
+        return this.tax() > other.tax();
     }
 
     /**
