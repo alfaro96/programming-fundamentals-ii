@@ -1,24 +1,21 @@
 package exceptions;
 
 /**
- * Checked exception thrown when an antique's price is negative.
+ * Signals that an antique has been given a negative price.
  *
- * <p>This exception must be explicitly declared in the {@code throws} clause of any
- * constructor or method that validates a price, and must be caught or propagated
- * by all callers.</p>
+ * <p>It is a checked exception: every constructor that may throw it has to declare it, and
+ * every caller has to catch it or declare it in turn.</p>
  *
  * @author Juan Carlos Alfaro Jiménez
- * @see Exception
  */
 public class InvalidPriceException extends Exception {
 
     /**
-     * Constructs a new {@link InvalidPriceException} with a descriptive message
-     * that includes the invalid value that triggered the exception.
+     * Constructs a new {@link InvalidPriceException} whose message includes the invalid price.
      *
-     * @param price The negative price value that caused the exception.
+     * @param price the negative price that was given.
      */
     public InvalidPriceException(double price) {
-        super("Invalid price: " + price + " euros. Price must be non-negative.");
+        super("Invalid price: " + price + " euros. It cannot be negative.");
     }
 }

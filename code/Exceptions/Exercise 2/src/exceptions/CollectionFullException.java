@@ -1,24 +1,21 @@
 package exceptions;
 
 /**
- * Checked exception thrown when there is no space available in a given century's
- * row to add a new antique to the collection.
+ * Signals that the row of a century has no room for another antique.
  *
- * <p>This exception is thrown by {@code Collection.addAntique()} when the row
- * corresponding to the antique's century is already at maximum capacity.</p>
+ * <p>It is a checked exception: every method that may throw it has to declare it, and every
+ * caller has to catch it or declare it in turn.</p>
  *
  * @author Juan Carlos Alfaro Jiménez
- * @see Exception
  */
 public class CollectionFullException extends Exception {
 
     /**
-     * Constructs a new {@link CollectionFullException} with a descriptive message
-     * indicating which century is full.
+     * Constructs a new {@link CollectionFullException} whose message includes the full century.
      *
-     * @param century The 1-based century number whose row has no remaining slots.
+     * @param century the century, counted from 1, whose row is full.
      */
     public CollectionFullException(int century) {
-        super("The collection for century " + century + " is full. No more antiques can be added.");
+        super("No room left for century " + century + ".");
     }
 }

@@ -776,11 +776,14 @@ The fix. On entry, private before the attribute: it can only be used from inside
 
 ### Reading and changing through methods
 
-<div class="columns code-compact stage-top">
+<div class="code-over-cards code-compact code-dense stage-top">
+<div class="columns">
 <div class="column">
 
-<!-- Code and cards step together from 0 -->
-<pre><code class="java" data-trim data-line-numbers="6-8|10-14|6-8|6-14" data-fragment-index="0">
+#### `Light.java`
+
+<!-- Both blocks and the cards step together from 0: the getters, the setter, the read-only name; both with the note -->
+<pre><code class="java" data-trim data-line-numbers="6-8|10-14||6-14" data-fragment-index="0">
 public class Light extends Device {
     private int brightness;
 
@@ -799,15 +802,38 @@ public class Light extends Device {
 </code></pre>
 
 </div>
-<div class="column rules">
+<div class="column">
+
+#### `Device.java`
+
+<pre><code class="java" data-trim data-line-numbers="11-13||7-9|7-13" data-fragment-index="0">
+public class Device {
+    private String name;
+    private boolean on;
+
+    // constructor, turnOn and turnOff, as before
+
+    public String getName() {
+        return this.name;
+    }
+
+    public boolean isOn() {
+        return this.on;
+    }
+}
+</code></pre>
+
+</div>
+</div>
+<div class="rules rules-grid rules-three">
 <div class="rule">
-<p><strong>Getter</strong><code>get</code> and the attribute's name: returns its value. For a <code>boolean</code>, <code>is</code>: <code>isOn()</code>.</p>
+<p><strong>Getter</strong><code>get</code> and its name, <code>is</code> for a <code>boolean</code>.</p>
 </div>
 <div class="rule fragment" data-fragment-index="0">
-<p><strong>Setter</strong><code>set</code> and the name: changes it, after checking the new value.</p>
+<p><strong>Setter</strong><code>set</code> and its name: changes it, after checking it.</p>
 </div>
 <div class="rule fragment" data-fragment-index="1">
-<p><strong>Only what is needed</strong>A getter without a setter makes an attribute read-only from outside.</p>
+<p><strong>Only what is needed</strong>A getter with no setter: read-only from outside.</p>
 </div>
 </div>
 </div>
@@ -819,7 +845,79 @@ A <strong>getter</strong> reads a private attribute and a <strong>setter</strong
 </div>
 
 Note:
-The usual pair of methods for a private attribute. On entry, the getter: getBrightness, which returns the value without changing it; the app calls it to draw the screen. For a boolean the name starts with is: Device has isOn(). Step 1, the setter, the one from the slide above. The names follow a convention that IntelliJ and many libraries rely on: get, set or is, and the attribute's name with a capital. Step 2: an attribute does not need both. Device has getName() and no setName(), so the name of a device is set by its constructor and can only be read afterwards; a setter is written only when changing the value from outside makes sense. Last, the takeaway, with both methods marked.
+The usual pair of methods for a private attribute; Device follows the rule too, its name and on are private, and it gets getters as well. On entry, the getters: getBrightness, which returns the value without changing it, and the app calls it to draw the screen; for a boolean the name starts with is, as Device's isOn(). Step 1, the setter, the one from the slide above. The names follow a convention that IntelliJ and many libraries rely on: get, set or is, and the attribute's name with a capital. Step 2, Device's getName(): an attribute does not need both. Device has getName() and no setName(), so the name of a device is set by its constructor and can only be read afterwards; a setter is written only when changing the value from outside makes sense. Last, the takeaway, with both methods marked.
+
+--
+
+<div class="stage">
+
+## The other two devices
+
+### The same pattern as `Light`
+
+<div class="columns code-compact code-dense stage-top">
+<div class="column">
+
+#### `Thermostat.java`
+
+```java
+public class Thermostat extends Device {
+    private double temperature;
+
+    public Thermostat(String name, double temperature) {
+        super(name);
+        this.temperature = temperature;
+    }
+
+    public double getTemperature() {
+        return this.temperature;
+    }
+
+    public void setTemperature(double temperature) {
+        if (temperature >= 5 && temperature <= 30) {
+            this.temperature = temperature;
+        }
+    }
+}
+```
+
+</div>
+<div class="column">
+
+#### `Speaker.java`
+
+```java
+public class Speaker extends Device {
+    private int volume;
+
+    public Speaker(String name) {
+        super(name);
+        this.volume = 50;
+    }
+
+    public int getVolume() {
+        return this.volume;
+    }
+
+    public void setVolume(int volume) {
+        if (volume >= 0 && volume <= 100) {
+            this.volume = volume;
+        }
+    }
+}
+```
+
+</div>
+</div>
+
+<blockquote class="stage-note fragment">
+Each kind of device: its own <strong>private</strong> attribute, a constructor that calls <strong><code>super(...)</code></strong>, a <strong>getter</strong> and a <strong>setter</strong> that checks.
+</blockquote>
+
+</div>
+
+Note:
+The other two kinds of device, written the way Light now is, so that the three classes are complete from here on. Ask them to read them in silence and spot what changes from Light: only the attribute, its range and the constructor. The thermostat takes its starting temperature in the constructor, and only accepts targets from 5 to 30 °C; the speaker starts at volume 50 and accepts 0 to 100, like the brightness. Neither has anything that Light did not already show. Last, the takeaway.
 
 ---
 
@@ -890,7 +988,7 @@ A subclass inherits its superclass's <strong>private</strong> attributes, but re
 </div>
 
 Note:
-Device follows the rule too now: name and on are private. Setting a brightness should also turn the lamp on. On entry, the obvious way: ask them whether it compiles. Step 1, the version through a method. Step 2, the difference: this.on = true does not compile, on has private access in Device. The attribute is in the object, it was in the memory diagram, but private means the code of Device only, and Light is another class. Step 3, the fix: Device already offers turnOn(), so Light asks Device to do it; if Device ever changes how it turns on, Light does not notice. Last, the takeaway.
+Device follows the rule too now: name and on are private. Setting a brightness should also turn the lamp on. On entry, the obvious way: ask them whether it compiles. Step 1, the version through a method. Step 2, the difference: this.on = true does not compile, on has private access in Device. The attribute is in the object, it was in the memory diagram, but private means the code of Device only, and Light is another class. Step 3, the fix: Device already offers turnOn(), so Light asks Device to do it; if Device ever changes how it turns on, Light does not notice. Last, the takeaway. It is an example of how a subclass reaches a private attribute: the course does not keep that line, and Light's setBrightness stays as on Getters and setters.
 
 --
 
@@ -2050,7 +2148,65 @@ A subclass has to override every <strong>abstract method</strong>, unless it is 
 </div>
 
 Note:
-On entry, Light's watts(): a 10 W bulb, so 0.1 W per point of brightness, and nothing when it is off; it is overriding as before, with @Override. Thermostat returns 3 W when on, and Speaker 0.05 W per point of volume. Step 1, in red, what happens if Light leaves it out: Light is not abstract and does not override abstract method watts() in Device. The abstract method is a promise every concrete device has to keep, checked by the compiler, unlike the 0.0 of "No honest answer". Step 2: a subclass may stay abstract and leave the method to the classes below it. With that, the app adds up the power of the whole house with a for-each over the array, total += device.watts(): 15.5 W with the three devices on. Last, the takeaway.
+On entry, Light's watts(): a 10 W bulb, so 0.1 W per point of brightness, and nothing when it is off; it is overriding as before, with @Override. Thermostat and Speaker have their own, on the slide below. Step 1, in red, what happens if Light leaves it out: Light is not abstract and does not override abstract method watts() in Device. The abstract method is a promise every concrete device has to keep, checked by the compiler, unlike the 0.0 of "No honest answer". Step 2: a subclass may stay abstract and leave the method to the classes below it. With that, the app adds up the power of the whole house with a for-each over the array, total += device.watts(): 15.5 W with the three devices on. Last, the takeaway.
+
+--
+
+<div class="stage">
+
+## The other `watts`
+
+### Each device, its own rule
+
+<div class="columns code-compact stage-top">
+<div class="column">
+
+#### `Thermostat.java`
+
+```java
+public class Thermostat extends Device {
+    // as before
+
+    @Override
+    public double watts() {
+        if (this.isOn()) {
+            return 3.0;
+        }
+        return 0.0;
+    }
+}
+```
+
+</div>
+<div class="column">
+
+#### `Speaker.java`
+
+```java
+public class Speaker extends Device {
+    // as before
+
+    @Override
+    public double watts() {
+        if (this.isOn()) {
+            return 0.05 * this.volume;
+        }
+        return 0.0;
+    }
+}
+```
+
+</div>
+</div>
+
+<blockquote class="stage-note fragment">
+The same <strong>abstract method</strong>, a different <strong>body</strong> in each subclass.
+</blockquote>
+
+</div>
+
+Note:
+The other two devices keep the contract too, each with its own rule: the thermostat uses 3 W whenever it is on, and the speaker 0.05 W per point of volume, 2.5 W at its starting 50. With the lamp at 100%, 10 W, the three on add up to 15.5 W. Last, the takeaway.
 
 ---
 
@@ -2142,7 +2298,7 @@ An <strong>interface</strong> says what a class <strong>can do</strong>; a class
 </div>
 
 Note:
-On entry, the interface: like an abstract class with nothing but abstract methods, so it needs neither public nor abstract on them. It lives in its own file, as a class. Interfaces are usually named with an adjective, what the class can be or do: Adjustable, and in Java itself Comparable or Runnable. Step 1, Light implements it: it still extends Device, and now also promises a setLevel, which reuses setBrightness. Speaker implements it too, with setVolume; Thermostat does not, and nothing forces it to. Light is not abstract and does not override abstract method setLevel(int) in Adjustable, if it forgets. Step 2: the lamp with a level and a schedule, which did not compile with two superclasses on the slide above, is fine with two interfaces, separated by commas. Last, the takeaway.
+On entry, the interface: like an abstract class with nothing but abstract methods, so it needs neither public nor abstract on them. It lives in its own file, as a class. Interfaces are usually named with an adjective, what the class can be or do: Adjustable, and in Java itself Comparable or Runnable. Step 1, Light implements it: it still extends Device, and now also promises a setLevel, which reuses setBrightness. Speaker implements it too, with setVolume, on the slide below; Thermostat does not, and nothing forces it to. Light is not abstract and does not override abstract method setLevel(int) in Adjustable, if it forgets. Step 2: the lamp with a level and a schedule, which did not compile with two superclasses on the slide above, is fine with two interfaces, separated by commas. Last, the takeaway.
 
 --
 
@@ -2152,7 +2308,27 @@ On entry, the interface: like an abstract class with nothing but abstract method
 
 ### Lights and speakers, together
 
-<div class="code-run code-compact stage-top">
+<div class="columns code-compact code-dense stage-top">
+<div class="column">
+
+#### `Speaker.java`
+
+```java
+public class Speaker extends Device implements Adjustable {
+    // as before
+
+    @Override
+    public void setLevel(int level) {
+        this.setVolume(level);
+    }
+}
+```
+
+</div>
+<div class="column code-over-cards code-compact">
+<div>
+
+#### `Main.java`
 
 <!-- Each println alone first, to ask, then its line of output; the empty spans in the note hold the indices only the code uses -->
 <pre><code class="java" data-trim data-line-numbers="1-2|4|6-8|10|10|11|11|4,6-8" data-fragment-index="0">
@@ -2169,9 +2345,11 @@ System.out.println(lamp.getBrightness());
 System.out.println(speaker.getVolume());
 </code></pre>
 
+</div>
 <div class="fragment" data-fragment-index="3">
 <pre><code class="nohighlight hljs console" data-noescape>30
 <span class="fragment" data-fragment-index="5">30</span></code></pre>
+</div>
 </div>
 </div>
 
@@ -2182,7 +2360,7 @@ An interface is a <strong>type</strong>: its variables refer to objects of <stro
 </div>
 
 Note:
-The slider at work. On entry, a lamp and a speaker. Step 1, an array of Adjustable: an interface creates no objects, but it is a type, so it has variables and arrays, which can hold any object of a class that implements it; upcasting works with interfaces as with superclasses. Step 2, one loop sets the level of both: each runs its own setLevel, polymorphism again. Then each println alone, to ask what it prints, and its line of output on the next step: 30 and 30, the brightness of one and the volume of the other. instanceof works with interfaces too: device instanceof Adjustable adjustable picks, from an array of Device, the ones with a level. Last, the takeaway.
+On the left, Speaker, which implements Adjustable too: its setLevel reuses setVolume. The slider at work. On entry, a lamp and a speaker. Step 1, an array of Adjustable: an interface creates no objects, but it is a type, so it has variables and arrays, which can hold any object of a class that implements it; upcasting works with interfaces as with superclasses. Step 2, one loop sets the level of both: each runs its own setLevel, polymorphism again. Then each println alone, to ask what it prints, and its line of output on the next step: 30 and 30, the brightness of one and the volume of the other. instanceof works with interfaces too: device instanceof Adjustable adjustable picks, from an array of Device, the ones with a level. Last, the takeaway.
 
 ---
 

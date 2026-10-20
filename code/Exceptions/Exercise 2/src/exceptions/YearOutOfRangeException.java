@@ -1,33 +1,21 @@
 package exceptions;
 
 /**
- * Unchecked exception thrown when an antique's creation year falls outside the
- * accepted range.
+ * Signals that a year is out of the range the collection accepts.
  *
- * <p>Because this exception extends {@link RuntimeException}, it does not need to
- * be declared in a {@code throws} clause, although callers may still choose to
- * catch it. The accepted year range is defined by the constants
- * {@link #MIN_YEAR} and {@link #MAX_YEAR}.</p>
+ * <p>It is an unchecked exception: it extends {@link RuntimeException}, so the methods that
+ * throw it do not have to declare it, although a caller can still catch it.</p>
  *
  * @author Juan Carlos Alfaro Jiménez
- * @see RuntimeException
  */
 public class YearOutOfRangeException extends RuntimeException {
 
-    /** The minimum accepted creation year for an antique. */
-    public static final int MIN_YEAR = 1;
-
-    /** The maximum accepted creation year for an antique. */
-    public static final int MAX_YEAR = 1900;
-
     /**
-     * Constructs a new {@link YearOutOfRangeException} with a descriptive message
-     * that includes the invalid year and the accepted range.
+     * Constructs a new {@link YearOutOfRangeException} whose message includes the invalid year.
      *
-     * @param year The out-of-range year that caused the exception.
+     * @param year the year out of range.
      */
     public YearOutOfRangeException(int year) {
-        super("Invalid year: " + year + ". Year must be between "
-                + MIN_YEAR + " and " + MAX_YEAR + ".");
+        super("Year out of range: " + year + ".");
     }
 }

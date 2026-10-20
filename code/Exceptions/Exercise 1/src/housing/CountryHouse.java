@@ -4,21 +4,17 @@ import exceptions.InvalidPriceException;
 import exceptions.InvalidSquareMetersException;
 
 /**
- * Represents a country house.
+ * Represents a country house, built on a large plot of land with a {@link Chalet} in it.
  *
- * <p>A country house is built on a large plot of land and contains a specific
- * {@link Chalet} within it, demonstrating composition. Validates both price
- * (delegated to {@link Housing}) and plot size at construction time.</p>
+ * <p>Its constructor rejects a negative plot size, on top of the price check of
+ * {@link Housing}.</p>
  *
  * @author Juan Carlos Alfaro Jiménez
- * @see Housing
- * @see Chalet
- * @see exceptions.InvalidPriceException
- * @see exceptions.InvalidSquareMetersException
+ * @see InvalidSquareMetersException
  */
 public class CountryHouse extends Housing {
 
-    /** The total size of the plot of land in square meters. Must be non-negative. */
+    /** The total size of the plot of land in square meters. */
     private double plotSize;
 
     /** The chalet located inside this country house. */
@@ -27,11 +23,11 @@ public class CountryHouse extends Housing {
     /**
      * Constructs a new {@link CountryHouse}.
      *
-     * @param price The base price of the country house in euros.
-     * @param plotSize The size of the land plot in square meters.
-     * @param chalet The specific chalet built on this plot.
-     * @throws InvalidPriceException If {@code price} is strictly negative.
-     * @throws InvalidSquareMetersException If {@code plotSize} is strictly negative.
+     * @param price the base price of the country house, in euros.
+     * @param plotSize the size of the plot in square meters.
+     * @param chalet the chalet built on this plot.
+     * @throws InvalidPriceException if {@code price} is negative.
+     * @throws InvalidSquareMetersException if {@code plotSize} is negative.
      */
     public CountryHouse(double price, double plotSize, Chalet chalet)
             throws InvalidPriceException, InvalidSquareMetersException {
@@ -44,24 +40,24 @@ public class CountryHouse extends Housing {
     }
 
     /**
-     * Calculates the tax for the country house.
-     * The tax is the sum of the internal chalet's tax plus 0.5 euros per square meter of the plot.
+     * Calculates the tax for the country house: the tax of its chalet plus 0.5 euros per square
+     * meter of the plot.
      *
-     * @return The calculated tax amount in euros.
+     * @return the calculated tax amount in euros.
      */
     @Override
     public double tax() {
-        return this.chalet.tax() + (this.plotSize * 0.5);
+        return this.chalet.tax() + this.plotSize * 0.5;
     }
 
     /**
      * Returns a string representation of the country house.
      *
-     * @return A descriptive string containing price, plot size, tax, and the embedded chalet.
+     * @return a string containing its price, plot size, tax and chalet.
      */
     @Override
     public String toString() {
         return "CountryHouse [Price = " + this.getPrice() + " euros, Plot = " + this.plotSize
-                + " m², Tax = " + this.tax() + " euros] containing: " + this.chalet.toString();
+                + " square meters, Tax = " + this.tax() + " euros] containing: " + this.chalet;
     }
 }

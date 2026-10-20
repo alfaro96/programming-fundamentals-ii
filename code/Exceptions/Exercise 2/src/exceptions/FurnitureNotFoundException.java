@@ -1,24 +1,21 @@
 package exceptions;
 
 /**
- * Checked exception thrown when no furniture dated in a specific year is found
- * in the collection during a deletion operation.
+ * Signals that there is no furniture dated in the year that was going to be deleted.
  *
- * <p>This exception is thrown by {@code Collection.deleteFurniture()} when the
- * collection contains no {@code Furniture} objects matching the requested year.</p>
+ * <p>It is a checked exception: every method that may throw it has to declare it, and every
+ * caller has to catch it or declare it in turn.</p>
  *
  * @author Juan Carlos Alfaro Jiménez
- * @see Exception
  */
 public class FurnitureNotFoundException extends Exception {
 
     /**
-     * Constructs a new {@link FurnitureNotFoundException} with a descriptive message
-     * that includes the year for which no matching furniture was found.
+     * Constructs a new {@link FurnitureNotFoundException} whose message includes the year.
      *
-     * @param year The year for which no furniture was found in the collection.
+     * @param year the year with no furniture in the collection.
      */
     public FurnitureNotFoundException(int year) {
-        super("No furniture dated " + year + " was found in the collection.");
+        super("No furniture dated in " + year + ".");
     }
 }

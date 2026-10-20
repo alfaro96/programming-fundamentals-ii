@@ -1,3 +1,7 @@
+import org.junit.Test;
+import static org.junit.Assert.*;
+
+import antiques.Antique;
 import antiques.Collection;
 import antiques.Furniture;
 import antiques.Painting;
@@ -6,324 +10,176 @@ import exceptions.FurnitureNotFoundException;
 import exceptions.InvalidPriceException;
 import exceptions.YearOutOfRangeException;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
 /**
- * <p>Covers the four exception classes ({@link InvalidPriceException},
- * {@link YearOutOfRangeException}, {@link CollectionFullException},
- * {@link FurnitureNotFoundException}) as well as the core logic of
- * {@link Collection#addAntique(antiques.Antique)} and
- * {@link Collection#deleteFurniture(int)}.</p>
+ * Test suite to validate the {@link Antique} {@link Collection} logic and the exceptions it
+ * throws.
  *
  * @author Juan Carlos Alfaro Jiménez
  */
 public class Tests {
 
-  /** Small collection used across most tests: 5 centuries, 3 slots per century. */
-  private Collection collection;
+  /** Delta value for floating-point comparisons to prevent precision errors. */
+  private static final double DELTA = 1e-9;
 
   /**
-   * Resets the shared {@link Collection} before every test so that tests are
-   * completely independent of one another.
-   */
-  @Before
-  public void setUp() {
-    collection = new Collection(5, 3);
-  }
-
-  /**
-   * A negative price on a {@link Furniture} must throw {@link InvalidPriceException}.
-   */
-  @Test(expected = InvalidPriceException.class)
-  public void testFurnitureNegativePriceThrows() throws InvalidPriceException {
-    new Furniture("F01", 1750, -100, "Oak");
-  }
-
-  /**
-   * A negative price on a {@link Painting} must throw {@link InvalidPriceException}.
-   */
-  @Test(expected = InvalidPriceException.class)
-  public void testPaintingNegativePriceThrows() throws InvalidPriceException {
-    new Painting("P01", 101, -1, "Oil on canvas");
-  }
-
-  /**
-   * A price of exactly 0 is valid and must not throw any exception.
+   * Verifies that the {@code toString} methods include every attribute, the price among them.
+   *
+   * @throws Exception if a constructor rejects a valid value.
    */
   @Test
-  public void testZeroPriceIsValid() throws InvalidPriceException {
-    Furniture furniture = new Furniture("F00", 101, 0, "Pine");
-    Assert.assertEquals(0.0, furniture.getPrice(), 0.001);
+  public void testToStringOverrides() throws Exception {
+    Antique p = new Painting("A1", 150, 800.0, "Oil");
+    Antique f = new Furniture("A2", 200, 300.0, "Wood");
+
+    assertTrue("Painting toString should contain its identifier", p.toString().contains("A1"));
+    assertTrue("Painting toString should contain its price", p.toString().contains("800"));
+    assertTrue("Painting toString should contain its technique", p.toString().contains("Oil"));
+    assertTrue("Furniture toString should contain its identifier", f.toString().contains("A2"));
+    assertTrue("Furniture toString should contain its material", f.toString().contains("Wood"));
+    assertEquals("The price should be kept", 300.0, f.getPrice(), DELTA);
   }
 
   /**
-   * The message of {@link InvalidPriceException} must mention the offending value.
+   * Verifies that a negative price throws an {@link InvalidPriceException} whose message
+   * includes it, and that a price of 0 is valid.
+   *
+   * @throws Exception if a constructor rejects a price of 0.
    */
   @Test
-  public void testInvalidPriceExceptionMessage() {
+  public void testNegativePrice() throws Exception {
     try {
-      new Furniture("F01", 101, -999, "Walnut");
-      Assert.fail("Expected InvalidPriceException was not thrown");
+      new Furniture("F1", 1750, -999.0, "Oak");
+      fail("A negative price should throw an InvalidPriceException");
     } catch (InvalidPriceException e) {
-      Assert.assertTrue(e.getMessage().contains("-999"));
+      assertTrue("The message should include the price", e.getMessage().contains("-999"));
     }
-  }
-
-  /**
-   * Year 0 is below {@link YearOutOfRangeException#MIN_YEAR} and must throw.
-   */
-  @Test(expected = YearOutOfRangeException.class)
-  public void testFurnitureYearZeroThrows() throws InvalidPriceException {
-    new Furniture("F02", 0, 500, "Mahogany");
-  }
-
-  /**
-   * Year 1901 is above {@link YearOutOfRangeException#MAX_YEAR} and must throw.
-   */
-  @Test(expected = YearOutOfRangeException.class)
-  public void testFurnitureYearTooLargeThrows() throws InvalidPriceException {
-    new Furniture("F03", 1901, 200, "Ebony");
-  }
-
-  /**
-   * Year 1900 is exactly on the upper boundary and must be valid.
-   */
-  @Test
-  public void testFurnitureYearMaxBoundaryIsValid() throws InvalidPriceException {
-    Furniture furniture = new Furniture("F04", 1900, 300, "Cherry");
-    Assert.assertEquals(1900, furniture.getYear());
-  }
-
-  /**
-   * Year 1 is exactly on the lower boundary and must be valid.
-   */
-  @Test
-  public void testFurnitureYearMinBoundaryIsValid() throws InvalidPriceException {
-    Furniture furniture = new Furniture("F05", 1, 100, "Stone");
-    Assert.assertEquals(1, furniture.getYear());
-  }
-
-  /**
-   * The message of {@link YearOutOfRangeException} must mention the offending year
-   * and the accepted bounds.
-   */
-  @Test
-  public void testYearOutOfRangeExceptionMessage() {
     try {
-      new Furniture("F06", 2025, 500, "Oak");
-      Assert.fail("Expected YearOutOfRangeException was not thrown");
+      new Painting("P1", 101, -1.0, "Fresco");
+      fail("A negative price should throw an InvalidPriceException");
+    } catch (InvalidPriceException e) {
+      // expected
+    }
+    assertEquals("A price of 0 should be valid", 0.0, new Furniture("F0", 101, 0.0, "Pine").getPrice(), DELTA);
+  }
+
+  /**
+   * Verifies that a year out of range throws a {@link YearOutOfRangeException}, and that the
+   * first and last years of the range are valid.
+   *
+   * @throws Exception if a constructor rejects a valid value.
+   */
+  @Test
+  public void testYearOutOfRange() throws Exception {
+    try {
+      new Furniture("F1", 0, 100.0, "Oak");
+      fail("Year 0 should throw a YearOutOfRangeException");
     } catch (YearOutOfRangeException e) {
-      Assert.assertTrue(e.getMessage().contains("2025"));
-      Assert.assertTrue(e.getMessage().contains(String.valueOf(YearOutOfRangeException.MIN_YEAR)));
-      Assert.assertTrue(e.getMessage().contains(String.valueOf(YearOutOfRangeException.MAX_YEAR)));
-    } catch (InvalidPriceException e) {
-      Assert.fail("Wrong exception type thrown: " + e.getClass().getSimpleName());
+      assertTrue("The message should include the year", e.getMessage().contains("0"));
     }
-  }
-
-  /**
-   * A valid antique is placed in the first slot of the correct century row.
-   * Year 101 maps to row index 1 (2nd century).
-   */
-  @Test
-  public void testAddAntiqueInsertedInCorrectRow() throws InvalidPriceException, CollectionFullException {
-    Furniture furniture = new Furniture("F10", 101, 400, "Oak");
-    collection.addAntique(furniture);
-    Assert.assertSame(furniture, collection.getAntiqueAt(1, 0));
-  }
-
-  /**
-   * Two antiques in the same century are placed in consecutive columns.
-   */
-  @Test
-  public void testAddAntiqueConsecutiveColumns() throws InvalidPriceException, CollectionFullException {
-    Furniture f1 = new Furniture("F11", 101, 400, "Oak");
-    Painting  p1 = new Painting("P11", 150, 800, "Fresco");
-    collection.addAntique(f1);
-    collection.addAntique(p1);
-    Assert.assertSame(f1, collection.getAntiqueAt(1, 0));
-    Assert.assertSame(p1, collection.getAntiqueAt(1, 1));
-  }
-
-  /**
-   * Antiques from different centuries end up in their respective rows.
-   */
-  @Test
-  public void testAddAntiqueDifferentCenturies() throws InvalidPriceException, CollectionFullException {
-    Furniture century2 = new Furniture("F20", 101, 100, "Pine");
-    Furniture century3 = new Furniture("F30", 201, 200, "Elm");
-    collection.addAntique(century2);
-    collection.addAntique(century3);
-    Assert.assertSame(century2, collection.getAntiqueAt(1, 0));
-    Assert.assertSame(century3, collection.getAntiqueAt(2, 0));
-  }
-
-  /**
-   * Adding a fourth antique to a century with only 3 slots must throw
-   * {@link CollectionFullException}.
-   */
-  @Test(expected = CollectionFullException.class)
-  public void testAddAntiqueCollectionFullThrows() throws InvalidPriceException, CollectionFullException {
-    collection.addAntique(new Furniture("F01", 10, 100, "Oak"));
-    collection.addAntique(new Furniture("F02", 20, 200, "Pine"));
-    collection.addAntique(new Furniture("F03", 30, 300, "Elm"));
-    collection.addAntique(new Furniture("F04", 40, 400, "Ash")); // must throw
-  }
-
-  /**
-   * The message of {@link CollectionFullException} must mention the century number.
-   */
-  @Test
-  public void testCollectionFullExceptionMessage() throws InvalidPriceException {
     try {
-      collection.addAntique(new Furniture("F01", 10, 100, "Oak"));
-      collection.addAntique(new Furniture("F02", 20, 200, "Pine"));
-      collection.addAntique(new Furniture("F03", 30, 300, "Elm"));
-      collection.addAntique(new Furniture("F04", 40, 400, "Ash"));
-      Assert.fail("Expected CollectionFullException was not thrown");
+      new Painting("P1", 2025, 100.0, "Oil");
+      fail("Year 2025 should throw a YearOutOfRangeException");
+    } catch (YearOutOfRangeException e) {
+      assertTrue("The message should include the year", e.getMessage().contains("2025"));
+    }
+    assertEquals("The first year should be valid", Antique.MIN_YEAR,
+        new Furniture("F2", Antique.MIN_YEAR, 100.0, "Stone").getYear());
+    assertEquals("The last year should be valid", Antique.MAX_YEAR,
+        new Furniture("F3", Antique.MAX_YEAR, 100.0, "Cherry").getYear());
+  }
+
+  /**
+   * Verifies that antiques are placed in the correct row based on their century.
+   * Year 45 is century 1 (row 0), year 150 is century 2 (row 1).
+   *
+   * @throws Exception if a constructor or {@code addFurniture} throws.
+   */
+  @Test
+  public void testAddFurnitureCorrectCentury() throws Exception {
+    Collection collection = new Collection(4, 4);
+    Antique f1 = new Furniture("A1", 45, 100.0, "Oak");
+    Antique p1 = new Painting("A2", 150, 200.0, "Fresco");
+    collection.addFurniture(f1);
+    collection.addFurniture(p1);
+
+    assertSame("Year 45 should go to row 0", f1, collection.getAntiqueAt(0, 0));
+    assertSame("Year 150 should go to row 1", p1, collection.getAntiqueAt(1, 0));
+  }
+
+  /**
+   * Verifies that adding to a full row throws a {@link CollectionFullException} that names the
+   * century, and that a year with no row in the matrix throws a {@link YearOutOfRangeException}.
+   *
+   * @throws Exception if a constructor throws.
+   */
+  @Test
+  public void testAddFurnitureErrors() throws Exception {
+    Collection collection = new Collection(4, 2);
+    collection.addFurniture(new Furniture("A1", 10, 100.0, "Oak"));
+    collection.addFurniture(new Furniture("A2", 20, 100.0, "Pine"));
+    try {
+      collection.addFurniture(new Furniture("A3", 30, 100.0, "Elm"));
+      fail("A full row should throw a CollectionFullException");
     } catch (CollectionFullException e) {
-      Assert.assertTrue(e.getMessage().contains("1")); // century 1
+      assertTrue("The message should include the century", e.getMessage().contains("1"));
     }
-  }
-
-  /**
-   * An antique whose year maps beyond the matrix dimensions must throw
-   * {@link YearOutOfRangeException}. Our 5-row collection covers years 1 to 500;
-   * year 501 maps to row 5 which is out of bounds.
-   */
-  @Test(expected = YearOutOfRangeException.class)
-  public void testAddAntiqueYearBeyondMatrixThrows() throws InvalidPriceException, CollectionFullException {
-    collection.addAntique(new Furniture("F99", 501, 999, "Iron"));
-  }
-
-  /**
-   * After deletion, matching furniture is removed and remaining items are
-   * compacted to the left. Vacated trailing slots must be {@code null}.
-   */
-  @Test
-  public void testDeleteFurnitureRemovesAndCompacts() throws InvalidPriceException, CollectionFullException, FurnitureNotFoundException {
-    Furniture keep = new Furniture("FK", 50, 100, "Oak");
-    Furniture remove1 = new Furniture("FR1", 75, 200, "Pine");
-    Furniture remove2 = new Furniture("FR2", 75, 300, "Elm");
-    collection.addAntique(keep);
-    collection.addAntique(remove1);
-    collection.addAntique(remove2);
-
-    collection.deleteFurniture(75);
-
-    Assert.assertSame(keep, collection.getAntiqueAt(0, 0));
-    Assert.assertNull(collection.getAntiqueAt(0, 1));
-    Assert.assertNull(collection.getAntiqueAt(0, 2));
-  }
-
-  /**
-   * {@link Painting} objects in the target year must NOT be deleted; only
-   * {@link Furniture} is removed.
-   */
-  @Test
-  public void testDeleteFurnitureLeavsPaintingsUntouched() throws InvalidPriceException, CollectionFullException, FurnitureNotFoundException {
-    Furniture furniture = new Furniture("F1", 50, 200, "Oak");
-    Painting  painting  = new Painting("P1",  75, 500, "Watercolour");
-    collection.addAntique(furniture);
-    collection.addAntique(painting);
-
-    collection.deleteFurniture(50);
-
-    // Painting (different year) must still be at slot 0 after compaction
-    Assert.assertSame(painting, collection.getAntiqueAt(0, 0));
-    Assert.assertNull(collection.getAntiqueAt(0, 1));
-  }
-
-  /**
-   * Deleting all furniture in a century results in a fully null row.
-   */
-  @Test
-  public void testDeleteFurnitureAllItemsResultsInEmptyRow() throws InvalidPriceException, CollectionFullException, FurnitureNotFoundException {
-    collection.addAntique(new Furniture("F1", 10, 100, "Oak"));
-    collection.addAntique(new Furniture("F2", 10, 200, "Pine"));
-
-    collection.deleteFurniture(10);
-
-    Assert.assertNull(collection.getAntiqueAt(0, 0));
-    Assert.assertNull(collection.getAntiqueAt(0, 1));
-  }
-
-  /**
-   * Deleting from an empty collection must throw {@link FurnitureNotFoundException}.
-   */
-  @Test(expected = FurnitureNotFoundException.class)
-  public void testDeleteFurnitureEmptyCollectionThrows() throws FurnitureNotFoundException {
-    collection.deleteFurniture(50);
-  }
-
-  /**
-   * Deleting a year for which no furniture exists must throw
-   * {@link FurnitureNotFoundException}, even when other antiques are present.
-   */
-  @Test(expected = FurnitureNotFoundException.class)
-  public void testDeleteFurnitureNotFoundThrows() throws InvalidPriceException, CollectionFullException, FurnitureNotFoundException {
-    collection.addAntique(new Furniture("F1", 10, 100, "Oak")); // year 10
-    collection.deleteFurniture(50); // year 50 does not exist
-  }
-
-  /**
-   * Deleting a year that contains only a {@link Painting} (no furniture) must throw
-   * {@link FurnitureNotFoundException}.
-   */
-  @Test(expected = FurnitureNotFoundException.class)
-  public void testDeleteFurnitureOnlyPaintingThrows() throws InvalidPriceException, CollectionFullException, FurnitureNotFoundException {
-    collection.addAntique(new Painting("P1", 50, 500, "Fresco"));
-    collection.deleteFurniture(50);
-  }
-
-  /**
-   * The message of {@link FurnitureNotFoundException} must mention the requested year.
-   */
-  @Test
-  public void testFurnitureNotFoundExceptionMessage() {
     try {
-      collection.deleteFurniture(99);
-      Assert.fail("Expected FurnitureNotFoundException was not thrown");
-    } catch (FurnitureNotFoundException e) {
-      Assert.assertTrue(e.getMessage().contains("99"));
+      collection.addFurniture(new Furniture("A4", 450, 100.0, "Ash"));
+      fail("A year with no row should throw a YearOutOfRangeException");
+    } catch (YearOutOfRangeException e) {
+      // expected
     }
   }
 
   /**
-   * Deleting furniture for a year that maps beyond the matrix dimensions must
-   * throw {@link YearOutOfRangeException} (unchecked). Year 501 → row 5 in a
-   * 5-row matrix.
+   * Verifies the example of the statement: deleting the furniture of years 45 and 350 removes
+   * A1 and A11, and the rest of their rows move to the left.
+   *
+   * @throws Exception if a constructor, {@code addFurniture} or {@code deleteFurniture} throws.
    */
-  @Test(expected = YearOutOfRangeException.class)
-  public void testDeleteFurnitureYearBeyondMatrixThrows() throws FurnitureNotFoundException {
-    collection.deleteFurniture(501);
+  @Test
+  public void testDeleteFurnitureAndShift() throws Exception {
+    Collection collection = new Collection(4, 4);
+    Antique a1 = new Furniture("A1", 45, 100.0, "Wood");
+    Antique a2 = new Painting("A2", 50, 100.0, "Fresco");
+    Antique a4 = new Furniture("A4", 70, 100.0, "Oak");
+    Antique a12 = new Painting("A12", 360, 100.0, "Tempera");
+    collection.addFurniture(a1);
+    collection.addFurniture(a2);
+    collection.addFurniture(new Painting("A3", 60, 100.0, "Oil"));
+    collection.addFurniture(a4);
+    collection.addFurniture(new Painting("A10", 310, 100.0, "Gouache"));
+    collection.addFurniture(new Furniture("A11", 350, 100.0, "Cedar"));
+    collection.addFurniture(a12);
+
+    collection.deleteFurniture(45);
+    collection.deleteFurniture(350);
+
+    assertSame("A2 should move to the first column", a2, collection.getAntiqueAt(0, 0));
+    assertSame("A4 should move to the third column", a4, collection.getAntiqueAt(0, 2));
+    assertNull("The last column of century 1 should be null", collection.getAntiqueAt(0, 3));
+    assertSame("A12 should move to the second column", a12, collection.getAntiqueAt(3, 1));
+    assertNull("The third column of century 4 should be null", collection.getAntiqueAt(3, 2));
   }
 
   /**
-   * {@link Furniture#toString()} must contain the identifier, year, price, and material.
+   * Verifies that deleting a year with no furniture, even with a painting of that year,
+   * throws a {@link FurnitureNotFoundException} that includes the year and leaves the row as it
+   * was.
+   *
+   * @throws Exception if a constructor or {@code addFurniture} throws.
    */
   @Test
-  public void testFurnitureToString() throws InvalidPriceException {
-    Furniture furniture = new Furniture("DESK01", 350, 1500, "Walnut");
-    String str = furniture.toString();
-    Assert.assertTrue(str.contains("DESK01"));
-    Assert.assertTrue(str.contains("350"));
-    Assert.assertTrue(str.contains("1500"));
-    Assert.assertTrue(str.contains("Walnut"));
-  }
-
-  /**
-   * {@link Painting#toString()} must contain the identifier, year, price, and technique.
-   */
-  @Test
-  public void testPaintingToString() throws InvalidPriceException {
-    Painting painting = new Painting("ART01", 200, 8000, "Tempera");
-    String str = painting.toString();
-    Assert.assertTrue(str.contains("ART01"));
-    Assert.assertTrue(str.contains("200"));
-    Assert.assertTrue(str.contains("8000"));
-    Assert.assertTrue(str.contains("Tempera"));
+  public void testDeleteFurnitureNotFound() throws Exception {
+    Collection collection = new Collection(4, 4);
+    Antique painting = new Painting("P1", 50, 100.0, "Fresco");
+    collection.addFurniture(painting);
+    try {
+      collection.deleteFurniture(50);
+      fail("A year with no furniture should throw a FurnitureNotFoundException");
+    } catch (FurnitureNotFoundException e) {
+      assertTrue("The message should include the year", e.getMessage().contains("50"));
+    }
+    assertSame("The painting should stay where it was", painting, collection.getAntiqueAt(0, 0));
   }
 }

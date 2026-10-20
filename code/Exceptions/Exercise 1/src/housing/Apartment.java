@@ -3,15 +3,10 @@ package housing;
 import exceptions.InvalidPriceException;
 
 /**
- * Represents an apartment.
- *
- * <p>An apartment is a type of {@link Housing} and may optionally include a terrace.
- * Its tax is calculated as 1.5 times the base price. Price validation is
- * delegated to the parent constructor.</p>
+ * Represents an apartment, which may have a terrace.
  *
  * @author Juan Carlos Alfaro Jiménez
- * @see Housing
- * @see exceptions.InvalidPriceException
+ * @see InvalidPriceException
  */
 public class Apartment extends Housing {
 
@@ -21,9 +16,9 @@ public class Apartment extends Housing {
     /**
      * Constructs a new {@link Apartment}.
      *
-     * @param price The base price of the apartment in euros.
+     * @param price the base price of the apartment, in euros.
      * @param terrace {@code true} if it has a terrace, {@code false} otherwise.
-     * @throws InvalidPriceException If {@code price} is strictly negative.
+     * @throws InvalidPriceException if {@code price} is negative.
      */
     public Apartment(double price, boolean terrace) throws InvalidPriceException {
         super(price);
@@ -31,10 +26,9 @@ public class Apartment extends Housing {
     }
 
     /**
-     * Calculates the tax for the apartment.
-     * The tax is computed as the base price multiplied by 1.5.
+     * Calculates the tax for the apartment, its base price multiplied by 1.5.
      *
-     * @return The calculated tax amount in euros.
+     * @return the calculated tax amount in euros.
      */
     @Override
     public double tax() {
@@ -44,7 +38,7 @@ public class Apartment extends Housing {
     /**
      * Returns a string representation of the apartment.
      *
-     * @return A descriptive string containing price, terrace availability, and tax.
+     * @return a string containing its price, whether it has a terrace, and its tax.
      */
     @Override
     public String toString() {

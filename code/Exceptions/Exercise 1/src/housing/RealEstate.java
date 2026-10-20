@@ -3,51 +3,46 @@ package housing;
 /**
  * Manages a collection of housing properties.
  *
- * <p>Provides functionality to store, count, and analyze different types of homes.
- * The internal array has a fixed capacity set at construction time.</p>
+ * <p>Stores, counts and analyzes different types of homes in an array of fixed size.</p>
  *
  * @author Juan Carlos Alfaro Jiménez
- * @see Housing
  */
 public class RealEstate {
 
     /** Array storing the housing objects. */
     private Housing[] housings;
 
-    /** Tracks the current number of inserted housings. */
+    /** The number of housing objects inserted so far, and the position of the next one. */
     private int counter;
 
     /**
-     * Constructs a new {@link RealEstate} manager with a specified capacity.
+     * Constructs a new {@link RealEstate} with room for {@code n} housing properties.
      *
-     * @param capacity The maximum number of housing properties this real estate can hold.
+     * @param n the maximum number of housing properties it can hold.
      */
-    public RealEstate(int capacity) {
-        this.housings = new Housing[capacity];
+    public RealEstate(int n) {
+        this.housings = new Housing[n];
         this.counter = 0;
     }
 
     /**
-     * Adds a new housing object to the real estate catalogue.
-     * If the catalogue is already at full capacity, a warning is printed and the
-     * property is not added.
+     * Adds a new housing property to the catalog, if there is room for it.
      *
-     * @param housing The housing property to add.
+     * @param housing the housing property to add.
      */
     public void addHousing(Housing housing) {
         if (this.counter < this.housings.length) {
             this.housings[this.counter] = housing;
             this.counter++;
         } else {
-            System.out.println("Error: Real estate catalogue is at full capacity.");
+            System.out.println("Error: Real Estate capacity is full.");
         }
     }
 
     /**
-     * Counts how many {@link SingleFamily} homes are present that are not chalets.
-     * Uses the {@code instanceof} operator to distinguish the exact runtime type.
+     * Counts how many {@link SingleFamily} homes are not chalets.
      *
-     * @return The count of standard {@link SingleFamily} homes (excluding {@link Chalet} instances).
+     * @return the number of {@link SingleFamily} homes that are not {@link Chalet} objects.
      */
     public int countNonChaletSingleFamily() {
         int count = 0;
@@ -60,18 +55,15 @@ public class RealEstate {
     }
 
     /**
-     * Determines which housing property in the catalogue has the highest tax.
+     * Determines which housing property in the catalog has the highest tax.
      *
-     * <p>Demonstrates polymorphism: {@link Housing#tax()} is called on generic
-     * {@link Housing} references and dispatches to the correct override at runtime.</p>
-     *
-     * @return The {@link Housing} object with the highest calculated tax,
-     *         or {@code null} if the catalogue is empty.
+     * @return the {@link Housing} with the highest tax, or {@code null} if there is none.
      */
     public Housing getHighestTaxHousing() {
         if (this.counter == 0) {
             return null;
         }
+
         Housing maxHousing = this.housings[0];
         for (int i = 1; i < this.counter; i++) {
             if (this.housings[i].tax() > maxHousing.tax()) {

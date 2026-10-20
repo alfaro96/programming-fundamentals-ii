@@ -4,31 +4,29 @@ import exceptions.InvalidPriceException;
 import exceptions.InvalidSquareMetersException;
 
 /**
- * Represents a chalet, which is a specific type of single-family home
- * that includes a garden.
+ * Represents a chalet, a specific type of single-family home that includes a garden.
  *
- * <p>Validates the garden size at construction time. Inherits price and
- * basement validation from {@link SingleFamily} and {@link Housing} respectively.</p>
+ * <p>Its constructor rejects a negative garden size, on top of the checks of
+ * {@link SingleFamily} and {@link Housing}.</p>
  *
  * @author Juan Carlos Alfaro Jiménez
- * @see SingleFamily
- * @see exceptions.InvalidPriceException
- * @see exceptions.InvalidSquareMetersException
+ * @see InvalidSquareMetersException
  */
 public class Chalet extends SingleFamily {
 
-    /** The size of the garden in square meters. Must be non-negative. */
+    /** The size of the garden in square meters. */
     private double gardenSize;
 
     /**
      * Constructs a new {@link Chalet}.
      *
-     * @param price The base price of the chalet in euros.
-     * @param numberOfFloors The number of floors.
-     * @param basementSize The size of the basement in square meters.
-     * @param gardenSize The size of the garden in square meters.
-     * @throws InvalidPriceException If {@code price} is strictly negative.
-     * @throws InvalidSquareMetersException If {@code basementSize} or {@code gardenSize} is strictly negative.
+     * @param price the base price of the chalet, in euros.
+     * @param numberOfFloors the number of floors.
+     * @param basementSize the size of the basement in square meters.
+     * @param gardenSize the size of the garden in square meters.
+     * @throws InvalidPriceException if {@code price} is negative.
+     * @throws InvalidSquareMetersException if {@code basementSize} or {@code gardenSize} is
+     *         negative.
      */
     public Chalet(double price, int numberOfFloors, double basementSize, double gardenSize)
             throws InvalidPriceException, InvalidSquareMetersException {
@@ -42,11 +40,11 @@ public class Chalet extends SingleFamily {
     /**
      * Returns a string representation of the chalet.
      *
-     * @return A descriptive string detailing the chalet's price, garden size, and tax.
+     * @return a string containing its price, garden size and tax.
      */
     @Override
     public String toString() {
         return "Chalet [Price = " + this.getPrice() + " euros, Garden = " + this.gardenSize
-                + " m², Tax = " + this.tax() + " euros]";
+                + " square meters, Tax = " + this.tax() + " euros]";
     }
 }

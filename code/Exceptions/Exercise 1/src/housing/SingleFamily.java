@@ -6,31 +6,28 @@ import exceptions.InvalidSquareMetersException;
 /**
  * Represents a single-family home.
  *
- * <p>Extends {@link Housing} and allows comparison based on taxes and class name.
- * Validates both price (delegated to {@link Housing}) and basement size at
- * construction time via checked exceptions.</p>
+ * <p>Extends {@link Housing} and can tell whether it pays more tax than another one. Its
+ * constructor rejects a negative basement size.</p>
  *
  * @author Juan Carlos Alfaro Jiménez
- * @see Housing
- * @see exceptions.InvalidPriceException
- * @see exceptions.InvalidSquareMetersException
+ * @see InvalidSquareMetersException
  */
-public class SingleFamily extends Housing implements Comparable<SingleFamily> {
+public class SingleFamily extends Housing {
 
-    /** The number of floors in the house. Must be positive. */
+    /** The number of floors in the house. */
     private int numberOfFloors;
 
-    /** The size of the basement in square meters. Must be non-negative. */
+    /** The size of the basement in square meters. */
     private double basementSize;
 
     /**
      * Constructs a new {@link SingleFamily} home.
      *
-     * @param price The base price of the home in euros.
-     * @param numberOfFloors The number of floors.
-     * @param basementSize The size of the basement in square meters.
-     * @throws InvalidPriceException If {@code price} is strictly negative.
-     * @throws InvalidSquareMetersException If {@code basementSize} is strictly negative.
+     * @param price the base price of the home, in euros.
+     * @param numberOfFloors the number of floors.
+     * @param basementSize the size of the basement in square meters.
+     * @throws InvalidPriceException if {@code price} is negative.
+     * @throws InvalidSquareMetersException if {@code basementSize} is negative.
      */
     public SingleFamily(double price, int numberOfFloors, double basementSize)
             throws InvalidPriceException, InvalidSquareMetersException {
@@ -43,10 +40,9 @@ public class SingleFamily extends Housing implements Comparable<SingleFamily> {
     }
 
     /**
-     * Calculates the tax for a single-family home.
-     * The tax is fixed at 20% of the property's base price.
+     * Calculates the tax for a single-family home, 20% of its base price.
      *
-     * @return The calculated tax in euros.
+     * @return the calculated tax in euros.
      */
     @Override
     public double tax() {
@@ -54,31 +50,23 @@ public class SingleFamily extends Housing implements Comparable<SingleFamily> {
     }
 
     /**
-     * Compares this single-family home to another based on their tax amount.
-     * If the taxes are equal, it resolves the tie by comparing class names alphabetically.
+     * Checks whether this single-family home pays more tax than another one.
      *
-     * @param other The other {@link SingleFamily} to compare against.
-     * @return A negative integer, zero, or a positive integer as this object is less than,
-     *         equal to, or greater than the specified object.
+     * @param other the other {@link SingleFamily} to compare against.
+     * @return {@code true} if the tax of this home is greater than the tax of {@code other}.
      */
-    @Override
-    public int compareTo(SingleFamily other) {
-        int taxComparison = Double.compare(this.tax(), other.tax());
-        if (taxComparison != 0) {
-            return taxComparison;
-        }
-        // Tie-breaker: compare by class name
-        return this.getClass().getSimpleName().compareTo(other.getClass().getSimpleName());
+    public boolean paysMoreTaxThan(SingleFamily other) {
+        return this.tax() > other.tax();
     }
 
     /**
      * Returns a string representation of the single-family home.
      *
-     * @return A descriptive string containing price, floors, basement size, and tax.
+     * @return a string containing its price, floors, basement size and tax.
      */
     @Override
     public String toString() {
         return "SingleFamily [Price = " + this.getPrice() + " euros, Floors = " + this.numberOfFloors
-                + ", Basement = " + this.basementSize + " m², Tax = " + this.tax() + " euros]";
+                + ", Basement = " + this.basementSize + " square meters, Tax = " + this.tax() + " euros]";
     }
 }

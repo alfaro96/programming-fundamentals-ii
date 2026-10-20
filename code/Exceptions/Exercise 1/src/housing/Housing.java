@@ -5,23 +5,22 @@ import exceptions.InvalidPriceException;
 /**
  * Represents a generic housing property in the real estate system.
  *
- * <p>This is an abstract class that defines the core attributes and behaviors
- * that all specific types of housing must implement. Price validation is
- * enforced at construction time via a checked exception.</p>
+ * <p>It is an abstract class that defines the attributes and behaviors that every specific
+ * type of housing must implement. Its constructor rejects a negative price.</p>
  *
  * @author Juan Carlos Alfaro Jiménez
- * @see exceptions.InvalidPriceException
+ * @see InvalidPriceException
  */
 public abstract class Housing {
 
-    /** The base price of the housing property in euros. Must be non-negative. */
+    /** The base price of the housing property in euros. */
     private double price;
 
     /**
      * Constructs a new {@link Housing} instance.
      *
-     * @param price The base price of the housing property in euros.
-     * @throws InvalidPriceException If {@code price} is strictly negative.
+     * @param price the base price of the housing property, in euros.
+     * @throws InvalidPriceException if {@code price} is negative.
      */
     public Housing(double price) throws InvalidPriceException {
         if (price < 0) {
@@ -31,9 +30,9 @@ public abstract class Housing {
     }
 
     /**
-     * Retrieves the base price of the housing property.
+     * Returns the base price of the housing property.
      *
-     * @return The price in euros.
+     * @return the price in euros.
      */
     public double getPrice() {
         return this.price;
@@ -41,17 +40,15 @@ public abstract class Housing {
 
     /**
      * Calculates the tax associated with this housing property.
-     * This method must be implemented by all subclasses according to their specific rules.
      *
-     * @return The calculated tax amount in euros.
+     * @return the calculated tax amount in euros.
      */
     public abstract double tax();
 
     /**
      * Returns a string representation of the housing property.
-     * Forces all subclasses to provide their own descriptive text.
      *
-     * @return A string detailing the housing's properties.
+     * @return a string detailing the properties of the housing.
      */
     @Override
     public abstract String toString();

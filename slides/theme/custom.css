@@ -70,6 +70,8 @@
   --flow-caption-gap: 0.3em; /* box to the caption under it */
   --flow-layer-gap: 0.8em; /* between two flows stacked as layers, the same above and below the divider */
   --flow-icon-size: 1.2em; /* an icon in an arrow's label, em of the label */
+  --flow-wide-box-size: 0.55em; /* boxes of a seven-column flow, so four fit across */
+  --flow-down-length: 1.8em; /* an arrow down from a box to the outcome under it */
 
   /* Stage */
   --stage-note-size: 0.58em; /* the takeaway at the bottom */
@@ -175,6 +177,16 @@
   --class-box-padding: 0.35em 0.6em;
   --class-box-tint: 6%; /* background, share of the heading blue */
   --class-keyword-size: 0.8em; /* abstract or interface over the name, em of the box text */
+  --hierarchy-large-size: 0.75em; /* a few classes alone, read from the back row */
+  --hierarchy-full-size: 0.22em; /* a whole family, such as Throwable's: small, so every class fits */
+  --hierarchy-full-gap: 0.8em; /* between its sibling branches */
+  --hierarchy-full-link: 1.1em; /* each half of a line, shorter than usual */
+  --hierarchy-list-indent: 1.6em; /* a stacked subclass to its superclass's left edge; the rail runs halfway */
+  --hierarchy-list-gap: 0.2em; /* between stacked subclasses */
+  --hierarchy-list-line: 1.25; /* line height of a stacked subclass, to find its middle */
+  --hierarchy-list-padding-y: 0.12em;
+  --hierarchy-list-padding-x: 0.5em;
+  --hierarchy-list-column-gap: 1em; /* a long list split in two columns */
 
   /* Toolbox: a frame holding columns of tool cards, with a band at the bottom */
   --toolbox-padding: 0.6em;
@@ -660,6 +672,11 @@ html.print-handout .reveal pre:has(code.fragment) .hljs.has-highlights tr.highli
   grid-area: 1 / 1;
 }
 
+/* A block smaller than the one that replaces it, centered in the room that one takes */
+.reveal .output-swap > .swap-center {
+  align-self: center;
+}
+
 /* An error the compiler or the program prints: the terminal tinted and barred in red, as an error card */
 .reveal .console-error pre {
   border-left-color: var(--color-accent-red);
@@ -929,6 +946,12 @@ html.print-handout .reveal pre:has(code.fragment) .hljs.has-highlights tr.highli
 
 .reveal .phone-swap > * {
   grid-area: 1 / 1;
+}
+
+/* Print PDF (theme/handout.js): reveal leaves fade-out steps shown, so the old value would overlap the new */
+html.print-handout .reveal .phone-swap > .fade-out,
+html.print-handout .reveal .output-swap > .fade-out {
+  visibility: hidden;
 }
 
 /* A button tapped on a step: pressed in, with a ring, while its step is the current one */
@@ -1516,6 +1539,80 @@ html.print-handout .reveal pre:has(code.fragment) .hljs.has-highlights tr.highli
   border-style: dashed;
 }
 
+/* A few classes, large, such as the top of a family before the whole of it */
+.reveal .hierarchy-large {
+  --hierarchy-size: var(--hierarchy-large-size);
+}
+
+/* A whole family: smaller, and each column as wide as its own branch, or the widest sets them all */
+.reveal .hierarchy-full {
+  --hierarchy-size: var(--hierarchy-full-size);
+  --hierarchy-gap: var(--hierarchy-full-gap);
+  --hierarchy-link: var(--hierarchy-full-link);
+}
+
+.reveal .hierarchy-full .hierarchy-children {
+  grid-auto-columns: auto;
+}
+
+/* Subclasses stacked under their superclass, too many for a row: a rail down the left, a tick to each */
+.reveal .hierarchy-list {
+  align-self: stretch;
+  margin: 0;
+  padding: 0 0 0 var(--hierarchy-list-indent);
+  list-style: none;
+}
+
+.reveal .hierarchy-list li {
+  position: relative;
+  margin: 0;
+  padding-top: var(--hierarchy-list-gap);
+}
+
+/* The rail runs past every subclass and stops at the middle of the last one */
+.reveal .hierarchy-list li::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(var(--hierarchy-list-indent) / -2);
+  border-left: var(--rule-hairline) solid var(--color-heading);
+}
+
+.reveal .hierarchy-list li:last-child::before {
+  bottom: auto;
+  height: calc(var(--hierarchy-list-gap) + var(--rule-hairline) + var(--hierarchy-list-padding-y) + var(--hierarchy-list-line) * 0.5em);
+}
+
+/* A list too long for the height, in two columns, each with its own rail, as one branch per column */
+.reveal .hierarchy-list-columns {
+  columns: 2;
+  column-gap: var(--hierarchy-list-column-gap);
+}
+
+.reveal .hierarchy-list-columns > li {
+  break-inside: avoid;
+}
+
+.reveal .hierarchy-list li > code {
+  position: relative;
+  display: block;
+  padding: var(--hierarchy-list-padding-y) var(--hierarchy-list-padding-x);
+  color: var(--color-heading);
+  line-height: var(--hierarchy-list-line);
+  border: var(--rule-hairline) solid var(--color-heading);
+  background: color-mix(in srgb, var(--color-heading) var(--class-box-tint), var(--color-bg));
+}
+
+.reveal .hierarchy-list li > code::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: calc(var(--hierarchy-list-indent) / -2 - var(--rule-hairline));
+  width: calc(var(--hierarchy-list-indent) / 2);
+  border-top: var(--rule-hairline) solid var(--color-heading);
+}
+
 /* File explorer: a panel with a title and one row per folder or file, indented by level
    (explorer-depth-1 to 3). Folders show open, with a chevron; .java files get a cup */
 .reveal .explorer {
@@ -1769,6 +1866,11 @@ html.print-handout .reveal pre:has(code.fragment) .hljs.has-highlights tr.highli
   font-size: var(--flow-detail-size);
 }
 
+/* Code inside a description: already at its size, so not shrunk again */
+.reveal .flow-box .flow-detail code {
+  font-size: 1em;
+}
+
 .reveal .flow-box {
   --flow-tone: var(--color-heading);
   display: flex;
@@ -1900,6 +2002,60 @@ html.print-handout .reveal pre:has(code.fragment) .hljs.has-highlights tr.highli
 /* An arrow across the three middle columns, straight to the last box */
 .reveal .flow-arrow.flow-long {
   grid-column: span 3;
+}
+
+/* Seven columns, four boxes: smaller boxes, so the longest names still fit */
+.reveal .flow-wide {
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  --flow-box-size: var(--flow-wide-box-size);
+}
+
+/* A layer that starts at the third column, over the same boxes of the layer below */
+.reveal .flow-offset > :first-child {
+  grid-column-start: 3;
+}
+
+/* A box with a choice: the box in the main row, an arrow down and the outcome under it */
+.reveal .flow-fork {
+  grid-row: span 3;
+  display: grid;
+  grid-template-rows: subgrid;
+}
+
+/* The arrow down, with its label beside it, centered under the box */
+.reveal .flow-arrow-down {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  column-gap: var(--flow-label-gap);
+  min-height: var(--flow-down-length);
+}
+
+.reveal .flow-arrow-down .flow-label {
+  grid-column: 3;
+  align-self: center;
+  text-align: start;
+}
+
+.reveal .flow-shaft-down {
+  grid-column: 2;
+  grid-row: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.reveal .flow-shaft-down::before {
+  content: "";
+  flex: 1;
+  border-left: var(--flow-stroke) solid currentColor;
+}
+
+.reveal .flow-shaft-down::after {
+  content: "";
+  width: var(--flow-head);
+  aspect-ratio: 1;
+  background: currentColor;
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
 }
 
 /* An icon before an arrow's label, like the Run button of an IDE */
