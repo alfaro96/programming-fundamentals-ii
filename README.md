@@ -60,7 +60,7 @@ A Gradle project in JetBrains Academy format, with one lesson per unit. It conta
 | Unit 3 | Inheritance                     |
 | Unit 4 | Exceptions                      |
 | Unit 5 | Collections                     |
-| Unit 6 | Event-Driven Programming        |
+| Unit 6 | Event-driven programming        |
 
 Each unit contains a combination of:
 
