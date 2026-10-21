@@ -1,8 +1,5 @@
 /**
- * Represents a {@link Dog}, which is a specific type of {@link Pet}.
- * <p>
- * Inherits the name state from the parent class and adds dog-specific behavior.
- * </p>
+ * Represents a dog, a pet that also barks.
  *
  * @author Juan Carlos Alfaro Jiménez
  * @see Pet
@@ -10,17 +7,16 @@
 public class Dog extends Pet {
 
     /**
-     * Constructor that initializes the inherited state.
+     * Creates a dog with a name.
      *
-     * @param name The name of the dog.
+     * @param name the name of the dog.
      */
     public Dog(String name) {
         super(name);
     }
 
     /**
-     * Specific behavior for the dog.
-     * Prints the dog's name followed by a barking sound.
+     * Prints the name of the dog followed by its bark.
      */
     public void bark() {
         System.out.println(this.getName() + ": woof!");

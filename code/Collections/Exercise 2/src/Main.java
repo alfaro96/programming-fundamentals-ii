@@ -3,73 +3,61 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Main class for Exercise 2.
- * <p>
- * This class repeats the steps from Exercise 1 but utilizes a generic
- * {@link ArrayList} (specifically {@code List<String>}). This ensures
- * type safety at compile time and eliminates the need for manual casting
- * when retrieving elements.
- * </p>
+ * Works with the list of colors of Exercise 1, now a {@code List<String>}, so the compiler checks
+ * the type of every element.
+ *
+ * <p>Each step that changes the list prints it, as in Exercise 1. The integer that the list of
+ * Exercise 1 accepted no longer compiles, and the string at position 3 needs no cast.</p>
  *
  * @author Juan Carlos Alfaro Jiménez
- * @see java.util.ArrayList
- * @see java.util.Collections
+ * @see List
+ * @see Collections
  */
 public class Main {
 
-   /**
-    * The entry point of the application. All exercise steps are executed
-    * sequentially here without relying on external methods.
-    *
-    * @param args Command-line arguments (not used).
-    */
-   public static void main(String[] args) {
-      // 1. Create a generic ArrayList named colors, initially empty.
-      // Notice the use of <String> to enforce type safety.
-      List<String> colors = new ArrayList<String>();
+    /**
+     * Adds, inserts, replaces, removes and sorts colors in a list of strings, printing it after
+     * each step.
+     *
+     * @param args the command-line arguments, not used.
+     */
+    public static void main(String[] args) {
+        List<String> colors = new ArrayList<>();
 
-      // 2. Add the following color names (as String objects).
-      colors.add("Red");
-      colors.add("Green");
-      colors.add("Orange");
-      colors.add("White");
-      colors.add("Black");
+        colors.add("Red");
+        colors.add("Green");
+        colors.add("Orange");
+        colors.add("White");
+        colors.add("Black");
+        System.out.println("Step 3 - Initial list: " + colors);
 
-      // 3. Print the content of the ArrayList.
-      System.out.println("Step 3 - Initial list: " + colors);
+        colors.add(0, "Pink");
+        System.out.println("Step 4 - After inserting Pink at 0: " + colors);
 
-      // 4. Insert the string "Pink" at position 0. Print to verify.
-      colors.add(0, "Pink");
-      System.out.println("Step 4 - After inserting Pink at 0: " + colors);
+        colors.set(3, "Blue");
 
-      // 5. Replace the element at position 3 (currently "Orange") with "Blue".
-      colors.set(3, "Blue");
+        colors.add("Purple");
+        System.out.println("Step 6 - After adding Purple at the end: " + colors);
 
-      // 6. Add "Purple" at the end. Print to verify.
-      colors.add("Purple");
-      System.out.println("Step 6 - After adding Purple at the end: " + colors);
+        System.out.print("Step 7 - Elements at even positions: ");
+        for (int i = 0; i < colors.size(); i += 2) {
+            if (i > 0) {
+                System.out.print(", ");
+            }
+            System.out.print(colors.get(i));
+        }
+        System.out.println();
 
-      // 7. Print elements at even positions.
-      System.out.print("Step 7 - Elements at even positions: ");
-      for (int i = 0; i < colors.size(); i += 2) {
-         System.out.print(colors.get(i) + (i + 2 < colors.size() ? ", " : ""));
-      }
-      System.out.println();
+        colors.remove(4);
+        System.out.println("Step 8 - After removing the element at position 4: " + colors);
 
-      // 8. Remove the element at position 4. Print to verify.
-      colors.remove(4);
-      System.out.println("Step 8 - After removing element at position 4: " + colors);
+        Collections.sort(colors);
+        System.out.println("Step 9 - Sorted list: " + colors);
 
-      // 9. Sort the list alphabetically using Collections.sort(...). Print to verify.
-      Collections.sort(colors);
-      System.out.println("Step 9 - Sorted list: " + colors);
+        // Main.java: error: incompatible types: int cannot be converted to String
+        // colors.add(100);
 
-      // 10. Add an integer to the list. Print to verify.
-      colors.add(String.valueOf(100));
-      System.out.println("Step 10 - After adding an integer (as a String): " + colors);
-
-      // 11. Print the length of the string at position 3.
-      String elementAt3 = colors.get(3);
-      System.out.println("Step 11 - Length of string at position 3 ('" + elementAt3 + "'): " + elementAt3.length());
-   }
+        String color = colors.get(3);
+        System.out.println("Step 11 - Length of the string at position 3: " + color.length());
+    }
 }

@@ -1,8 +1,5 @@
 /**
- * Represents a {@link Cat}, which is a specific type of {@link Pet}.
- * <p>
- * Inherits the name state from the parent class and adds cat-specific behavior.
- * </p>
+ * Represents a cat, a pet that also meows.
  *
  * @author Juan Carlos Alfaro Jiménez
  * @see Pet
@@ -10,17 +7,16 @@
 public class Cat extends Pet {
 
     /**
-     * Constructor that initializes the inherited state.
+     * Creates a cat with a name.
      *
-     * @param name The name of the cat.
+     * @param name the name of the cat.
      */
     public Cat(String name) {
         super(name);
     }
 
     /**
-     * Specific behavior for the cat.
-     * Prints the cat's name followed by a meowing sound.
+     * Prints the name of the cat followed by its meow.
      */
     public void meow() {
         System.out.println(this.getName() + ": meow!");

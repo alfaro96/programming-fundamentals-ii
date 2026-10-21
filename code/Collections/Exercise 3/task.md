@@ -1,9 +1,15 @@
 # Exercise 3
 
-1. Create two independent classes, **`Dog`** and **`Cat`**. Both classes must maintain a private state for their name, which must be provided at the time the object is instantiated.
-2. Implement specific behaviors for each animal: a **`bark()`** method in the **`Dog`** class that prints **`"[name]: woof!"`**, and a **`meow()`** method in the **`Cat`** class that prints **`"[name]: meow!"`**.
-3. Research and override the appropriate method inherited from the **`Object`** class so that printing the object directly outputs exactly **`"I am the dog [name]"`** or **`"I am the cat [name]"`**, respectively.
-4. Create a non-generic **`ArrayList`** named **`animals`**.
-5. Instantiate and add the following dogs (**`"Bobby"`**, **`"Jimmy"`**, **`"Oasis"`**, **`"Sanson"`**) and cats (**`"Garfield"`**, **`"Boots"`**, **`"Whiskers"`**) to your list.
-6. Iterate through the **`animals`** list using a for-each loop. Because the list holds generic objects, you must write the necessary logic to check the type of each object at runtime in order to safely call either **`bark()`** or **`meow()`**.
-7. Finally, create a generic **`ArrayList<Dog>`** and attempt to add both dogs and cats to it. Observe and explain the compiler's behavior.
+Write two independent classes, **`Dog`** and **`Cat`**, and keep their objects together in one list.
+
+* Each class has a private attribute `String name`, given by its constructor.
+* `Dog` has a method `bark()` that prints `[name]: woof!`, and `Cat` a method `meow()` that prints `[name]: meow!`, where `[name]` is the name of the animal.
+* Each class overrides `toString()`, so that printing a dog prints `I am the dog [name]`, and printing a cat, `I am the cat [name]`.
+
+Write a **`Main`** class whose `main`:
+
+1. Creates an `ArrayList` named `animals`, with no type in angle brackets.
+2. Adds the dogs `"Bobby"`, `"Jimmy"`, `"Oasis"` and `"Sanson"`, and the cats `"Garfield"`, `"Boots"` and `"Whiskers"`.
+3. Prints every animal with a for-each loop.
+4. Goes through `animals` again with a for-each loop and makes each dog bark and each cat meow. The list gives back `Object`s, so check the class of each one before calling its method.
+5. Creates a `List<Dog>` named `dogs`, adds a dog, and tries to add a cat. Leave that line as a comment, with the compiler's error and a short explanation of it in comments above it.

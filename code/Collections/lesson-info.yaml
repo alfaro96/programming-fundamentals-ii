@@ -1,13 +1,7 @@
 content:
-  - Understanding resizable arrays
   - Exercise 1
-  - Enforcing type safety with generics
   - Exercise 2
   - Exercise 3
   - Exercise 4
-  - Solving generic invariance with wildcards
   - Exercise 5
-  - Understanding the Iterator interface
-  - Solving concurrent modification issues
   - Exercise 6
-  - Sorting collections with Comparable

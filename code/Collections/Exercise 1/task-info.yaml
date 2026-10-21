@@ -4,7 +4,7 @@ files:
     visible: true
     placeholders:
       - offset: 0
-        length: 2737
+        length: 1926
         placeholder_text: "/* TODO: Implement Main class. */"
   - name: test/output.txt
     visible: false

@@ -1,26 +1,32 @@
-type: theory
+type: output
 files:
   - name: src/Pet.java
     visible: true
     placeholders:
       - offset: 0
-        length: 1209
+        length: 705
         placeholder_text: "/* TODO: Implement Pet class. */"
   - name: src/Dog.java
     visible: true
     placeholders:
       - offset: 0
-        length: 877
+        length: 453
         placeholder_text: "/* TODO: Implement Dog class. */"
   - name: src/Cat.java
     visible: true
     placeholders:
       - offset: 0
-        length: 877
+        length: 453
         placeholder_text: "/* TODO: Implement Cat class. */"
   - name: src/Main.java
     visible: true
     placeholders:
       - offset: 0
-        length: 4406
+        length: 2381
         placeholder_text: "/* TODO: Implement Main class. */"
+  - name: test/output.txt
+    visible: false
+    propagatable: false
+  - name: test/input.txt
+    visible: false
+    propagatable: false

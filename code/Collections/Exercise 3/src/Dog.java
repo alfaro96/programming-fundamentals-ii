@@ -1,36 +1,34 @@
 /**
- * Represents a {@link Dog} with a specific name and behavior.
+ * Represents a dog with a name, which barks.
  *
  * @author Juan Carlos Alfaro Jiménez
+ * @see Cat
  */
 public class Dog {
 
-    /**
-     * Private state to store the dog's name.
-     */
+    /** The name of the dog. */
     private String name;
 
     /**
-     * Constructor that initializes the dog's name.
+     * Creates a dog with a name.
      *
-     * @param name The name of the dog.
+     * @param name the name of the dog.
      */
     public Dog(String name) {
         this.name = name;
     }
 
     /**
-     * Specific behavior for the dog.
-     * Prints the dog's name followed by a barking sound.
+     * Prints the name of the dog followed by its bark.
      */
     public void bark() {
         System.out.println(this.name + ": woof!");
     }
 
     /**
-     * Overrides the default {@code toString()} method from the {@link Object} class.
+     * Returns a description of the dog.
      *
-     * @return A custom string representation of the dog.
+     * @return {@code "I am the dog "} followed by its name.
      */
     @Override
     public String toString() {

@@ -1,41 +1,35 @@
 /**
- * Base class representing a generic {@link Pet}.
- * <p>
- * This class manages the common state (name) and behavior (speak) 
- * for all types of pets in the hierarchy.
- * </p>
+ * Represents a pet with a name, which makes a sound.
  *
  * @author Juan Carlos Alfaro Jiménez
+ * @see Dog
+ * @see Cat
  */
 public class Pet {
 
-    /**
-     * Private state to store the pet's name.
-     */
+    /** The name of the pet. */
     private String name;
 
     /**
-     * Constructor to initialize the pet's name.
+     * Creates a pet with a name.
      *
-     * @param name The name of the pet.
+     * @param name the name of the pet.
      */
     public Pet(String name) {
         this.name = name;
     }
 
     /**
-     * Gets the name of the pet. 
-     * Provided for subclasses to access the private state safely.
+     * Returns the name of the pet.
      *
-     * @return The name of the pet.
+     * @return the name of the pet.
      */
     public String getName() {
         return this.name;
     }
 
     /**
-     * Generic behavior for any pet.
-     * Prints a generic sound message using the pet's name.
+     * Prints the name of the pet followed by {@code " makes a sound."}.
      */
     public void speak() {
         System.out.println(this.name + " makes a sound.");

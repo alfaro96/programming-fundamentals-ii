@@ -1,7 +1,11 @@
 # Exercise 5
 
-1. Add a static method named **`processElements`** to your main class. This method must accept a single parameter: an **`ArrayList`** restricted by an upper bound wildcard, meaning it can accept lists of **`Pet`** or any of its subclasses. Inside the method, iterate through the list and safely invoke the **`speak()`** method on each element.
-2. Instantiate separate, strongly-typed generic lists for **`Dog`** and **`Cat`** objects. Populate them, and pass each list to your **`processElements`** method to verify that your wildcard implementation handles both collections correctly.
-3. Attempt to pass an **`ArrayList<String>`** and a completely raw (non-generic) **`ArrayList`** to the **`processElements`** method. Observe, analyze, and document the compiler's reaction or the runtime behavior for each case.
-4. Research the concept of lower bounded wildcards in Java generics (specifically the syntax using **`? super`**).
-5. Create an overloaded version of **`processElements`** (or a new method) that accepts an **`ArrayList`** restricted by a lower bound wildcard, so it accepts lists of **`Pet`** or any of its superclasses. Iterate through this list (think carefully about what base type you must use to guarantee a safe extraction from such a list) and print each object to the console. Test it and explain why iterating over a lower bounded list differs from an upper bounded one.
+Start from the `Pet`, `Dog` and `Cat` classes of Exercise 4, and write in the **`Main`** class two static methods that take lists of different kinds of pet.
+
+1. **`processElements`** receives a `List<? extends Pet>` and calls `speak()` on each of its elements.
+2. In `main`, create a `List<Dog>` with the dogs `"Bobby"` and `"Jimmy"`, and a `List<Cat>` with the cats `"Garfield"` and `"Whiskers"`, and pass each one to `processElements`.
+3. Try to pass `processElements` a `List<String>`: leave the call as a comment, with the compiler's error and a short explanation above it. Then pass it an `ArrayList` with no type in angle brackets, holding the dog `"Oasis"` and the string `"Boots"`: it compiles, so explain in a comment what happens when it runs, and catch the exception it throws, printing `The list holds something that is not a pet`.
+4. **`addDog`** receives a `List<? super Dog>` and a name (`String`), and adds a new dog with that name to the list.
+5. In `main`, call `addDog` with the `List<Dog>` of step 2 and the name `"Rex"`, with a new `List<Pet>` and the name `"Toby"`, and with a new `List<Object>` and the name `"Max"`. Then go through the `List<Object>` with a for-each loop, printing `[name] is now in the list` for each dog, and pass the `List<Pet>` to `processElements`.
+
+Explain in a comment why the for-each loop of step 5 reads each element as an `Object`, while the one in `processElements` reads it as a `Pet`.

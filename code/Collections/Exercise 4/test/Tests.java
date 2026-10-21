@@ -1,80 +1,72 @@
-import org.junit.Assert;
 import org.junit.Test;
+import static org.junit.Assert.*;
+
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
 /**
- * Unit tests for the {@link Pet}, {@link Dog}, and {@link Cat} classes.
- * <p>
- * Verifies that inheritance is properly established and that both inherited
- * and specific methods output the correct strings to the console.
- * </p>
+ * Test suite for the {@link Pet} hierarchy and the list of pets in {@link Main}.
  *
  * @author Juan Carlos Alfaro Jiménez
  */
 public class Tests {
 
   /**
-   * Tests the instantiation, overridden {@link Dog#toString()}, and {@link Dog#bark()} method
-   * of the {@link Dog} class.
+   * Runs a piece of code and returns what it prints, with its line separators as {@code \n}.
+   *
+   * @param code the code to run.
+   * @return the text printed to {@code System.out} while it runs.
    */
-  @Test
-  public void testDogBehaviors() {
-    Dog dog = new Dog("Rex");
-
-    // Verify state initialization via inheritance
-    Assert.assertEquals("The name should be correctly initialized", "Rex", dog.getName());
-
-    // Intercept System.out
-    ByteArrayOutputStream outContent = new ByteArrayOutputStream();
-    PrintStream originalOut = System.out;
-    System.setOut(new PrintStream(outContent));
-
-    // Test Step 1: Inherited speak()
-    dog.speak();
-    String expectedSpeak = "Rex makes a sound.";
-
-    // Test Step 2: Specific bark()
-    dog.bark();
-    String expectedBark = "Rex: woof!";
-
-    System.setOut(originalOut); // Restore standard output
-
-    // The output will contain both lines separated by a newline
-    String output = outContent.toString().trim();
-    Assert.assertTrue("Output should contain the speak phrase", output.contains(expectedSpeak));
-    Assert.assertTrue("Output should contain the bark phrase", output.contains(expectedBark));
+  private static String capture(Runnable code) {
+    PrintStream original = System.out;
+    ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+    System.setOut(new PrintStream(buffer));
+    try {
+      code.run();
+    } finally {
+      System.setOut(original);
+    }
+    return buffer.toString().replace(System.lineSeparator(), "\n");
   }
 
   /**
-   * Tests the instantiation, overridden {@link Cat#toString()}, and {@link Cat#meow()} method
-   * of the {@link Cat} class.
+   * Verifies that a dog is a {@link Pet} with its name, which speaks and barks.
    */
   @Test
-  public void testCatBehaviors() {
-    Cat cat = new Cat("Luna");
+  public void testDog() {
+    Pet pet = new Dog("Rex");
+    Dog dog = (Dog) pet;
 
-    // Verify state initialization via inheritance
-    Assert.assertEquals("The name should be correctly initialized", "Luna", cat.getName());
+    assertEquals("The name should be given to Pet's constructor", "Rex", pet.getName());
+    assertEquals("speak() should be inherited from Pet", "Rex makes a sound.\n", capture(pet::speak));
+    assertEquals("bark() should print the name and woof!", "Rex: woof!\n", capture(dog::bark));
+  }
 
-    // Intercept System.out
-    ByteArrayOutputStream outContent = new ByteArrayOutputStream();
-    PrintStream originalOut = System.out;
-    System.setOut(new PrintStream(outContent));
+  /**
+   * Verifies that a cat is a {@link Pet} with its name, which speaks and meows.
+   */
+  @Test
+  public void testCat() {
+    Pet pet = new Cat("Luna");
+    Cat cat = (Cat) pet;
 
-    // Test Step 1: Inherited speak()
-    cat.speak();
-    String expectedSpeak = "Luna makes a sound.";
+    assertEquals("The name should be given to Pet's constructor", "Luna", pet.getName());
+    assertEquals("speak() should be inherited from Pet", "Luna makes a sound.\n", capture(pet::speak));
+    assertEquals("meow() should print the name and meow!", "Luna: meow!\n", capture(cat::meow));
+  }
 
-    // Test Step 2: Specific meow()
-    cat.meow();
-    String expectedMeow = "Luna: meow!";
+  /**
+   * Verifies that {@code main} makes each pet bark or meow, and then speak, in the order they
+   * were added.
+   */
+  @Test
+  public void testMain() {
+    String expected = "Bobby: woof!\nBobby makes a sound.\n"
+        + "Garfield: meow!\nGarfield makes a sound.\n"
+        + "Sanson: woof!\nSanson makes a sound.\n"
+        + "Whiskers: meow!\nWhiskers makes a sound.\n";
 
-    System.setOut(originalOut); // Restore standard output
-
-    // The output will contain both lines separated by a newline
-    String output = outContent.toString().trim();
-    Assert.assertTrue("Output should contain the speak phrase", output.contains(expectedSpeak));
-    Assert.assertTrue("Output should contain the meow phrase", output.contains(expectedMeow));
+    assertEquals("main should print each pet's own sound, then speak", expected,
+        capture(() -> Main.main(new String[0])));
   }
 }

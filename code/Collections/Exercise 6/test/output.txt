@@ -1,0 +1,18 @@
+Step 1 - Iterator with no type
+Bobby
+Rex
+Garfield
+Boots
+Jimmy
+Luna
+Step 2 - Iterator<Pet>
+Bobby
+Rex
+Garfield
+Boots
+Jimmy
+Luna
+Step 3 - Names: [Bobby, Rex, Garfield, Boots, Jimmy, Luna]
+Step 4 - Five letters, with an iterator: [Bobby, Boots, Jimmy]
+Step 5 - Five letters, by position: [Bobby, Boots, Jimmy]
+Step 6 - Reversed: [Jimmy, Boots, Bobby]

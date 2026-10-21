@@ -187,6 +187,7 @@
   --hierarchy-list-padding-y: 0.12em;
   --hierarchy-list-padding-x: 0.5em;
   --hierarchy-list-column-gap: 1em; /* a long list split in two columns */
+  --hierarchy-row-gap: 4em; /* between separate hierarchies side by side */
 
   /* Toolbox: a frame holding columns of tool cards, with a band at the bottom */
   --toolbox-padding: 0.6em;
@@ -726,7 +727,8 @@ html.print-handout .reveal pre:has(code.fragment) .hljs.has-highlights tr.highli
 
 /* An output too long for its cell, like an exception, wraps instead of being cut */
 .reveal .runs pre code.console,
-.reveal .code-run-output pre code.console {
+.reveal .code-run-output pre code.console,
+.reveal .column pre code.console {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
@@ -1553,6 +1555,19 @@ html.print-handout .reveal .output-swap > .fade-out {
 
 .reveal .hierarchy-full .hierarchy-children {
   grid-auto-columns: auto;
+}
+
+/* A box with its subclasses stacked under it, as wide as they are, so the rail starts under it */
+.reveal .class-box:has(+ .hierarchy-list) {
+  align-self: stretch;
+}
+
+/* Separate hierarchies side by side, each as wide as its own content */
+.reveal .hierarchy-row {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: var(--hierarchy-row-gap);
 }
 
 /* Subclasses stacked under their superclass, too many for a row: a rail down the left, a tick to each */

@@ -2,27 +2,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Main class for Exercise 3.
- * <p>
- * This class demonstrates the use of custom objects within both non-generic
- * and generic collections, showing runtime type checking and compile-time
- * type safety constraints.
- * </p>
- * * @author Juan Carlos Alfaro Jiménez
+ * Keeps dogs and cats in one {@link ArrayList} with no type of element, and then tries a list
+ * that only holds dogs.
+ *
+ * @author Juan Carlos Alfaro Jiménez
+ * @see Dog
+ * @see Cat
  */
 public class Main {
 
     /**
-     * The entry point of the application.
+     * Adds four dogs and three cats to one list, prints them, makes each one bark or meow, and
+     * creates a {@code List<Dog>}.
      *
-     * @param args Command-line arguments (not used).
+     * @param args the command-line arguments, not used.
      */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     public static void main(String[] args) {
-        // 4. Create a non-generic ArrayList named animals.
-        List animals = new ArrayList();
-
-        // 5. Instantiate and add dogs and cats to the list.
+        ArrayList animals = new ArrayList();
         animals.add(new Dog("Bobby"));
         animals.add(new Dog("Jimmy"));
         animals.add(new Dog("Oasis"));
@@ -31,35 +27,24 @@ public class Main {
         animals.add(new Cat("Boots"));
         animals.add(new Cat("Whiskers"));
 
-        System.out.println("--- Testing overridden toString() method ---");
-        System.out.println(animals.get(0)); // Should print: I am the dog Bobby
-        System.out.println(animals.get(4)); // Should print: I am the cat Garfield
-
-        System.out.println("\n--- Iterating and triggering specific behaviors ---");
-
-        // 6. Iterate through the animals list using a for-each loop.
         for (Object animal : animals) {
-            // Type checking at runtime
-            if (animal instanceof Dog) {
-                ((Dog) animal).bark();
-            } else if (animal instanceof Cat) {
-                ((Cat) animal).meow();
+            System.out.println(animal);
+        }
+
+        for (Object animal : animals) {
+            if (animal instanceof Dog dog) {
+                dog.bark();
+            } else if (animal instanceof Cat cat) {
+                cat.meow();
             }
         }
 
-        // 7. Create a generic ArrayList<Dog> and attempt to add both.
-        List<Dog> dogsOnly = new ArrayList<Dog>();
-        dogsOnly.add(new Dog("Rex")); // This works perfectly.
+        List<Dog> dogs = new ArrayList<>();
+        dogs.add(new Dog("Rex"));
 
-        /*
-         * EXPLANATION OF COMPILER BEHAVIOR:
-         * If we uncomment the line below, the Java compiler will throw an error:
-         * "The method add(Dog) in the type ArrayList<Dog> is not applicable for the arguments (Cat)"
-         * * This happens because generics enforce "Type Safety" at compile-time.
-         * The compiler guarantees that ONLY objects of type Dog (or its subclasses)
-         * can be added to this specific list, preventing accidental ClassCastExceptions
-         * later at runtime.
-         */
-        // dogsOnly.add(new Cat("Luna")); // COMPILATION ERROR
+        // Main.java: error: incompatible types: Cat cannot be converted to Dog
+        // A List<Dog> only takes dogs: the compiler rejects the cat where it is added, instead of
+        // a ClassCastException later, when the program runs.
+        // dogs.add(new Cat("Luna"));
     }
 }

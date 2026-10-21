@@ -1,36 +1,34 @@
 /**
- * Represents a {@link Cat} with a specific name and behavior.
+ * Represents a cat with a name, which meows.
  *
  * @author Juan Carlos Alfaro Jiménez
+ * @see Dog
  */
 public class Cat {
 
-    /**
-     * Private state to store the cat's name.
-     */
+    /** The name of the cat. */
     private String name;
 
     /**
-     * Constructor that initializes the cat's name.
+     * Creates a cat with a name.
      *
-     * @param name The name of the cat.
+     * @param name the name of the cat.
      */
     public Cat(String name) {
         this.name = name;
     }
 
     /**
-     * Specific behavior for the cat.
-     * Prints the cat's name followed by a meowing sound.
+     * Prints the name of the cat followed by its meow.
      */
     public void meow() {
         System.out.println(this.name + ": meow!");
     }
 
     /**
-     * Overrides the default {@code toString()} method from the {@link Object} class.
+     * Returns a description of the cat.
      *
-     * @return A custom string representation of the cat.
+     * @return {@code "I am the cat "} followed by its name.
      */
     @Override
     public String toString() {
