@@ -1,0 +1,15 @@
+% A laboratory assignment: the goals.tex, tasks.tex and parameters.tex (its \name) that /latex writes from its
+% task.md. scripts/statements.sh copies them to \statementdir and sets it, \statementunit, \statementunitname and
+% \statementnumber, the assignment's number in the course, from 0
+\documentclass{article}
+\makeatletter\def\input@path{{../beamer/}}\makeatother % palette.tex, codefont.tex, the fonts and commands.tex
+\usepackage{statement}
+\input{\statementdir/parameters}
+
+\begin{document}
+\statementtitle{Laboratory assignment \statementnumber}[\name]
+\section{Goals}
+\input{\statementdir/goals}
+\section{Tasks}
+\input{\statementdir/tasks}
+\end{document}

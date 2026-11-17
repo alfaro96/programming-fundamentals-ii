@@ -1,0 +1,17 @@
+Start from the \texttt{Pet}, \texttt{Dog} and \texttt{Cat} classes of Exercise 4, and write in the \textbf{\texttt{Main}} class two static methods that take lists of different kinds of pet.
+
+\begin{enumerate}
+
+    \item \textbf{\texttt{processElements}} receives a \texttt{List<? extends Pet>} and calls \texttt{speak()} on each of its elements.
+
+    \item In \texttt{main}, create a \texttt{List<Dog>} with the dogs \texttt{"Bobby"} and \texttt{"Jimmy"}, and a \texttt{List<Cat>} with the cats \texttt{"Garfield"} and \texttt{"Whiskers"}, and pass each one to \texttt{processElements}.
+
+    \item Try to pass \texttt{processElements} a \texttt{List<String>}: leave the call as a comment, with the compiler's error and a short explanation above it. Then pass it an \texttt{ArrayList} with no type in angle brackets, holding the dog \texttt{"Oasis"} and the string \texttt{"Boots"}: it compiles, so explain in a comment what happens when it runs, and catch the exception it throws, printing \texttt{The list holds something that is not a pet}.
+
+    \item \textbf{\texttt{addDog}} receives a \texttt{List<? super Dog>} and a name (\texttt{String}), and adds a new dog with that name to the list.
+
+    \item In \texttt{main}, call \texttt{addDog} with the \texttt{List<Dog>} of step 2 and the name \texttt{"Rex"}, with a new \texttt{List<Pet>} and the name \texttt{"Toby"}, and with a new \texttt{List<Object>} and the name \texttt{"Max"}. Then go through the \texttt{List<Object>} with a for-each loop, printing \texttt{[name] is now in the list} for each dog, and pass the \texttt{List<Pet>} to \texttt{processElements}.
+
+\end{enumerate}
+
+Explain in a comment why the for-each loop of step 5 reads each element as an \texttt{Object}, while the one in \texttt{processElements} reads it as a \texttt{Pet}.

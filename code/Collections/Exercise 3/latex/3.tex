@@ -1,0 +1,27 @@
+Write two independent classes, \textbf{\texttt{Dog}} and \textbf{\texttt{Cat}}, and keep their objects together in one list.
+
+\begin{itemize}
+
+    \item Each class has a private attribute \texttt{String name}, given by its constructor.
+
+    \item \texttt{Dog} has a method \texttt{bark()} that prints \texttt{[name]: woof!}, and \texttt{Cat} a method \texttt{meow()} that prints \texttt{[name]: meow!}, where \texttt{[name]} is the name of the animal.
+
+    \item Each class overrides \texttt{toString()}, so that printing a dog prints \texttt{I am the dog [name]}, and printing a cat, \texttt{I am the cat [name]}.
+
+\end{itemize}
+
+Write a \textbf{\texttt{Main}} class whose \texttt{main}:
+
+\begin{enumerate}
+
+    \item Creates an \texttt{ArrayList} named \texttt{animals}, with no type in angle brackets.
+
+    \item Adds the dogs \texttt{"Bobby"}, \texttt{"Jimmy"}, \texttt{"Oasis"} and \texttt{"Sanson"}, and the cats \texttt{"Garfield"}, \texttt{"Boots"} and \texttt{"Whiskers"}.
+
+    \item Prints every animal with a for-each loop.
+
+    \item Goes through \texttt{animals} again with a for-each loop and makes each dog bark and each cat meow. The list gives back \texttt{Object}s, so check the class of each one before calling its method.
+
+    \item Creates a \texttt{List<Dog>} named \texttt{dogs}, adds a dog, and tries to add a cat. Leave that line as a comment, with the compiler's error and a short explanation of it in comments above it.
+
+\end{enumerate}

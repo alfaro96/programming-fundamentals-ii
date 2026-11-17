@@ -22,7 +22,7 @@ public class Furniture extends Antique {
      * @throws exceptions.YearOutOfRangeException if {@code year} is out of range.
      * @throws InvalidPriceException if {@code price} is negative.
      */
-    public Furniture(String id, int year, double price, String material) throws InvalidPriceException {
+    public Furniture(String id, int year, double price, String material) {
         super(id, year, price);
         this.material = material;
     }

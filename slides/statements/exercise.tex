@@ -1,0 +1,10 @@
+% An exercise of a unit: the N.tex that /latex writes from its task.md. scripts/statements.sh copies it to
+% \statementdir/body.tex and sets \statementdir, \statementunit, \statementunitname and \statementnumber
+\documentclass{article}
+\makeatletter\def\input@path{{../beamer/}}\makeatother % palette.tex, codefont.tex, the fonts and commands.tex
+\usepackage{statement}
+
+\begin{document}
+\statementtitle{Exercise \statementnumber}
+\input{\statementdir/body}
+\end{document}

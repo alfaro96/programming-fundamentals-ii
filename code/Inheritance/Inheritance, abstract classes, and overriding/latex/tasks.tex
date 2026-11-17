@@ -1,0 +1,289 @@
+\subsection{\texttt{Commerce}}
+
+\begin{enumerate}
+
+    \item \textbf{Attributes}:
+
+        \begin{itemize}
+
+            \item \texttt{name}, \texttt{address}, and \texttt{cif} of type \texttt{String}.
+
+            \item \texttt{dailySales}: A \textbf{matrix} (two-dimensional array) of size 12×31 where each position represents the \textbf{total sale price} for a specific month and day.
+
+            \item \texttt{stock}: An \textbf{array} where each position specifies the \textbf{current stock} for a specific product.
+
+            \item \texttt{employees}: An \textbf{array} of \texttt{Employee} objects.
+
+        \end{itemize}
+
+    \item \textbf{Constructors}: \textbf{Implement} the necessary constructors. \textbf{Remember} that \textbf{no constructors} should directly take the matrix of daily sales or the list of employees. These must be \textbf{initialized} with their \textbf{expected sizes} and \textbf{default values}.
+
+    \item \textbf{Getters and setters}: \textbf{Implement} the necessary getter and setter methods. \textbf{Generate} only the ones strictly required to access or modify the internal state of the class appropriately.
+
+    \item \textbf{Sales management methods}:
+
+        \begin{itemize}
+
+            \item \texttt{totalSales()}: \textbf{Calculates} and \textbf{returns} the \textbf{total sum} of sales contained within the \texttt{dailySales} matrix.
+
+            \item \texttt{salesInMonth()}: \textbf{Given} a specific \textbf{month} as an argument, \textbf{returns} the \textbf{sum of sales} for that specific month.
+
+            \item \texttt{topSalesMonth()}: \textbf{Returns} the \textbf{month} (index) with the \textbf{highest volume of sales}. You can use \texttt{salesInMonth()} to compute the values for each month.
+
+            \item \texttt{updateSales()}: \textbf{Overload} this method to provide two different implementations:
+
+                \begin{itemize}
+
+                    \item \textbf{Given} a \textbf{month}, a \textbf{day}, and a \textbf{sale amount}, \textbf{updates} (adds to) the sales amount for the specified date.
+
+                    \item \textbf{Given} \textbf{only} a \textbf{sale amount}, \textbf{updates} the sales amount for the \textbf{current month and day}. \textbf{Note}: the current date is obtained with \texttt{java.time.LocalDate}: \texttt{LocalDate.now().getMonthValue()} gives the month (from \texttt{1} to \texttt{12}) and \texttt{LocalDate.now().getDayOfMonth()} the day (from \texttt{1} to \texttt{31}), after \texttt{import java.time.LocalDate;}.
+
+                \end{itemize}
+
+        \end{itemize}
+
+    \item \textbf{Employee management methods}:
+
+        \begin{itemize}
+
+            \item \texttt{hireEmployee()}: \textbf{Given} a new \texttt{Employee}, \textbf{adds} it to the array. \textbf{If} the array is \textbf{full}, you must \textbf{double its size} before adding the new employee.
+
+            \item \texttt{fireEmployee()}: \textbf{Given} the \textbf{DNI} of an employee, \textbf{finds} it in the array, \textbf{removes} it, and \textbf{returns} the object. The array \textbf{must be compacted} after removal (i.e., there should be no empty \texttt{null} positions between existing elements).
+
+        \end{itemize}
+
+    \item \textbf{Standard overrides}: \textbf{Implement} the specific printing methods (\texttt{toStringMonthlySales()} and \texttt{toStringDailySales()}), and \textbf{override} the standard \texttt{toString()} and \texttt{equals()} methods according to the standard rules of object-oriented programming.
+
+\end{enumerate}
+
+\subsection{\texttt{CarDealership}}
+
+\begin{enumerate}
+
+    \item \textbf{Attributes}:
+
+        \begin{itemize}
+
+            \item \texttt{vehiclesOnSale}: An \textbf{array} of \texttt{SaleVehicle} objects.
+
+            \item \texttt{vehiclesForRepair}: An \textbf{array} of \texttt{RepairVehicle} objects.
+
+        \end{itemize}
+
+    \item \textbf{Constructors}: \textbf{Implement} the required constructors. The vehicle arrays \textbf{must be initialized} as empty with a default or specified maximum size. \textbf{Do not} pass the arrays directly as arguments.
+
+    \item \textbf{Getters and setters}: \textbf{Implement} the necessary getter and setter methods. \textbf{Generate} only the ones strictly required to access or modify the internal state of the class appropriately.
+
+    \item \textbf{Repair management methods}:
+
+        \begin{itemize}
+
+            \item \texttt{addVehicleForRepair()}: \textbf{Given} a \texttt{RepairVehicle}, \textbf{adds} it to the repair list. The vehicles \textbf{must be ordered by their priority}, meaning that a vehicle with priority \texttt{1} (maximum priority) should be stored before vehicles with lower priorities.
+
+            \item \texttt{repairVehicle()}: \textbf{Given} a \texttt{numberPlate}, \textbf{finds} the specific car and \textbf{sets} its \texttt{repaired} status to \texttt{true}.
+
+            \item \texttt{pickupVehicle()}: \textbf{Given} a \texttt{numberPlate}, \textbf{checks} the array of vehicles to repair. \textbf{If} the vehicle exists and is already repaired, \textbf{removes} it from the array and \textbf{returns} it. The array \textbf{must be compacted} after removal.
+
+        \end{itemize}
+
+    \item \textbf{Sales management methods}:
+
+        \begin{itemize}
+
+            \item \texttt{addSale()}: \textbf{Adds} a \texttt{SaleVehicle} to the array of vehicles on sale.
+
+            \item \texttt{sellVehicle()}: \textbf{Given} a car \texttt{identifier}, \textbf{checks} the array of vehicles for sale. \textbf{If} found, \textbf{removes} it, \textbf{increases} the daily sales of today with its price, and \textbf{returns} it. The array \textbf{must be compacted} after removal.
+
+        \end{itemize}
+
+    \item \textbf{Standard overrides}: \textbf{Implement} the specific printing methods (\texttt{toStringVehiclesOnSale()} and \texttt{toStringVehiclesForRepair()}), along with the standard \texttt{toString()} and \texttt{equals()}. \textbf{Two car dealerships} are considered equivalent if they share a memory position \textbf{or} if they have exactly the same vehicles in repair and for sale.
+
+\end{enumerate}
+
+\subsection{\texttt{Restaurant}}
+
+\begin{enumerate}
+
+    \item \textbf{Attributes}:
+
+        \begin{itemize}
+
+            \item \texttt{dailyMenus}: An \textbf{array} of \texttt{String} objects representing the menu for each day.
+
+            \item \texttt{numTables}: An \texttt{int} representing the number of tables.
+
+            \item \texttt{capacity}: An \texttt{int} representing the total customer capacity.
+
+        \end{itemize}
+
+    \item \textbf{Constructors}: \textbf{Implement} the necessary constructors. \textbf{Remember} that \textbf{no constructors} should directly take a list of menus. The list of menus \textbf{must be initialized} with default values.
+
+    \item \textbf{Getters and setters}: \textbf{Implement} the necessary getter and setter methods. \textbf{Generate} only the ones strictly required to access or modify the internal state of the class appropriately.
+
+    \item \textbf{Menu management methods}:
+
+        \begin{itemize}
+
+            \item \texttt{setDailyMenu()}: \textbf{Given} a menu (as a \texttt{String}) and a day of the week, \textbf{stores} the specified menu in the \texttt{dailyMenus} array.
+
+            \item \texttt{getDailyMenu()}: \textbf{Given} a day of the week, \textbf{returns} the appropriate menu as a \texttt{String}.
+
+        \end{itemize}
+
+    \item \textbf{Standard overrides}: \textbf{Override} the standard \texttt{toString()} and \texttt{equals()} methods according to the standard rules of object-oriented programming. \textbf{Two restaurants} are considered equivalent if they share a memory position \textbf{or} if they have exactly the same daily menus.
+
+\end{enumerate}
+
+\subsection{\texttt{Employee}}
+
+\begin{enumerate}
+
+    \item \textbf{Attributes}:
+
+        \begin{itemize}
+
+            \item \texttt{DNI}, \texttt{name}, \texttt{address}, \texttt{phoneNumber}, \texttt{email}, \texttt{startingDate}, and \texttt{position}, all of type \texttt{String}.
+
+            \item \texttt{salary} of type \texttt{double}.
+
+        \end{itemize}
+
+    \item \textbf{Constructors}: \textbf{Implement} the necessary constructors to initialize the employee details.
+
+    \item \textbf{Getters and setters}: \textbf{Implement} the necessary getter and setter methods. \textbf{Generate} only the ones strictly required to access or modify the internal state of the class appropriately.
+
+    \item \textbf{Standard overrides}: \textbf{Override} the \texttt{toString()} and \texttt{equals()} methods according to the standard rules of object-oriented programming.
+
+\end{enumerate}
+
+\subsection{\texttt{Vehicle}}
+
+\begin{enumerate}
+
+    \item \textbf{Attributes}: \textbf{Define} the following \textbf{private} attributes:
+
+        \begin{itemize}
+
+            \item \texttt{brand} and \texttt{model}, both of type \texttt{String}.
+
+        \end{itemize}
+
+    \item \textbf{Constructors}: \textbf{Implement} the required constructors to initialize the vehicle's base properties.
+
+    \item \textbf{Getters and Setters}: \textbf{Implement} the necessary getter and setter methods. \textbf{Generate} only the ones strictly required to access or modify the internal state of the class appropriately.
+
+    \item \textbf{Standard overrides}: \textbf{Override} the \texttt{toString()} and \texttt{equals()} methods. As an abstract class, these methods will be inherited and adapted by its child classes.
+
+\end{enumerate}
+
+\subsection{\texttt{RepairVehicle}}
+
+\begin{enumerate}
+
+    \item \textbf{Attributes}:
+
+        \begin{itemize}
+
+            \item \texttt{damage} and \texttt{numberPlate}, both of type \texttt{String}.
+
+            \item \texttt{repaired} of type \texttt{boolean}.
+
+            \item \texttt{priority} of type \texttt{int}. The value \textbf{should be contained} within the range \texttt{1} to \texttt{3}, where \texttt{1} is the \textbf{maximum priority} and \texttt{3} is the lowest priority.
+
+        \end{itemize}
+
+    \item \textbf{Constructors}: \textbf{Implement} the necessary constructors, ensuring that a call to the superclass's constructor is made to initialize inherited attributes.
+
+    \item \textbf{Getters and setters}: \textbf{Implement} the necessary getter and setter methods. \textbf{Generate} only the ones strictly required to access or modify the internal state of the class appropriately.
+
+    \item \textbf{Standard overrides}: \textbf{Override} the \texttt{toString()} and \texttt{equals()} methods according to the standard rules of object-oriented programming, ensuring they include both the superclass's and the subclass's specific attributes.
+
+\end{enumerate}
+
+\subsection{\texttt{SaleVehicle}}
+
+\begin{enumerate}
+
+    \item \textbf{Attributes}:
+
+        \begin{itemize}
+
+            \item \texttt{price} of type \texttt{double}.
+
+            \item \texttt{discount} of type \texttt{int}.
+
+            \item \texttt{identifier} of type \texttt{String}.
+
+        \end{itemize}
+
+    \item \textbf{Constructors}: \textbf{Implement} the necessary constructors, making sure to invoke the superclass constructor appropriately.
+
+    \item \textbf{Getters and setters}: \textbf{Implement} the necessary getter and setter methods. \textbf{Generate} only the ones strictly required to access or modify the internal state of the class appropriately.
+
+    \item \textbf{Standard overrides}: \textbf{Override} the \texttt{toString()} and \texttt{equals()} methods according to the standard rules of object-oriented programming, combining parent properties with these new specific fields.
+
+\end{enumerate}
+
+\subsection{\texttt{CommerceAssociation}}
+
+\begin{enumerate}
+
+    \item \textbf{Attributes}:
+
+        \begin{itemize}
+
+            \item \texttt{commerces}: An \textbf{array} of \texttt{Commerce} objects.
+
+            \item \texttt{address} and \texttt{president}, both of type \texttt{String}.
+
+        \end{itemize}
+
+    \item \textbf{Constructors}:
+
+        \begin{itemize}
+
+            \item A \textbf{default constructor} that creates an array of commerces with a size of \texttt{20}.
+
+            \item A \textbf{parameterized constructor} that takes, as arguments, the \textbf{size} of the array of commerces and the values for all other attributes to initialize them.
+
+            \item A \textbf{copy constructor}, which receives another \texttt{CommerceAssociation} and creates a new association with the same data: \texttt{public CommerceAssociation(CommerceAssociation other)}. It copies \texttt{address} and \texttt{president} from \texttt{other}, and \textbf{creates a new array} of the same size into which it copies, one by one, the commerces of \texttt{other}. Assigning \texttt{this.commerces = other.commerces} would not do: both associations would share one array, so adding a commerce to one would change the other. The commerces themselves can be shared.
+
+        \end{itemize}
+
+    \item \textbf{Getters and setters}: \textbf{Implement} the necessary getter and setter methods. \textbf{Generate} only the ones strictly required to access or modify the internal state of the class appropriately.
+
+    \item \textbf{Association management methods}:
+
+        \begin{itemize}
+
+            \item \texttt{addCommerce()}: \textbf{Adds} a commerce of any type to the association. \textbf{If} the commerce is already in the array or if the array is full, it \textbf{will not be added}.
+
+            \item \texttt{replaceRestaurant()}: \textbf{Finds} a previously created restaurant within the association. \textbf{If} it is found, \textbf{replaces} it with a given car dealership.
+
+            \item \texttt{printDealershipEmployees()}: A method that \textbf{shows on screen} the employees of those commerces that are car dealerships.
+
+        \end{itemize}
+
+    \item \textbf{Standard overrides}: \textbf{Override} the \texttt{toString()} and \texttt{equals()} methods according to the standard rules of object-oriented programming.
+
+\end{enumerate}
+
+\subsection{\texttt{Main}}
+
+\begin{enumerate}
+
+    \item \textbf{Object creation}: \textbf{Create} two \texttt{Restaurant} objects and two \texttt{CarDealership} objects.
+
+    \item \textbf{Employee management}: \textbf{Add} two employees to the restaurants and three employees to the car dealerships.
+
+    \item \textbf{Association initialization}: \textbf{Create} an object of type \texttt{CommerceAssociation}.
+
+    \item \textbf{Adding commerces}: \textbf{Add} the two restaurants and the two car dealerships to the association.
+
+    \item \textbf{Print dealership employees}: \textbf{Show on screen} the data of the employees working at the car dealerships within the association by calling the appropriate method of the \texttt{CommerceAssociation} class.
+
+    \item \textbf{Object copy}: \textbf{Create} a copy of the \texttt{CommerceAssociation} object with its copy constructor, and \textbf{check} that it is equal to the original but not the same object.
+
+    \item \textbf{Commerce replacement}: \textbf{Replace} one of the restaurants in the association with a \textbf{new} car dealership.
+
+\end{enumerate}

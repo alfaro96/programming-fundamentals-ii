@@ -1,0 +1,927 @@
+% Unit 5: Collections. Build from this folder: latexmk -xelatex main.tex
+% scripts/beamer.sh builds both PDFs: it adds handout to \deckoptions for print
+\providecommand\deckoptions{aspectratio=169}
+\documentclass[\deckoptions]{beamer}
+\makeatletter\def\input@path{{../../}}\makeatother % packages, style, commands and cover, in beamer/
+\input{packages}
+\usepackage{style}
+\input{commands}
+
+\title{Unit 5: Collections}
+\subtitle{Groups of objects that grow as needed}
+
+\begin{document}
+
+\input{cover}
+\note{They write hierarchies of classes (unit 3) and report and handle errors with exceptions (unit 4). Every group of objects so far has been an array, whose length is fixed when it is created. This unit is about Java's collections, lists above all: groups of objects that grow as elements are added, written once in java.util for any class of element. The example is still the smart home app of units 3 and 4, with its lamp, thermostat and speaker.}
+
+% % % % % % % % % % Lists % % % % % % % % % %
+\section{Lists}
+
+% The code plain on entry, to ask whether it compiles and what happens; the line that fails with the exception under
+% the code; the takeaway on plain code
+\begin{frame}[fragile]{A fourth device}{Where does it go?}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.56\textwidth}
+\begin{codeblock}[steps={|8|}, compact, marks={8/2/error}]{java}
+public class Main {
+    public static void main(String[] args) {
+        Device[] devices = {
+                new Light("Living room lamp"),
+                new Thermostat("Hallway thermostat", 21.5),
+                new Speaker("Kitchen speaker")
+        };
+        devices[3] = new Light("Bedroom lamp");
+    }
+}
+\end{codeblock}
+      \blockgap
+      \begin{uncoverenv}<2->
+\begin{consoleerror}[compact]
+Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException:
+  Index 3 out of bounds for length 3
+\end{consoleerror}
+      \end{uncoverenv}
+    \end{column}
+    \begin{column}{0.4\textwidth}
+      \begin{codenotes}[1]
+        \codenote<2->[error]{No room for a fourth}{It compiles, and stops when it runs: the array has room for
+          three.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<3->{An array has a \key{fixed length}: the app needs a group of devices that \key{grows}.}
+  \note{The user has bought a bedroom lamp and adds it to the app. The devices are in the array of unit 3, created with the three of them. On entry, the code, with the fourth device put after the last one: ask whether it compiles, and what happens when it runs. Step 1, note 1, in red: it compiles, since the compiler does not know the length of the array, and when it runs Java checks the index and throws the first exception of the previous unit, index 3 for length 3 (broken in two to fit). In C it would have written past the end of the array without a word. The length of an array is decided when it is created, as unit 1 said, and never changes, and the app cannot know how many devices a house will have: three today, twenty next year. Step 2, the takeaway; how to make room by hand comes next.}
+\end{frame}
+
+% Code and notes step together; the takeaway on plain code
+\begin{frame}[fragile]{Growing it by hand}{A bigger array, every time it fills up}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.56\textwidth}
+\begin{codeblock}[steps={2-3|10|11-15|17-18|}, dense, marks={2-3/1, 10/2, 11-15/3, 17-18/4}]{java}
+public class Home {
+    private Device[] devices;
+    private int count;
+
+    public Home() {
+        this.devices = new Device[3];
+    }
+
+    public void add(Device device) {
+        if (this.count == this.devices.length) {
+            Device[] bigger = new Device[2 * this.devices.length];
+            for (int i = 0; i < this.count; i++) {
+                bigger[i] = this.devices[i];
+            }
+            this.devices = bigger;
+        }
+        this.devices[this.count] = device;
+        this.count++;
+    }
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.4\textwidth}
+      \begin{codenotes}[1]
+        \codenote{An array and a count}{The array is the room; the count, how much of it is used.}
+        \codenote<2->{Full?}{When the count reaches the length, there is no room left.}
+        \codenote<3->{Twice as big}{A new array, every device copied into it, and the attribute pointing at it.}
+        \codenote<4->{Then it goes in}{In the first free place, and the count goes up.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<5->{It works, but \key{every class} that keeps a group would write it \key{again}.}
+  \note{What they would write with what they know: a class Home that keeps the devices of the house. On entry, note 1, its two attributes: the array, created with room for three, and count, the number of places in use, 0 at first. Step 1, note 2, add checks whether the array is full. Step 2, note 3, if it is, it creates an array twice as long, copies every device into it, and keeps the new one in the attribute; nothing refers to the old one any more, so the garbage collector frees it. It is what they did in C with realloc. Step 3, note 4, either way the device goes into the first free place, and count goes up. Ask them what else Home would need: removing a device from the middle means moving all the ones after it, and so do inserting and searching. Step 4, the takeaway: all of that, written again for every group of every class.}
+\end{frame}
+
+% A question to the class, on its own, before the idea that answers it
+\begin{frame}
+  \question{How could any class keep a group that grows, without writing \code{Home} again?}
+  \note{The previous slide turned into a question before collections answer it. Let them think: Home works for devices only, and every other group would need its own copy; what is missing is a class written once, for any class of element, that does what Home does and more. Java has it. Do not name collections yet: the next slide does.}
+\end{frame}
+
+% Collection on entry, with its note; the two kinds, the classes that implement them and Map, each with its note; then
+% what the course leaves aside crossed out; the takeaway after
+\begin{frame}{The collections framework}{Interfaces, and the classes that implement them}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.62\textwidth}
+      \centering
+      \begin{classdiagram}
+        \classbox{collection}{0.5}{}{\interfacename{Collection}}{}{add(E): boolean, remove(Object): boolean,
+          size(): int}
+        \classbox<2->{list}{0}{collection}{\interfacename{List}}{}{}
+        \classunused<5->\classbox<2->{set}{1}{collection}{\interfacename{Set}}{}{}
+        \classbox*<3->{arraylist}{0}{list}{ArrayList}{}{}
+        \classunused<5->\classbox*<3->{hashset}{1}{set}{HashSet}{}{}
+        \classunused<5->\classbox<4->{map}{2.2}{}{\interfacename{Map}}{}{}
+        \classunused<5->\classbox*<4->{hashmap}{2.2}{map}{HashMap}{}{}
+        \classmark{above}{collection}{1}
+        \inheritmark<2->{list}{2}\inheritmark<2->{set}{2}
+        \classmark<3->{below}{arraylist}{3}\classmark<3->{below}{hashset}{3}
+        \classmark<4->{above}{map}{4}
+      \end{classdiagram}
+    \end{column}
+    \begin{column}{0.35\textwidth}
+      \begin{codenotes}[1]
+        \codenote{A collection}{An object that holds a group of objects, its elements, and grows as needed.}
+        \codenote<2->{Its kinds}{A list keeps them by position; a set, never the same one twice.}
+        \codenote<3->{Its classes}{Each one a way of storing them: an \code{ArrayList} keeps them in an array.}
+        \codenote<4->{\code{Map}, apart}{Pairs of a key and a value: not a \code{Collection}, but part of the
+          family.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<6->{The \key{interfaces} say what each kind of collection \key{does}; the \key{classes}, how it
+    \key{stores} its elements.}
+  \note{What Java offers instead of Home, in java.util, the package of Scanner: interfaces, as in unit 3, and classes that implement them; the dashed arrows are implements, the solid ones extends. On entry, note 1, Collection, the interface every collection implements, with the methods any group of objects has: add, remove, size, contains; E stands for the type of its elements, which the next section explains. Step 1, note 2, two kinds under it: a List keeps its elements in order, by position, and allows duplicates; a Set never has the same element twice. There are more, such as Queue, left for later courses. Step 2, note 3, a class for each: ArrayList, the list of this unit, keeps its elements in an array, as Home did. Others they will meet by name: LinkedList, a chain of nodes like the linked lists of C, and TreeSet. Step 3, note 4, Map, on its own: it stores pairs, a key and its value, such as a name and its device, so it does not extend Collection, although everyone counts it in; HashMap is its usual class. Step 4, crossed out, what the course leaves aside, as with the reserved words of unit 1: sets and maps, which later courses use; this unit is about lists. Step 5, the takeaway. The tree is simplified: there are abstract classes and more interfaces in between, which they do not need.}
+\end{frame}
+
+% Code and notes step together; each println alone first, to ask, then its line of output and its note; the takeaway
+% on plain code
+\begin{frame}[fragile]{\code{ArrayList}}{A list that grows by itself}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.58\textwidth}
+\begin{codeblock}[steps={1,5|6-9|10|10|11|11|}, dense, marks={1+5/1, 6-9/2, 10/4, 11/6}]{java}
+import java.util.ArrayList;
+
+public class Main {
+    public static void main(String[] args) {
+        ArrayList devices = new ArrayList();
+        devices.add(new Light("Living room lamp"));
+        devices.add(new Thermostat("Hallway thermostat", 21.5));
+        devices.add(new Speaker("Kitchen speaker"));
+        devices.add(new Light("Bedroom lamp"));
+        System.out.println(devices.size());
+        System.out.println(devices.get(3));
+    }
+}
+\end{codeblock}
+      \blockgap
+      \begin{uncoverenv}<4->
+\begin{console}[dense, lines={1|1}, steps from=4]
+4
+Bedroom lamp: Off, 100%
+\end{console}
+      \end{uncoverenv}
+    \end{column}
+    \begin{column}{0.38\textwidth}
+      \begin{codenotes}[1]
+        \codenote{\code{ArrayList}}{A class of \code{java.util}: imported, and created empty, with no length.}
+        \codenote<2->{\code{add}}{Puts an element at the end: the list makes room by itself.}
+        \codenote<4->{\code{size}}{How many elements it holds: the \code{length} of an array.}
+        \codenote<6->{\code{get}}{The element at a position, from 0: the \code{[i]} of an array.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<7->{An \key{\code{ArrayList}} grows as elements are \key{added}: \code{size} and \code{get} do what
+    \code{length} and \code{[i]} did.}
+  \note{The four devices again, in a list instead of an array. On entry, note 1, the import, as with Scanner in the previous unit, and the list: new ArrayList() creates it with no elements and no length to choose. Step 1, note 2, add, four times: each device goes after the last one, and the list makes room when it needs it, the fourth one included. Inside, it is an array that is replaced by a bigger one, as in Home; ArrayList makes it half as big again each time, not twice. Step 2, the first println, alone: ask what it prints. Step 3, note 3, 4: size is a method, with parentheses in the call, as length of a String, and counts elements, not room. Step 4, the second println: ask again. Step 5, note 4, the fourth device, printed with the toString of unit 3; the lamp is off, since nobody turned it on. An index out of range throws an IndexOutOfBoundsException, as an array would. Step 6, the takeaway.}
+\end{frame}
+
+% A reference table: each group of rows shows at once; the takeaway after
+\begin{frame}{Its methods}{What a list can do}
+  \begin{datatable}{l l Y}
+    \tablehead{To} & \tablehead{Method} & \tablehead{What it does} \\
+    \grouprule
+    \multirow{2}{*}{Add} & \code{add(e)} & Puts the element \code{e} at the end \\
+    \partrule{2-3}
+    & \code{add(i, e)} & Puts the element \code{e} at the position \code{i}, moving the rest one place on \\
+    \grouprule
+    \uncover<2->{\multirow{2}{*}{Read}} & \uncover<2->{\code{get(i)}} & \uncover<2->{The element at the position
+      \code{i}} \\
+    \partrule{2-3}
+    & \uncover<2->{\code{size()}, \code{isEmpty()}} & \uncover<2->{How many elements it has, and whether it has
+      none} \\
+    \grouprule
+    \uncover<3->{Change} & \uncover<3->{\code{set(i, e)}} & \uncover<3->{Puts the element \code{e} in place of the one at
+      the position \code{i}} \\
+    \grouprule
+    \uncover<4->{\multirow{2}{*}{Remove}} & \uncover<4->{\code{remove(i)}, \code{remove(o)}} &
+      \uncover<4->{The element at the position \code{i}, or the first one equal to the object \code{o}, moving the rest back}
+      \\
+    \partrule{2-3}
+    & \uncover<4->{\code{clear()}} & \uncover<4->{Every element} \\
+    \grouprule
+    \uncover<5->{Search} & \uncover<5->{\code{contains(o)}, \code{indexOf(o)}} & \uncover<5->{Whether an element is
+      equal to the object \code{o}, and the position of the first one, or -1} \\
+    \grouprule
+  \end{datatable}
+  \takeaway<6->{A list keeps its elements \key{in order}, by \key{position}: adding or removing one \key{moves} the
+    ones after it.}
+  \note{The methods of a list they will use most, by what they are for; they are all in the List interface, so every list has them. On entry, adding: at the end, or at a position, where the element at that position and all the ones after it move one place on, the work Home would have had to write. Step 1, reading: get and size, from the previous slide, and isEmpty, which is size() == 0. Step 2, changing: set replaces, so the size stays the same. Step 3, removing: remove takes out an element, by its position or by an object equal to it, and the ones after it move back, so the size goes down; clear empties it. Step 4, searching, which compares the elements with equals, as two slides on shows. The whole list is in Java's documentation, the page of java.util.ArrayList. Step 5, the takeaway.}
+\end{frame}
+
+% The insertion alone first, to ask, then its note; each println alone first, to ask, then its line of output and its
+% note; no takeaway: it practices the previous slide's methods
+\begin{frame}[fragile]{What does it print?}{A list of rooms}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.52\textwidth}
+\begin{codeblock}[steps={4|4|5|5|6-7|8|8|9|9}, compact, marks={4/2, 5/4, 6-7/5, 8/7, 9/9}]{java}
+ArrayList rooms = new ArrayList();
+rooms.add("Kitchen");
+rooms.add("Hallway");
+rooms.add(0, "Living room");
+System.out.println(rooms);
+rooms.set(2, "Bedroom");
+rooms.remove(0);
+System.out.println(rooms);
+System.out.println(rooms.indexOf("Bedroom"));
+\end{codeblock}
+      \blockgap
+      \begin{uncoverenv}<4->
+\begin{console}[compact, lines={1|1|1|2|2}, steps from=4]
+[Living room, Kitchen, Hallway]
+[Kitchen, Bedroom]
+1
+\end{console}
+      \end{uncoverenv}
+    \end{column}
+    \begin{column}{0.44\textwidth}
+      \begin{codenotes}[1]
+        \codenote<2->{At position 0}{\code{Living room} goes first, and the other two move on.}
+        \codenote<4->{A list prints itself}{Its elements in order, between brackets.}
+        \codenote<5->{Replaced and removed}{\code{Hallway} becomes \code{Bedroom}; \code{Living room} goes, and the
+          rest move back.}
+        \codenote<7->{Two left}{\code{Kitchen} at 0, \code{Bedroom} at 1.}
+        \codenote<9->{Its position}{\code{Bedroom} is now at 1.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \note{A list of strings, the rooms of the house, to practice the methods of the table. On entry, three adds, the last one at position 0, marked: ask how the list looks after it. Step 1, note 1, Kitchen, Hallway, and Living room at position 0, which pushes the other two on. Step 2, the first println, alone: ask what it prints. Step 3, note 2, the list prints itself, because ArrayList overrides toString, as Device does: the elements, each with its own toString, between brackets and separated by commas. Step 4, note 3, set(2, "Bedroom") replaces Hallway, at position 2, and remove(0) takes out Living room, so Kitchen moves back to 0 and Bedroom to 1. Step 5, the second println: ask. Step 6, note 4, the two that are left. Step 7, indexOf: ask. Step 8, note 5, 1.}
+\end{frame}
+
+% The list on entry, with its note; each println alone first, to ask, then its line of output and its note; the
+% takeaway on plain code
+\begin{frame}[fragile]{Is the lamp in the list?}{\code{contains} asks \code{equals}}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.64\textwidth}
+\begin{codeblock}[steps={1-2|3|3|4|4|}, dense, marks={1-2/1, 3/3, 4/5}]{java}
+ArrayList devices = new ArrayList();
+devices.add(new Light("Living room lamp"));
+System.out.println(devices.contains(new Light("Living room lamp")));
+System.out.println(devices.indexOf(new Speaker("Living room lamp")));
+\end{codeblock}
+      \blockgap
+      \begin{uncoverenv}<3->
+\begin{console}[dense, lines={1|1}, steps from=3]
+true
+-1
+\end{console}
+      \end{uncoverenv}
+    \end{column}
+    \begin{column}{0.32\textwidth}
+      \begin{codenotes}[1]
+        \codenote{One lamp}{In the list, created on its own.}
+        \codenote<3->{Another lamp, the same name}{\code{equals} of unit 3 says they are equal:
+          \code{true}.}
+        \codenote<5->{A speaker, the same name}{Another class: never equal, so \code{-1}.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<6->{\code{contains}, \code{indexOf} and \code{remove} compare with \key{\code{equals}}, the one
+    \code{Device} overrides.}
+  \note{How a list decides that an element is there. On entry, note 1, a list with one lamp. Step 1, contains, with another lamp of the same name, a different object: ask what it prints. Step 2, note 2, true: contains does not compare references, it calls equals on each element, and Device overrides equals in unit 3 to compare the class and the name. Without that override it would use Object's, which compares references, and print false. Step 3, indexOf with a speaker of the same name: ask again. Step 4, note 3, -1: equals checks the class first, and a speaker is never equal to a lamp. remove(o) works the same way: it removes the first element equal to o. Step 5, the takeaway.}
+\end{frame}
+
+% Each line with its note; the cast alone first, to ask, then its exception under the code; the takeaway on plain code
+\begin{frame}[fragile]{Everything is an \code{Object}}{What the list lets in, and what comes out}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.56\textwidth}
+\begin{codeblock}[steps={3|4|5|5|}, compact, marks={3/1, 4/2, 5/4/error}]{java}
+ArrayList devices = new ArrayList();
+devices.add(new Light("Living room lamp"));
+devices.add("Kitchen speaker");
+Device lamp = (Device) devices.get(0);
+Device speaker = (Device) devices.get(1);
+\end{codeblock}
+      \blockgap
+      \begin{uncoverenv}<4->
+\begin{consoleerror}[compact]
+Exception in thread "main" java.lang.ClassCastException:
+  class String cannot be cast to class Device
+\end{consoleerror}
+      \end{uncoverenv}
+    \end{column}
+    \begin{column}{0.4\textwidth}
+      \begin{codenotes}[1]
+        \codenote{Any object goes in}{\code{add} takes an \code{Object}: a \code{String} gets in, and it compiles.}
+        \codenote<2->{An \code{Object} comes out}{\code{get} returns an \code{Object}: without the cast, it does not
+          compile.}
+        \codenote<4->[error]{The wrong cast}{It fails while the program runs, at line 5, far from the mistake, at
+          line 3.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<5->{A list like this takes \key{any object} and gives back an \key{\code{Object}}: the compiler can no
+    longer \key{check the types}.}
+  \note{The catch of the lists so far. On entry, note 1, someone adds the name of the speaker instead of the speaker, and it compiles: ArrayList was written for any class of element, so add takes an Object, and every object is one, as in unit 3. Step 1, note 2, the other side: get returns an Object too, so without the cast it does not compile, incompatible types: Object cannot be converted to Device, and every element needs a downcast. Step 2, the cast of the second element: ask what happens. Step 3, note 3, in red, the wrong cast of unit 3, a ClassCastException, because that element is a String (the message, shortened). The mistake was at line 3 and it shows up at line 5, in a real program possibly in another class and much later. Step 4, the takeaway. IntelliJ underlines new ArrayList() with a warning, raw use of parameterized class: how to tell a list what it holds is the next section.}
+\end{frame}
+
+\begin{frame}{Exercises}{What you can solve so far}
+  \begin{datatable}{l Y}
+    \tablehead{Exercise} & \tablehead{What it practices} \\
+    \grouprule
+    \href{https://github.com/alfaro96/programming-fundamentals-ii/tree/main/code/Collections/Exercise\%201}{Exercise 1} &
+      Colors: the methods of a list that takes any object, step by step \\
+    \grouprule
+  \end{datatable}
+  \note{The exercise that can be solved with lists that take any object. It is in the JetBrains Academy course, in the Collections lesson; the title opens it on GitHub. The rest of the unit's exercises need the next sections.}
+\end{frame}
+
+% % % % % % % % % % Generics % % % % % % % % % %
+\section{Generics}
+
+% A question to the class, on its own, before the idea that answers it
+\begin{frame}
+  \question{How can a list tell the compiler what it holds?}
+  \note{The previous slide turned into a question before generics answer it. Let them think: an array already does it, a Device[] only takes devices, and the compiler checks every assignment. A list needs the same: a way to say, when it is created, the class of its elements. Do not name generics yet: the next slide does.}
+\end{frame}
+
+% A comparison: the list of the first section alone on entry; the one with the type beside it, plain, to ask what
+% changed; then each line that differs with its note, the one that fails last; the takeaway on plain code
+\begin{frame}[fragile]{\code{ArrayList<Device>}}{A list of one type}
+  \begin{columns}[T, onlytextwidth]
+    \begin{column}{0.44\textwidth}
+      \blocktitle{Any object}
+\begin{codeblock}[steps={||none|none|none|}, dense]{java}
+ArrayList devices = new ArrayList();
+devices.add(new Light("Living room lamp"));
+devices.add("Kitchen speaker");
+Device lamp = (Device) devices.get(0);
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.54\textwidth}
+      \begin{uncoverenv}<2->
+        \blocktitle{Only devices}
+\begin{codeblock}[steps={||1|4|3|}, dense, marks={1/3, 4/4, 3/5/error}]{java}
+ArrayList<Device> devices = new ArrayList<Device>();
+devices.add(new Light("Living room lamp"));
+devices.add("Kitchen speaker");
+Device lamp = devices.get(0);
+\end{codeblock}
+      \end{uncoverenv}
+      \blockgap
+      \begin{uncoverenv}<5->
+\begin{consoleerror}[dense]
+Main.java:3: error: incompatible types:
+    String cannot be converted to Device
+\end{consoleerror}
+      \end{uncoverenv}
+    \end{column}
+  \end{columns}
+  \notesgap
+  \begin{codenotes}[3]
+    \codenote<3->{The type in \code{<>}}{The class of its elements, after the name of the collection.}
+    \codenote<4->{No cast}{\code{get} returns a \code{Device}, ready to use.}
+    \codenote<5->[error]{Anything else}{Does not compile: the error is at the line with the mistake.}
+  \end{codenotes}
+  \takeaway<6->{A \key{generic} collection says the type of its \key{elements}: the compiler checks what goes
+    \key{in}, and what comes \key{out} needs no cast.}
+  \note{The fix for the previous slide, side by side. On entry, the list of the first section. Step 1, the same lines with a type in angle brackets: ask what changed. Step 2, note 1, the type of the elements, after ArrayList, both in the variable and after new: a list of Device. ArrayList is a generic class, written in Java as ArrayList<E>, the E of the framework's diagram, which stands for the type each list chooses, as a parameter stands for a value. Step 3, note 2, get returns a Device, so the cast goes. Step 4, note 3, in red, the name of the speaker no longer gets in: the error is at line 3, the line with the mistake, while compiling, not at line 5 while the program runs (the message, broken in two to fit). A Light, a Thermostat or a Speaker are fine, since each is a Device. Step 5, the takeaway. The lists of the first section are called raw: they exist because Java had collections before generics, in Java 5, and old code still works; new code always gives the type.}
+\end{frame}
+
+% Code and notes step together; the takeaway on plain code
+\begin{frame}[fragile]{\code{List<Device>}}{The interface as the type}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.56\textwidth}
+\begin{codeblock}[steps={2,6|6|6|}, compact, marks={2+6/1, 6/2, 6/3}]{java}
+import java.util.ArrayList;
+import java.util.List;
+
+public class Main {
+    public static void main(String[] args) {
+        List<Device> devices = new ArrayList<>();
+        devices.add(new Light("Living room lamp"));
+        devices.add(new Speaker("Kitchen speaker"));
+    }
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.4\textwidth}
+      \begin{codenotes}[1]
+        \codenote{\code{List<Device>}}{The variable's type is the interface: its methods are all the code needs.}
+        \codenote<2->{The diamond \code{<>}}{After \code{new}, the type can be left out: Java takes it from the
+          variable.}
+        \codenote<3->{One word to change}{Another kind of list changes only what follows \code{new}.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<4->{The variable is a \key{\code{List}}, the interface; the object, an \key{\code{ArrayList}}: from here
+    on, every list is written this way.}
+  \note{How lists are usually written. On entry, note 1, the import of List, an interface of java.util, and a variable of type List<Device>: as in unit 3, an interface is a type, and its variables refer to an object of any class that implements it, here an ArrayList. The code can only call the methods of List, which are all the methods of the table. Step 1, note 2, the empty angle brackets after new, called the diamond: the type is already in the variable, so there is no need to write it twice. Step 2, note 3, why the interface: if a LinkedList suited the app better, only the new would change, and nothing else in the program; the same goes for the parameters of methods, which take a List and accept any list. Step 3, the takeaway.}
+\end{frame}
+
+% The line that does not compile, crossed out, with its note; then the one that does, and each use, with its own; the
+% output with the last; the takeaway on plain code
+\begin{frame}[fragile]{No \code{int} in a list}{Wrapper classes}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.56\textwidth}
+\begin{codeblock}[steps={1|2|3-4|5-6|}, compact, marks={1/1/error, 2/2, 3-4/3, 5-6/4}, strike={1/1}]{java}
+List<int> levels = new ArrayList<>();
+List<Integer> levels = new ArrayList<>();
+levels.add(80);
+levels.add(30);
+int first = levels.get(0);
+System.out.println(first + levels.get(1));
+\end{codeblock}
+      \blockgap
+      \begin{uncoverenv}<4->
+\begin{console}[compact]
+110
+\end{console}
+      \end{uncoverenv}
+    \end{column}
+    \begin{column}{0.4\textwidth}
+      \begin{codenotes}[1]
+        \codenote[error]{Not a primitive type}{A collection holds objects: \code{List<int>} does not compile.}
+        \codenote<2->{Wrapper classes}{A class for each primitive type, in \code{java.lang}: \code{Integer},
+          \code{Double}, \code{Boolean}, etc.}
+        \codenote<3->{Autoboxing}{Java turns an \code{int} into an \code{Integer} on the way in.}
+        \codenote<4->{Unboxing}{And an \code{Integer} back into an \code{int} on the way out.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<5->{For a primitive type, a collection uses its \key{wrapper class}; Java \key{boxes} and \key{unboxes}
+    the values on its own.}
+  \note{The brightness levels the app has used, in a list. On entry, note 1, in red, crossed out: List<int> does not compile, unexpected type, required: reference, found: int. The type of the elements has to be a class, because a collection keeps references to objects. Step 1, note 2, the way out: each of the eight primitive types has a class whose objects hold one value of it, in java.lang, so with no import: Byte, Short, Integer, Long, Float, Double, Character and Boolean; only int and char change their name. Step 2, note 3, levels.add(80): 80 is an int, and Java turns it into an Integer by itself, which is called autoboxing. Step 3, note 4, the way back: levels.get(0) returns an Integer, and Java turns it into an int to store it in first, or to add it, unboxing: 110. Two traps: an Integer can be null, and unboxing null throws a NullPointerException; and in a List<Integer>, remove(1) removes the element at position 1, not the number 1. Step 4, the takeaway.}
+\end{frame}
+
+% The code plain on entry, for the question; the parameter and the call marked with the error under the code; the
+% takeaway on plain code
+\begin{frame}[fragile]{A list of lights}{Does it compile?}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.6\textwidth}
+\begin{codeblock}[steps={|5,16|}, dense, marks={5+16/2/error}]{java}
+import java.util.ArrayList;
+import java.util.List;
+
+public class Main {
+    public static double totalWatts(List<Device> devices) {
+        double total = 0.0;
+        for (Device device : devices) {
+            total += device.watts();
+        }
+        return total;
+    }
+
+    public static void main(String[] args) {
+        List<Light> lights = new ArrayList<>();
+        lights.add(new Light("Living room lamp"));
+        System.out.println(totalWatts(lights));
+    }
+}
+\end{codeblock}
+      \blockgap
+      \begin{uncoverenv}<2->
+\begin{consoleerror}[dense]
+Main.java:16: error: incompatible types:
+    List<Light> cannot be converted to List<Device>
+\end{consoleerror}
+      \end{uncoverenv}
+    \end{column}
+    \begin{column}{0.36\textwidth}
+      \begin{codenotes}[1]
+        \codenote<2->[error]{Not a list of devices}{Every \code{Light} is a \code{Device}, but a
+          \code{List<Light>} is not a \code{List<Device>}.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<3->{A \code{List<Light>} is \key{not} a \code{List<Device>}, although every \code{Light} \key{is} a
+    \code{Device}.}
+  \note{A method that adds up the power of a list of devices, the total of unit 3, now with a list, and a call with a list of lights. On entry, the whole program: ask whether it compiles. Every Light is a Device, and a Light goes into a List<Device> without trouble, so most of them will say yes. Step 1, note 1, in red, the answer: it does not (the message, broken in two to fit). Upcasting works for the elements, not for the lists that hold them. Step 2, the takeaway; the reason comes next.}
+\end{frame}
+
+% Each line with its note: what the method does, the call if it compiled, and what would come out; the takeaway on
+% plain code
+\begin{frame}[fragile]{Why not?}{What the method could do with it}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.56\textwidth}
+\begin{codeblock}[steps={6|11|12|}, dense, marks={6/1, 11/2/warn, 12/3/error}]{java}
+import java.util.ArrayList;
+import java.util.List;
+
+public class Main {
+    public static void addThermostat(List<Device> devices) {
+        devices.add(new Thermostat("Hallway thermostat", 21.5));
+    }
+
+    public static void main(String[] args) {
+        List<Light> lights = new ArrayList<>();
+        addThermostat(lights);
+        Light lamp = lights.get(0);
+    }
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.4\textwidth}
+      \begin{codenotes}[1]
+        \codenote{Fine for a list of devices}{A thermostat is a device: adding one compiles.}
+        \codenote<2->[warn]{If \code{lights} were accepted}{The thermostat would end up in a list of lights.}
+        \codenote<3->[error]{And come out as a \code{Light}}{\code{get} promises a \code{Light}, and gives a
+          thermostat.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<4->{Java rejects the call so that a list never holds an element of the \key{wrong type}.}
+  \note{Why Java says no. On entry, note 1, another method that takes a List<Device>: it adds a thermostat, which is perfectly legal, since a thermostat is a device. Step 1, note 2, in orange, suppose the call with the list of lights compiled: the method has no way of knowing that the list it got is a list of lights, and the thermostat goes in. Step 2, note 3, in red, the list still says Light, so get promises a Light and the line that takes it out throws a ClassCastException, far from the method that put the thermostat in: exactly what generics were meant to prevent. Java cannot look inside every method to see whether it adds something, so it rejects every such call. Step 3, the takeaway: List<Light> and List<Device> are unrelated types; the word for it is invariance. Arrays do allow it, a Light[] is a Device[], and pay for it with an exception when the program runs.}
+\end{frame}
+
+% A question to the class, on its own, before the idea that answers it
+\begin{frame}
+  \question{How can \code{totalWatts} take a list of any kind of device?}
+  \note{The previous slide turned into a question before wildcards answer it. Let them think: totalWatts never adds anything, it only reads, so the danger of the previous slide cannot happen in it; what is missing is a way for the parameter to say \enquote{a list of Device or of any subclass, which I will only read}. Do not name the wildcard yet: the next slide does.}
+\end{frame}
+
+% Code and notes step together; the line that adds, added crossed out with its note; the takeaway on plain code
+\begin{frame}[fragile]{\code{? extends}}{Any list of devices, to read}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.6\textwidth}
+\begin{codeblock}[steps={5|7-8|10|}, dense, marks={5/1, 7-8/2, 10/3/error}, add={10/3}, strike={10/3}]{java}
+import java.util.ArrayList;
+import java.util.List;
+
+public class Main {
+    public static double totalWatts(List<? extends Device> devices) {
+        double total = 0.0;
+        for (Device device : devices) {
+            total += device.watts();
+        }
+        devices.add(new Light("Bedroom lamp"));
+        return total;
+    }
+
+    // main, as before
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.36\textwidth}
+      \begin{codenotes}[1]
+        \codenote{A wildcard}{\code{?} is a type the method does not know: \code{Device} or a subclass of it.}
+        \codenote<2->{Read as a \code{Device}}{Whatever the type is, each element is a device.}
+        \codenote<3->[error]{No adding}{It does not compile: it could be a list of speakers.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<4->{\key{\code{? extends Device}} accepts a list of \code{Device} or of \key{any subclass}, to \key{read}
+    its elements as devices.}
+  \note{The fix for totalWatts. On entry, note 1, the parameter: a question mark, called a wildcard, stands for a type the method does not know, and extends Device bounds it from above, Device or something under it. The call of A list of lights now compiles, and so would one with a list of speakers. Step 1, note 2, inside, the for-each reads each element as a Device, which is true whatever the list is, so watts can be called on it. Step 2, note 3, in red, a new line, crossed out: adding does not compile, not even a Light, because the list could be a List<Speaker>; the compiler's message speaks of a capture, CAP\#1, its name for that unknown type. It is the thermostat of the previous slide, stopped where it is written. Step 3, the takeaway; a method that needs to add is the other way round, next.}
+\end{frame}
+
+% Code and notes step together; the line that reads, added crossed out with its note; the takeaway on plain code
+\begin{frame}[fragile]{\code{? super}}{Any list a light fits in, to add}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.6\textwidth}
+\begin{codeblock}[steps={5|6|7|}, dense, marks={5/1, 6/2, 7/3/error}, add={7/3}, strike={7/3}]{java}
+import java.util.ArrayList;
+import java.util.List;
+
+public class Main {
+    public static void addLamp(List<? super Light> devices) {
+        devices.add(new Light("Bedroom lamp"));
+        Device first = devices.get(0);
+    }
+
+    // main, which calls it with a list
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.36\textwidth}
+      \begin{codenotes}[1]
+        \codenote{\code{super Light}}{\code{Light} or a superclass of it: a list of lights, of devices or of
+          objects.}
+        \codenote<2->{Adding a light}{It fits in any of them: it compiles.}
+        \codenote<3->[error]{Read only as an \code{Object}}{The one type all of them share: as a \code{Device}, it
+          does not compile.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<4->{\key{\code{? super Light}} accepts a list of \code{Light} or of \key{any superclass}, to \key{add}
+    lights to it.}
+  \note{The other bound. On entry, note 1, the parameter: super bounds the wildcard from below, Light or something above it, Device, or Object. Step 1, note 2, adding a Light compiles: a lamp can go into a list of lights, of devices or of objects. A Thermostat would not compile, since the list could be a List<Light>. Step 2, note 3, in red, a new line, crossed out: what comes out could be a Light, a Device or any object, so get returns an Object, and storing it in a Device does not compile. Step 3, the takeaway; both, side by side, next.}
+\end{frame}
+
+% Every parameter is there from the start; each row's answers fill in at once, after asking the class
+\begin{frame}{Which lists can it take?}{Three parameters, compared}
+  \begin{datatable}{l C C C C}
+    \tablehead{Parameter} & \tablehead{Takes a \code{List<Light>}} & \tablehead{Takes a \code{List<Device>}} &
+      \tablehead{Reads a \code{Device}} & \tablehead{Adds a \code{Light}} \\
+    \grouprule
+    \code{List<Device>} & \uncover<2->{\markerror} & \uncover<2->{\markok} & \uncover<2->{\markok} &
+      \uncover<2->{\markok} \\
+    \tablerule
+    \code{List<? extends Device>} & \uncover<3->{\markok} & \uncover<3->{\markok} & \uncover<3->{\markok} &
+      \uncover<3->{\markerror} \\
+    \tablerule
+    \code{List<? super Light>} & \uncover<4->{\markok} & \uncover<4->{\markok} & \uncover<4->{\markerror} &
+      \uncover<4->{\markok} \\
+    \grouprule
+  \end{datatable}
+  \takeaway<5->{\key{\code{extends}} to \key{read} from a list of any subclass; \key{\code{super}} to \key{add} to a
+    list of any superclass.}
+  \note{The three parameters of this section, each asked the same four questions; ask about each row before filling it in. Step 1, List<Device>: only a list of exactly Device, but it can do everything with it. Step 2, List<? extends Device>: any list of devices, read as devices, and nothing added. Step 3, List<? super Light>: any list a light fits in, lights added, and nothing read as a Device, only as an Object. A rule of thumb to remember it: a list the method takes elements out of is extends; a list it puts elements into is super; one it does both with is neither. Step 4, the takeaway.}
+\end{frame}
+
+\begin{frame}{Exercises}{What you can solve now}
+  \begin{datatable}{l Y}
+    \tablehead{Exercise} & \tablehead{What it practices} \\
+    \grouprule
+    \href{https://github.com/alfaro96/programming-fundamentals-ii/tree/main/code/Collections/Exercise\%202}{Exercise 2} &
+      Colors again, in a list of strings: what the compiler now checks \\
+    \tablerule
+    \href{https://github.com/alfaro96/programming-fundamentals-ii/tree/main/code/Collections/Exercise\%203}{Exercise 3} &
+      Dogs and cats in one list, told apart with \code{instanceof} \\
+    \tablerule
+    \href{https://github.com/alfaro96/programming-fundamentals-ii/tree/main/code/Collections/Exercise\%204}{Exercise 4} &
+      Pets: a list of the superclass, and the methods each subclass adds \\
+    \tablerule
+    \href{https://github.com/alfaro96/programming-fundamentals-ii/tree/main/code/Collections/Exercise\%205}{Exercise 5} &
+      Pets: methods that take lists of any kind of pet, with \code{? extends} and \code{? super} \\
+    \grouprule
+  \end{datatable}
+  \note{The exercises that can be solved with lists of one type, generics and wildcards. They are in the JetBrains Academy course, in the Collections lesson; each title opens it on GitHub.}
+\end{frame}
+
+% % % % % % % % % % Iterators % % % % % % % % % %
+\section{Iterators}
+
+% Code and notes step together; the takeaway on plain code
+\begin{frame}[fragile]{Going through a list}{Three ways}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.56\textwidth}
+\begin{codeblock}[steps={1-3|5-7|9|10-11|}, compact, marks={1-3/1, 5-7/2, 9/3, 10-11/4}]{java}
+for (int i = 0; i < devices.size(); i++) {
+    System.out.println(devices.get(i));
+}
+
+for (Device device : devices) {
+    System.out.println(device);
+}
+
+Iterator<Device> iterator = devices.iterator();
+while (iterator.hasNext()) {
+    Device device = iterator.next();
+    System.out.println(device);
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.4\textwidth}
+      \begin{codenotes}[1]
+        \codenote{By position}{Only in a list, which keeps its elements by position.}
+        \codenote<2->{For-each}{Any collection, as with an array: the usual way.}
+        \codenote<3->{\code{Iterator}}{An object that goes through a collection: \code{iterator} gives one, at the
+          start.}
+        \codenote<4->{\code{hasNext} and \code{next}}{Whether there is an element left, and the next one, moving
+          forward.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<5->{A for-each goes through a collection with an \key{\code{Iterator}}: the same loop, written out.}
+  \note{Three loops that print the same devices. On entry, note 1, the loop by position, as with an array in unit 1, with size and get: it only works with lists. Step 1, note 2, the for-each of unit 1, which works with any collection, and the one to use when the position does not matter. Step 2, note 3, what Java turns the for-each into: every collection has a method iterator, which returns an object that implements the interface Iterator, from java.util, placed before the first element. Step 3, note 4, its two methods: hasNext says whether there is an element left, and next returns it and moves on; calling next with none left throws a NoSuchElementException. The while loop is the for-each written out, with the same output. Step 4, the takeaway. Nobody writes this loop to print; the iterator is worth it for one thing, which comes next.}
+\end{frame}
+
+% The code plain on entry, for the question; the loop and the line that changes the list, with the exception under the
+% code; the takeaway on plain code
+\begin{frame}[fragile]{Removing in a for-each}{Does it work?}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.56\textwidth}
+\begin{codeblock}[steps={|1,3|}, compact, marks={1+3/2/error}]{java}
+for (Device device : devices) {
+    if (!device.isOn()) {
+        devices.remove(device);
+    }
+}
+\end{codeblock}
+      \blockgap
+      \begin{uncoverenv}<2->
+\begin{consoleerror}[compact]
+Exception in thread "main"
+  java.util.ConcurrentModificationException
+    ...
+    at Main.main(Main.java:1)
+\end{consoleerror}
+      \end{uncoverenv}
+    \end{column}
+    \begin{column}{0.4\textwidth}
+      \begin{codenotes}[1]
+        \codenote<2->[error]{Changed behind its back}{The list changes under the loop, and its hidden iterator stops
+          the program.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<3->{Changing a collection \key{in a for-each} over it stops the program with a
+    \key{\code{ConcurrentModificationException}}.}
+  \note{A list of the devices that are on, for the power screen of the app: the ones that are off have to go. devices holds the speaker, the thermostat, the living room lamp, which is on, and the bedroom lamp. On entry, the loop: ask whether it works. Step 1, note 1, in red, the answer when it runs: the speaker is removed, and the next turn of the loop throws a ConcurrentModificationException, unchecked, from the previous unit's table of Java's exceptions. The trace goes through ArrayList's iterator, left out here, and ends at the line of the for: the hidden next of the for-each. The iterator noticed that the list changed behind its back, and stops at once rather than skip elements or read past the end. Sometimes the loop ends quietly instead, when the element removed is the second to last one: worse, since the last one is never checked. Step 2, the takeaway; the fix comes next.}
+\end{frame}
+
+% Code and notes step together; the takeaway on plain code
+\begin{frame}[fragile]{\code{iterator.remove()}}{Removing through the iterator}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.56\textwidth}
+\begin{codeblock}[steps={5|1-3|5|}, compact, marks={5/1, 1-3/2, 5/3/warn}]{java}
+Iterator<Device> iterator = devices.iterator();
+while (iterator.hasNext()) {
+    Device device = iterator.next();
+    if (!device.isOn()) {
+        iterator.remove();
+    }
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.4\textwidth}
+      \begin{codenotes}[1]
+        \codenote{The iterator removes it}{\code{remove} takes out the element \code{next} just returned.}
+        \codenote<2->{And knows it}{The iterator stays in step with the collection: no exception.}
+        \codenote<3->[warn]{Once per \code{next}}{Called twice in a row, or before \code{next}, it throws an
+          \code{IllegalStateException}.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<4->{To remove while going through a collection, the \key{iterator} removes with its own
+    \key{\code{remove}}.}
+  \note{The loop written out, which is what makes the fix possible. On entry, note 1, the line that changes: the iterator, not the list, removes the element, the last one next returned. Step 1, note 2, the loop around it, as on the first slide of the section: the iterator removes the element and moves its own position back, so it is still in step with the list, and the next call to next returns the element that came after the removed one. Step 2, note 3, in orange, the rule: one remove per next; calling it before any next, or twice in a row, throws an IllegalStateException, from the previous unit's table too. It works with any collection. Step 3, the takeaway.}
+\end{frame}
+
+% Every loop is there from the start; each row's answers fill in at once, after asking the class
+\begin{frame}{Which ones work?}{Removing the devices that are off}
+  \begin{datatable}{l M M Y}
+    \tablehead{The loop} & \tablehead{Compiles?} & \tablehead{Works?} & \tablehead{Why} \\
+    \grouprule
+    \code{for (Device device : devices)} & \uncover<2->{\markok} & \uncover<2->{\markerror} &
+      \uncover<2->{\code{devices.remove(device)} changes the list under the loop: a
+      \code{ConcurrentModificationException}} \\
+    \tablerule
+    \code{for (int i = 0; i < devices.size(); i++)} & \uncover<3->{\markok} & \uncover<3->{\markcaution} &
+      \uncover<3->{\code{devices.remove(i)} moves the next one back to \code{i}, and \code{i++} skips it} \\
+    \tablerule
+    \code{for (int i = devices.size() - 1; i >= 0; i--)} & \uncover<4->{\markok} & \uncover<4->{\markok} &
+      \uncover<4->{\code{devices.remove(i)} only moves the ones after \code{i}, already checked} \\
+    \tablerule
+    \code{while (iterator.hasNext())} & \uncover<5->{\markok} & \uncover<5->{\markok} &
+      \uncover<5->{\code{iterator.remove()}: the iterator stays in step with the list} \\
+    \grouprule
+  \end{datatable}
+  \takeaway<6->{Remove with the \key{iterator}, or by position \key{from the end}: never with the list's own
+    \code{remove} in a for-each.}
+  \note{Four ways to write the same loop, all of which compile; ask about each row before filling it in. Step 1, the for-each, from two slides before: the exception. Step 2, by position, from 0 up to size: when the element at i is removed, the next one moves back to i, and i++ jumps over it, so two devices in a row that are off leave the second one in the list, with no error at all, in orange. Step 3, by position from the end, from size() - 1 down to 0: removing the element at i only moves the ones after it, which have already been checked, so nothing is skipped. Step 4, with the iterator: the previous slide. For a list, the last two are both right; for a collection with no positions, only the iterator works. Step 5, the takeaway.}
+\end{frame}
+
+\begin{frame}{Exercises}{The rest of the exercises}
+  \begin{datatable}{l Y}
+    \tablehead{Exercise} & \tablehead{What it practices} \\
+    \grouprule
+    \href{https://github.com/alfaro96/programming-fundamentals-ii/tree/main/code/Collections/Exercise\%206}{Exercise 6} &
+      Pets: going through a list with an iterator, and removing from it while going through it \\
+    \grouprule
+  \end{datatable}
+  \note{The exercise that needs this section: iterators, and removing elements in the two ways that work. It is in the JetBrains Academy course, in the Collections lesson; the title opens it on GitHub. The last section has no exercises of its own.}
+\end{frame}
+
+% % % % % % % % % % Sorting % % % % % % % % % %
+\section{Sorting}
+
+% The sort on entry, with its note, and the question; then the error under the code, with its note; the takeaway
+% on plain code
+\begin{frame}[fragile]{Sorting the devices}{Does it compile?}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.56\textwidth}
+\begin{codeblock}[steps={4|4|}, compact, marks={4/1, 4/2/error}]{java}
+List<Device> devices = new ArrayList<>();
+devices.add(new Speaker("Kitchen speaker"));
+devices.add(new Light("Living room lamp"));
+Collections.sort(devices);
+\end{codeblock}
+      \blockgap
+      \begin{uncoverenv}<2->
+\begin{consoleerror}[compact]
+Main.java:4: error: no suitable method found
+    for sort(List<Device>)
+\end{consoleerror}
+      \end{uncoverenv}
+    \end{column}
+    \begin{column}{0.4\textwidth}
+      \begin{codenotes}[1]
+        \codenote{\code{Collections.sort}}{A static method of the class \code{Collections}, in \code{java.util}: it sorts a list, strings
+          alphabetically.}
+        \codenote<2->[error]{No order}{Java does not know which of two devices goes first.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<3->{To sort, Java has to know \key{which of two elements goes first}: strings know it, devices do not.}
+  \note{The devices, to show them in order on the screen. On entry, note 1, Collections.sort: Collections, with an s, is a class of java.util, so it needs an import, and it is not the Collection interface; it only has static methods, as Math, which take the list as an argument. sort puts the list in order and changes the list itself, it does not return a new one: a list of strings, the rooms of the house, would come out alphabetical. It has others they can look up, such as reverse, max and min. Then, with the call on the devices, ask whether it compiles. Step 1, note 2, in red, the answer: it does not (the message, shortened and broken in two to fit; the rest, about inference variables and bounds, says that sort only takes a list of something comparable). Ask them which device should go first: by name, by power, by kind? Java cannot guess; String has an order of its own, alphabetical, and Device has none yet. Step 2, the takeaway.}
+\end{frame}
+
+% A question to the class, on its own, before the idea that answers it
+\begin{frame}
+  \question{How can a class say which of two of its objects goes first?}
+  \note{The previous slide turned into a question before Comparable answers it. Let them think: sort needs a method it can call on any two elements, the same for every class, so it has to be a contract, as in unit 3: an interface the class implements. Do not name Comparable yet: the next slide does.}
+\end{frame}
+
+% Code and notes step together; the takeaway on plain code
+\begin{frame}[fragile]{\code{Comparable}}{The natural order of a class}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.58\textwidth}
+\begin{codeblock}[steps={1|3|4|}, compact, marks={1/1, 3/2, 4/3}]{java}
+public abstract class Device implements Comparable<Device> {
+    @Override
+    public int compareTo(Device other) {
+        return this.name.compareTo(other.name);
+    }
+
+    // the rest of the class, as before
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.38\textwidth}
+      \begin{codenotes}[1]
+        \codenote{\code{Comparable<T>}}{An interface of \code{java.lang} with one method, which \code{String}
+          implements.}
+        \codenote<2->{\code{compareTo}}{Negative if \code{this} goes first, 0 if they are equal, positive if it goes
+          after.}
+        \codenote<3->{By name}{\code{String}'s own \code{compareTo} compares their characters one by one, by
+          their codes: alphabetical order, capitals first.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<4->{Implementing \key{\code{Comparable}} gives a class its \key{natural order}: the one \code{sort}
+    uses.}
+  \note{How a class says its order: by implementing an interface, as Light implements Adjustable in unit 3. On entry, note 1, the header: Device implements Comparable<Device>, a generic interface of java.lang, so with no import, whose type says what devices are compared with, other devices. Step 1, note 2, its one method: compareTo compares this device with another and returns an int, negative if this goes first, 0 if they are equal, positive if it goes after, exactly as strcmp in C. Only the sign matters. Step 2, note 3, the body: the devices go by name, and the names are strings, which already implement Comparable, so their compareTo does the comparing: it looks for the first character that differs and returns the difference of their Unicode codes, from unit 1, so the order is alphabetical, with every capital letter before every lowercase one (compareToIgnoreCase ignores the case). Every subclass inherits it, so lamps, thermostats and speakers can be sorted together. Step 3, the takeaway.}
+\end{frame}
+
+% Every call is there from the start; each row's answers fill in at once, after asking the class
+\begin{frame}[fragile]{What does \code{compareTo} return?}{Comparing devices}
+\begin{codeblock}[compact]{java}
+Device lamp = new Light("Bedroom lamp");
+Device speaker = new Speaker("Kitchen speaker");
+Device thermostat = new Thermostat("Hallway thermostat", 21.5);
+\end{codeblock}
+  \notesgap
+  \begin{datatable}{l l Y}
+    \tablehead{The call} & \tablehead{Returns} & \tablehead{Goes first} \\
+    \grouprule
+    \code{lamp.compareTo(speaker)} & \uncover<2->{-9, negative} & \uncover<2->{\code{lamp}} \\
+    \tablerule
+    \code{speaker.compareTo(thermostat)} & \uncover<3->{3, positive} & \uncover<3->{\code{thermostat}} \\
+    \tablerule
+    \code{speaker.compareTo(new Speaker("Kitchen speaker"))} & \uncover<4->{0} & \uncover<4->{Neither: two
+      objects, the same name} \\
+    \tablerule
+    \code{lamp.compareTo(new Light("bedroom lamp"))} & \uncover<5->{-32, negative} &
+      \uncover<5->{\code{lamp}: capitals go before} \\
+    \grouprule
+  \end{datatable}
+  \takeaway<6->{Only the \key{sign} matters: \key{negative}, the first goes first; \key{positive}, the second;
+    \key{0}, they are equal.}
+  \note{Three of the devices, compared with the compareTo just written; ask about each row before filling it in. Each call compares the names, character by character. Step 1, B is 66 and K is 75, so -9: the lamp goes first. Step 2, K and H, 75 and 72, 3: the thermostat goes first. Step 3, two different objects with the same name: 0, they are equal for the order, though not the same object. Step 4, the trap: B is 66 and b is 98, so -32: every capital letter goes before every lowercase one. They should not rely on the exact numbers, only on the sign. Step 5, the takeaway.}
+\end{frame}
+
+% The sort on entry, with its note; the loop alone, to ask, then its output and its note; the takeaway on plain code
+\begin{frame}[fragile]{Sorted by name}{What does it print?}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.56\textwidth}
+\begin{codeblock}[steps={6|7-9|7-9|}, compact, marks={6/1, 7-9/3}]{java}
+List<Device> devices = new ArrayList<>();
+devices.add(new Speaker("Kitchen speaker"));
+devices.add(new Thermostat("Hallway thermostat", 21.5));
+devices.add(new Light("Living room lamp"));
+devices.add(new Light("Bedroom lamp"));
+Collections.sort(devices);
+for (Device device : devices) {
+    System.out.println(device);
+}
+\end{codeblock}
+      \blockgap
+      \begin{uncoverenv}<3->
+\begin{console}[compact]
+Bedroom lamp: Off, 100%
+Hallway thermostat: Off, 21.5 °C
+Kitchen speaker: Off
+Living room lamp: Off, 100%
+\end{console}
+      \end{uncoverenv}
+    \end{column}
+    \begin{column}{0.4\textwidth}
+      \begin{codenotes}[1]
+        \codenote{Now it compiles}{\code{Device} is \code{Comparable}.}
+        \codenote<3->{By name}{Whatever their kind: the order of \code{compareTo}.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<4->{\code{Collections.sort} puts a list in its \key{natural order}, the one \key{\code{compareTo}} gives.}
+  \note{The four devices, added in no particular order. On entry, note 1, the sort of Sorting the devices, which did not compile: it does now, since Device implements Comparable. Step 1, a for-each that prints them: ask what it prints. Step 2, note 2, in alphabetical order of their names, whatever their kind. Another order for another screen, say by power, is given with a Comparator, an object passed to sort, which they will meet in later courses. Step 3, the takeaway.}
+\end{frame}
+
+\begin{frame}{Unit summary}{What to take away from this unit}
+  \begin{recap}
+    \recapitem<2>{Lists}{A \key{list} keeps its elements \key{by position} and grows as needed:
+      \code{add}, \code{get}, \code{set}, \code{remove}, \code{size}.}
+    \recapitem<3>{Generics}{A \key{generic} collection says the \key{type} of its elements, checked by the compiler;
+      \key{\code{? extends}} to read, \key{\code{? super}} to add.}
+    \recapitem<4>{Iterators}{A for-each uses an \key{\code{Iterator}}; to remove while going through, its
+      \key{\code{remove}}.}
+    \recapitem<5>{Sorting}{A class that implements \key{\code{Comparable}} has a \key{natural order}, which
+      \code{Collections.sort} uses.}
+  \end{recap}
+  \note{The unit's contents once more, now with what each section left: all of them dimmed on entry, then one per step, in the order they were seen; ask the class to recall an example of each before showing its sentence: the fourth device, Home and the list of rooms; the name of the speaker that got into the list, and the list of lights that was not a list of devices; the devices that were off and the ConcurrentModificationException; the devices sorted by name. The next unit changes how a program runs: instead of going from the first line of main to the last, it waits for the user and reacts to what they do.}
+\end{frame}
+
+\end{document}

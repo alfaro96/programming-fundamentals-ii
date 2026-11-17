@@ -29,8 +29,7 @@ public class CountryHouse extends Housing {
      * @throws InvalidPriceException if {@code price} is negative.
      * @throws InvalidSquareMetersException if {@code plotSize} is negative.
      */
-    public CountryHouse(double price, double plotSize, Chalet chalet)
-            throws InvalidPriceException, InvalidSquareMetersException {
+    public CountryHouse(double price, double plotSize, Chalet chalet) {
         super(price);
         if (plotSize < 0) {
             throw new InvalidSquareMetersException("plotSize", plotSize);

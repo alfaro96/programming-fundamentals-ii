@@ -1,0 +1,49 @@
+% The palette, shared by the slides (style.sty) and the exercise and assignment statements (../statements/)
+% % % % % % % % % % Palette % % % % % % % % % %
+% The instructor's colors. Every role below points at one of these
+\definecolor{paletteRed}{HTML}{C32900}
+\definecolor{paletteOrange}{HTML}{DD6700}
+\definecolor{paletteYellow}{HTML}{FFC107}
+\definecolor{paletteTeal}{HTML}{2F7A6B} % the cool counterpart to the warm three
+\definecolor{palettePlum}{HTML}{6A4C93} % data; a hue the others leave free, as dark as they are
+\definecolor{paletteBerry}{HTML}{A23B72} % operations; pink, so it never reads as the red of errors
+
+% Background and text
+\definecolor{colorBg}{HTML}{FFFFFF} % white, because the slides go through a projector
+\definecolor{colorText}{HTML}{1D242C}
+\definecolor{colorMuted}{HTML}{949494} % subtitles, line numbers and comments
+\definecolor{colorHeading}{HTML}{1E4D78}
+
+% Accents
+\colorlet{colorAccent}{paletteOrange} % bullets, emphasis and exercises
+\colorlet{colorAccentTwo}{paletteTeal} % it works, and links; code itself is neutral
+\colorlet{colorHighlightSoft}{paletteYellow!22!colorBg} % takeaways, like a highlighter
+\colorlet{colorState}{palettePlum} % what an object holds: its data (orange already means take care)
+\colorlet{colorBehavior}{paletteBerry} % what an object does: its operations (teal already means it works)
+
+% Code
+\colorlet{colorCodeBg}{colorBg} % code and terminals stay white, like the slide
+\colorlet{colorCodeEdge}{colorHeading!25!colorBg} % neutral: teal means it works
+\colorlet{colorCodeInline}{colorHeading!12!colorBg} % under code in running text
+\colorlet{colorCodeKeyword}{colorHeading} % keywords
+\colorlet{colorCodeString}{colorAccentTwo} % strings
+\colorlet{colorCodeAnnotation}{paletteOrange}
+\colorlet{colorCodeCurrentLine}{paletteYellow!12!colorCodeBg} % the line a step points at
+
+% Cover
+\definecolor{colorCoverCourse}{HTML}{000000}
+\definecolor{colorCoverAuthor}{HTML}{313131}
+\definecolor{colorCoverDegree}{HTML}{000000}
+
+% Contents slide
+\definecolor{colorContentsText}{HTML}{5E5E5E} % section titles
+\colorlet{colorContentsNumber}{colorHeading}
+\colorlet{colorContentsCurrent}{paletteOrange} % the section about to start
+
+% Card tones: blue by default; warn and error as the verdicts; state and behavior for data and operations
+\colorlet{tone@info}{colorHeading}
+\colorlet{tone@warn}{paletteOrange}
+\colorlet{tone@error}{paletteRed}
+\colorlet{tone@state}{colorState}
+\colorlet{tone@behavior}{colorBehavior}
+

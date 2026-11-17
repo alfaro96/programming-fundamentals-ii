@@ -1,0 +1,227 @@
+/* The index page of the web version (scripts/index.mjs): the course, then one card per unit with
+   its two PDFs. The colors are the slides' own (beamer/style.sty). */
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap");
+
+:root {
+  /* Palette, as in beamer/style.sty */
+  --color-accent-orange: #dd6700;
+  --color-accent-yellow: #ffc107;
+  --color-accent-teal: #2f7a6b;
+
+  --color-bg: #ffffff;
+  --color-text: #1d242c;
+  --color-muted: #949494;
+  --color-heading: #1e4d78;
+  --color-accent: var(--color-accent-orange);
+  --color-accent-2: var(--color-accent-teal);
+  --color-card-edge: color-mix(in srgb, var(--color-heading) 18%, transparent);
+  --card-shadow: 0 0.14em 0.5em color-mix(in srgb, var(--color-text) 22%, transparent);
+
+  --font-body: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  --line-height-body: 1.4;
+  --rule-hairline: 2px;
+  --rule-accent: 4px; /* the card's left bar and the band under the header */
+
+  --site-width: 64rem; /* widest the content gets */
+  --site-gutter: 1.25rem; /* side air, phones included */
+  --site-gap: 1.5rem; /* between the cards */
+  --site-hero-padding: 4rem; /* above the course name, half of it below the author */
+  --site-title-size: clamp(2.25rem, 1.5rem + 3vw, 3.5rem);
+  --site-card-padding: 1.75rem;
+  --site-number-size: 3.5rem; /* the unit number disc */
+  --site-chip-padding: 0.3em 0.8em;
+  --site-tint: 7%; /* chip backgrounds, share of the heading blue */
+  --site-button-padding: 0.45em 1.1em; /* a unit's PDF buttons */
+  --site-button-gap: 0.75rem;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  line-height: var(--line-height-body);
+}
+
+.site-wrap {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: calc(var(--site-width) + 2 * var(--site-gutter));
+  margin-inline: auto;
+  padding-inline: var(--site-gutter);
+}
+
+.site-hero {
+  padding-block: var(--site-hero-padding) calc(var(--site-hero-padding) / 2);
+  border-bottom: var(--rule-accent) solid var(--color-accent);
+  background: var(--color-heading);
+  color: var(--color-bg);
+}
+
+.site-hero h1 {
+  margin: 0;
+  font-size: var(--site-title-size);
+  line-height: 1.1;
+}
+
+.site-degree {
+  margin: 0;
+  color: var(--color-accent-yellow);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.site-author {
+  margin: 0;
+  margin-top: 0.5em;
+  font-size: 1.15rem;
+  opacity: 0.85;
+}
+
+.site-units {
+  display: grid;
+  gap: var(--site-gap);
+  margin: 0;
+  margin-block: calc(2 * var(--site-gap));
+  padding: 0;
+  list-style: none;
+}
+
+.site-unit {
+  display: flex;
+  gap: var(--site-card-padding);
+  padding: var(--site-card-padding);
+  border: 1px solid var(--color-card-edge);
+  border-left: var(--rule-accent) solid var(--color-accent);
+  background: var(--color-bg);
+  box-shadow: var(--card-shadow);
+}
+
+.site-unit-number {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: var(--site-number-size);
+  height: var(--site-number-size);
+  border-radius: 50%;
+  background: var(--color-accent);
+  color: var(--color-bg);
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.site-unit-body {
+  min-width: 0;
+}
+
+.site-unit-label {
+  margin: 0;
+  color: var(--color-accent);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.site-unit h2 {
+  margin: 0;
+  color: var(--color-heading);
+  font-size: 1.75rem;
+  line-height: 1.2;
+}
+
+.site-unit-summary {
+  margin: 0;
+  margin-top: 0.25em;
+  color: var(--color-muted);
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.site-unit-sections {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+  margin-top: 1.25rem;
+  padding: 0;
+  list-style: none;
+}
+
+.site-unit-sections li {
+  padding: var(--site-chip-padding);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-heading) var(--site-tint), transparent);
+  color: var(--color-heading);
+  font-size: 0.9rem;
+}
+
+.site-unit-sections span {
+  margin-right: 0.5em;
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
+/* The two PDFs: class, as shown in the lecture, and print, every step on one page */
+.site-unit-pdfs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--site-button-gap);
+  margin: 0;
+  margin-top: 1.25rem;
+}
+
+.site-unit-pdfs a {
+  padding: var(--site-button-padding);
+  border: var(--rule-hairline) solid var(--color-accent-2);
+  border-radius: 999px;
+  color: var(--color-accent-2);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.site-unit-pdfs a:hover,
+.site-unit-pdfs a:focus-visible {
+  background: var(--color-accent-2);
+  color: var(--color-bg);
+}
+
+/* The statements of the unit's exercises and assignments: a label, then a link for each */
+.site-unit-statements {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--site-button-gap);
+  margin: 0;
+  margin-top: 0.75rem;
+  font-size: 0.9rem;
+}
+
+.site-unit-statements span {
+  color: var(--color-muted);
+  font-weight: 600;
+}
+
+.site-unit-statements a {
+  padding: var(--site-button-padding);
+  border: var(--rule-hairline) solid var(--color-card-edge);
+  border-radius: 999px;
+  color: var(--color-heading);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.site-unit-statements a:hover,
+.site-unit-statements a:focus-visible {
+  border-color: var(--color-heading);
+}
+
+/* Phones: the number above the title */
+@media (max-width: 40rem) {
+  .site-unit {
+    flex-direction: column;
+  }
+}

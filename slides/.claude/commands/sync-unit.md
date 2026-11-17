@@ -2,7 +2,7 @@
 description: Bring a unit's lesson in `code/` in line with its slides
 ---
 
-Unit to check (a file in `content/`, e.g. `unit_1-introduction_java.md`):
+Unit to check (its folder in `beamer/units/`, e.g. `unit_1-introduction_java`):
 $ARGUMENTS
 
 Follow "Keeping `slides/` and `code/` in step" in the repository's `CLAUDE.md` and the rules in `../code/CLAUDE.md`.

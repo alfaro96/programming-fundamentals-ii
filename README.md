@@ -16,24 +16,23 @@ Through Java, students learn to structure larger applications and apply reusable
 
 This repository brings together the lectures and the programming components of the course, so that each unit's slides, examples and exercises live side by side. It is organized in two folders:
 
-* `slides/`: reveal.js project with the lecture slides
+* `slides/`: beamer project with the lecture slides
 * `code/`: JetBrains Academy project with the exercises and assignments
 
 ### `slides/`
 
-The lecture slides, one Markdown file per unit, rendered with reveal.js. It contains:
+The lecture slides, one beamer document per unit, compiled with XeLaTeX (TeX Live). It contains:
 
 * **Units**: the content of each lecture, with its speaker notes
-* **Theme**: the shared visual style of the whole course
-* **Templates**: one model per type of slide, to keep the units consistent
-* **Scripts**: the export of every unit to the web and to two PDF versions
+* **Theme**: the shared visual style and the components of the whole course
+* **Scripts**: the build of every unit to two PDF versions and the index page that links them
 
 Both PDF versions are generated from the same slides:
 
 * **Class**: one page per step, as shown during the lecture
 * **Print**: one page per slide, every step visible, for students to print and study
 
-The web version is published on GitHub Pages on every push.
+Both PDFs of every unit are published on GitHub Pages on every push, from an index page with a button for each, together with the statement of every exercise and laboratory assignment of `code/`, compiled from its `task.md` in the same style as the slides.
 
 > See `slides/README.md` for how to view, edit and export the slides.
 

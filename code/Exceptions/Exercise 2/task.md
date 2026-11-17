@@ -7,12 +7,12 @@ Start from your solution to Exercise 2 of Unit 3: Inheritance, the `antiques` pa
   * The constructors of `Painting` and `Furniture` receive the price after `year` too, and every `toString()` includes it.
 
 * Create a package called `exceptions` with the following exceptions:
-  * **`InvalidPriceException`**, a checked exception (it extends `Exception`) thrown by the constructor of `Antique` when the price is negative. Its constructor receives the price.
-  * **`YearOutOfRangeException`**, an unchecked exception (it extends `RuntimeException`) thrown by the constructor of `Antique` when the year is not between `Antique.MIN_YEAR` and `Antique.MAX_YEAR`, two constants equal to 1 and 1900, and by `addFurniture()` and `deleteFurniture()` when the matrix has no row for the century of the year. Its constructor receives the year.
-  * **`CollectionFullException`**, a checked exception thrown by `addFurniture()` when the row of the century has no `null` position, instead of leaving the antique out without a word. Its constructor receives the century.
+  * **`InvalidPriceException`**, an unchecked exception (it extends `RuntimeException`) thrown by the constructor of `Antique` when the price is negative. Its constructor receives the price.
+  * **`YearOutOfRangeException`**, an unchecked exception too, thrown by the constructor of `Antique` when the year is not between `Antique.MIN_YEAR` and `Antique.MAX_YEAR`, two constants equal to 1 and 1900, and by `addFurniture()` and `deleteFurniture()` when the matrix has no row for the century of the year. Its constructor receives the year.
+  * **`CollectionFullException`**, a checked exception (it extends `Exception`) thrown by `addFurniture()` when the row of the century has no `null` position, instead of leaving the antique out without a word. Its constructor receives the century.
   * **`FurnitureNotFoundException`**, a checked exception thrown by `deleteFurniture()` when there is no furniture dated in the given year. Its constructor receives the year.
 
-  Each constructor builds a message that includes the value it receives. The constructors and methods that may throw a checked exception have to declare it.
+  Each constructor builds a message that includes the value it receives. A negative price or a year out of range is a mistake in the code that passes it, which should check the value first, so those two exceptions are unchecked. A full century or a year with no furniture can happen even in a correct program, so the other two are checked, and the methods that may throw them have to declare them.
 
 Replace the **`Main`** class with a menu that is shown again after every option, until the user chooses to exit:
 * `1`: add a piece of furniture, reading its identifier, year, price and material from the keyboard with a `Scanner`.

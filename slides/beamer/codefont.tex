@@ -1,0 +1,12 @@
+% The code font, JetBrains Mono, shared by the slides (style.sty) and the statements (../statements/)
+% fonts/ sits next to this file: in the first folder of \input@path when a deck sets one (units/)
+\def\pf@fontpath{fonts/}
+\def\pf@firstpath#1#2\@nil{\def\pf@fontpath{#1fonts/}}
+\ifdefined\input@path\expandafter\pf@firstpath\input@path\@nil\fi
+\setmonofont{JetBrainsMonoNL}[
+  Path = \pf@fontpath,
+  Extension = .ttf,
+  UprightFont = *-Regular,
+  ItalicFont = *-Italic,
+  BoldFont = *-Bold,
+  BoldItalicFont = *-BoldItalic]

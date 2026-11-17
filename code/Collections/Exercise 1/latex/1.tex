@@ -1,0 +1,29 @@
+Write a \textbf{\texttt{Main}} class whose \texttt{main} works with a list of colors, step by step, using an \texttt{ArrayList} with no type in angle brackets, which takes any object.
+
+\begin{enumerate}
+
+    \item Create an \texttt{ArrayList} named \texttt{colors}, initially empty, with no type in angle brackets.
+
+    \item Add the strings \texttt{"Red"}, \texttt{"Green"}, \texttt{"Orange"}, \texttt{"White"} and \texttt{"Black"}, in that order.
+
+    \item Print \texttt{Step 3 - Initial list: } followed by the list.
+
+    \item Insert \texttt{"Pink"} at position 0, and print \texttt{Step 4 - After inserting Pink at 0: } followed by the list.
+
+    \item Replace the element at position 3, which is now \texttt{"Orange"}, with \texttt{"Blue"}.
+
+    \item Add \texttt{"Purple"} at the end, and print \texttt{Step 6 - After adding Purple at the end: } followed by the list.
+
+    \item Print \texttt{Step 7 - Elements at even positions: } followed by the elements at positions 0, 2, 4..., separated by \texttt{, }, on the same line.
+
+    \item Remove the element at position 4, and print \texttt{Step 8 - After removing the element at position 4: } followed by the list.
+
+    \item Sort the list with \texttt{Collections.sort(...)}, and print \texttt{Step 9 - Sorted list: } followed by the list.
+
+    \item Add the integer \texttt{100} to the list, and print \texttt{Step 10 - After adding an integer: } followed by the list.
+
+    \item Print \texttt{Step 11 - Length of the string at position 3: } followed by the length of the string at position 3.
+
+\end{enumerate}
+
+Each step that prints writes a single line, and a list is printed by joining it to the text with \texttt{+}, as the slides print it. Think about why step 10 compiles, and what step 11 needs before it can call \texttt{length()}.

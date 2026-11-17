@@ -22,7 +22,7 @@ public class Painting extends Antique {
      * @throws exceptions.YearOutOfRangeException if {@code year} is out of range.
      * @throws InvalidPriceException if {@code price} is negative.
      */
-    public Painting(String id, int year, double price, String technique) throws InvalidPriceException {
+    public Painting(String id, int year, double price, String technique) {
         super(id, year, price);
         this.technique = technique;
     }

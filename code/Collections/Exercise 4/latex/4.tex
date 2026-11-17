@@ -1,0 +1,23 @@
+Turn the dogs and cats of Exercise 3 into a hierarchy, and keep them in a list of their superclass.
+
+\begin{itemize}
+
+    \item Write a class \textbf{\texttt{Pet}} with a private attribute \texttt{String name}, given by its constructor, a getter \texttt{getName()}, and a method \texttt{speak()} that prints \texttt{[name] makes a sound.}
+
+    \item Write two subclasses of \texttt{Pet}, \textbf{\texttt{Dog}} and \textbf{\texttt{Cat}}, whose constructors receive the name and pass it to the constructor of \texttt{Pet}. \texttt{Dog} adds a method \texttt{bark()} that prints \texttt{[name]: woof!}, and \texttt{Cat} a method \texttt{meow()} that prints \texttt{[name]: meow!}.
+
+\end{itemize}
+
+Write a \textbf{\texttt{Main}} class whose \texttt{main}:
+
+\begin{enumerate}
+
+    \item Creates a \texttt{List<Pet>} named \texttt{pets}, as an \texttt{ArrayList}.
+
+    \item Adds the dog \texttt{"Bobby"}, the cat \texttt{"Garfield"}, the dog \texttt{"Sanson"} and the cat \texttt{"Whiskers"}, in that order.
+
+    \item Goes through \texttt{pets} with a for-each loop and, for each pet, first makes it bark if it is a dog or meow if it is a cat, and then calls its \texttt{speak()}.
+
+\end{enumerate}
+
+Explain in a comment why \texttt{bark()} and \texttt{meow()} need a check of the class of the object, and \texttt{speak()} does not.

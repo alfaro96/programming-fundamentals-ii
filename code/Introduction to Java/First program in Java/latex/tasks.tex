@@ -1,0 +1,101 @@
+Write a program that calculates the \textbf{sum of the integers from} \(\boldsymbol{0}\) \textbf{to} \(\boldsymbol{n}\) in two ways, with a loop and with a mathematical formula, and checks that both agree.
+
+\subsection{Environment setup}
+
+\begin{enumerate}
+
+    \item \textbf{Install and configure the IDE}: download and install it from \url{https://www.jetbrains.com/idea/download/}.
+
+    \item \textbf{Create the project structure}:
+
+        \begin{enumerate}
+
+            \item Select \uibutton{New Project} from the welcome screen.
+
+            \item Choose \uibutton{Java} in the left menu.
+
+            \item Configure the project details:
+
+                \begin{itemize}
+
+                    \item \textbf{Project name}: \uibutton{Laboratory assignment 0}.
+
+                    \item \textbf{Project location}: choose a folder where you can save and later delete your work.
+
+                \end{itemize}
+
+            \item Click the \uibutton{Create} button to generate the workspace.
+
+        \end{enumerate}
+
+\end{enumerate}
+
+\subsection{Implementation of the summation methods}
+
+Once the project workspace has been generated, remove the \texttt{Main.java} file inside the source (\texttt{src}) folder of your project and copy the \texttt{Sum.java} template provided with this assignment into it. Each \texttt{TODO} comment in the template marks a part you have to write.
+
+In Java, functions are called \textbf{methods}. You declare one as a function in C, with the \texttt{static} keyword in front, for example \texttt{static int sum1(int n)}. Java requires it here, as \texttt{main} calls these methods directly; for now, write it as it is: what it means will be covered in later sessions.
+
+\begin{enumerate}
+
+    \item \textbf{Iterative sum}: write a method named \texttt{sum1} that receives an \texttt{int} \(n\) and returns the sum of the integers from \(0\) to \(n\): \(sum1(n) = \sum_{i = 0}^{n} i\).
+
+        \begin{itemize}
+
+            \item \textbf{Logic}: translate the implementation from C. Initialize a variable to \(0\) and use a \texttt{for} loop to add the values from \(0\) to \(n\).
+
+        \end{itemize}
+
+    \item \textbf{Formula sum}: write a second method named \texttt{sum2} that returns the same sum using the arithmetic progression formula: \(sum2(n) = \frac{n(n + 1)}{2}\).
+
+        \begin{itemize}
+
+            \item \textbf{Logic}: its body is a single \texttt{return} statement.
+
+        \end{itemize}
+
+    \item \textbf{Verification}: write the body of \texttt{main} to test both methods, printing the results with \texttt{System.out.printf}, which works as \texttt{printf} in C (with \texttt{\%d} for an \texttt{int} and \texttt{\textbackslash{}n} to end the line).
+
+        \begin{enumerate}
+
+            \item \textbf{Individual test}: print the results of \texttt{sum1} and \texttt{sum2} for \(n = 11\). Both must be \(66\).
+
+            \item \textbf{Batch test}: use a loop to go through the following array of values: \texttt{\{3, 4, 13, 21, 67, 102, 155, 365, 1007\}}. For each value, print \(n\), the results of both methods and whether they are equal.
+
+            \item \textbf{Automatic comparison}: instead of checking the numbers yourself, let the program tell you. Compare the results of \texttt{sum1} and \texttt{sum2} with \texttt{==}, which gives a \texttt{boolean}, and print it with \texttt{\%b}, which prints \texttt{true} or \texttt{false}. Every value in the array must print \texttt{true}.
+
+        \end{enumerate}
+
+    \item \textbf{Documentation comments}: document the \texttt{Sum} class and the \texttt{sum1} and \texttt{sum2} methods with \textbf{Javadoc comments} (\texttt{/** ... */}), placed right above what they describe. The comment of \texttt{main} in the template is an example to follow:
+
+        \begin{itemize}
+
+            \item The first sentence says what the class or method does.
+
+            \item \texttt{@param} followed by a parameter's name describes that parameter, one line per parameter.
+
+            \item \texttt{@return} describes the value the method returns.
+
+            \item \texttt{@author} followed by your name, in the comment of the class.
+
+            \item Javadoc comments are HTML, not Markdown: write code (names, expressions) as \texttt{\{@code sum1\}} and use HTML for formulas, such as \texttt{<i>n</i>(<i>n</i> + 1) / 2}.
+
+        \end{itemize}
+
+    \item \textbf{Documentation generation}: generate the documentation of your project to see what your comments become.
+
+        \begin{enumerate}
+
+            \item Open the \uibutton{Tools} menu.
+
+            \item Select \uibutton{Generate JavaDoc...}.
+
+            \item Set the output directory to your project folder followed by \texttt{/doc}.
+
+            \item Once the process is complete, check that a new folder named \texttt{doc} has been created in your project directory.
+
+            \item Open its \texttt{index.html} file in a web browser. Observe how your Javadoc comments have been turned into an HTML documentation page, listing the class, its methods, their parameters and their return values.
+
+        \end{enumerate}
+
+\end{enumerate}

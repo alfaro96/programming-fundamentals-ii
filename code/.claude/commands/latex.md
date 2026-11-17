@@ -1,12 +1,12 @@
 ---
-description: Turn a task's `task.md` into LaTeX ready to paste into Overleaf: the three files of an assignment's PDF (goals, parameters and tasks), or a single `N.tex` for an exercise
+description: Turn a task's `task.md` into the LaTeX its statement PDF is compiled from: the three files of an assignment (goals, parameters and tasks), or a single `N.tex` for an exercise
 ---
 
 Task to convert (its folder, e.g. `Introduction to Java/First program in Java`), and notes from the instructor, if any:
 
 $ARGUMENTS
 
-The instructor compiles each assignment's PDF in an Overleaf template that `\input`s three files, and hands it out on the virtual campus with the template from `template/`; the exercises go in another Overleaf document, one file per exercise. Write those files from `task.md`, with nothing else in them (no preamble, no `\begin{document}`), so their content can be pasted as it is.
+`../slides/scripts/statements.sh` compiles each assignment's PDF from a document that `\input`s three files (`../slides/statements/assignment.tex`), and each exercise's from one that `\input`s its file (`exercise.tex`), in the style of `statement.sty`; the PDFs are published with the slides, and each assignment is also handed out with the template from `template/`. Write those files from `task.md`, with nothing else in them (no preamble, no `\begin{document}`).
 
 1. Read the task's `task.md`. An assignment has `## Goals` and `## Tasks` sections; an exercise (`Exercise N`) has neither.
 2. Write `latex/` in the task folder (replacing what is there). For an exercise, a single file named after its number (`1.tex` for `Exercise 1`), with all of `task.md` except its `#` title. For an assignment:
@@ -17,7 +17,7 @@ The instructor compiles each assignment's PDF in an Overleaf template that `\inp
      ```
    * `goals.tex`: the content of `## Goals`, without its heading.
    * `tasks.tex`: the content of `## Tasks`, without its heading.
-3. Make sure `latex/` of that task is listed in `.courseignore` (one line, `<lesson>/<task>/latex`), as `template/` is, so the plugin leaves it out of the course. It is ignored by git: `task.md` is what is kept.
+3. Make sure `latex/` of that task is listed in `.courseignore` (one line, `<lesson>/<task>/latex`), as `template/` is, so the plugin leaves it out of the course. It is kept in git, next to `task.md`, so the workflow that publishes the PDFs only has to compile it.
 4. Check the result: every `\begin` has its `\end`, every brace is closed, and every LaTeX special character outside math is escaped. Show `goals.tex` (or the exercise's file) and say where the files are.
 
 ## How the Markdown becomes LaTeX
@@ -44,7 +44,7 @@ The text is the same as in `task.md`, in the same order and with the same case: 
 
 **Code blocks**
 
-* `task.md` files have no code blocks so far. If one does, ask the instructor which environment the Overleaf template uses before writing it.
+* `task.md` files have no code blocks so far. If one does, ask the instructor which environment `statement.sty` should give it before writing it.
 
 ## Example
 

@@ -22,15 +22,15 @@ A Gradle project in JetBrains Academy format, with one lesson per unit. It conta
 
 > These materials are designed to be opened in IntelliJ IDEA with the JetBrains Academy plugin.
 
-### Assignment PDFs
+### Statement PDFs
 
-Each assignment is also handed out as a PDF, compiled in Overleaf, and the file students start from (`template/` in its task folder). With Claude Code started from this folder:
+Every exercise and assignment also has its statement as a PDF, published with the slides on its unit's card, and each assignment is handed out with the file students start from (`template/` in its task folder). The PDFs are compiled by `../slides/scripts/statements.sh` from the LaTeX in each task's `latex/` folder, which, with Claude Code started from this folder,
 
 ```
 /latex Introduction to Java/First program in Java
 ```
 
-writes `goals.tex`, `parameters.tex` and `tasks.tex` in the task's `latex/` folder, converted from its `task.md`, ready to paste into the Overleaf template.
+writes from its `task.md`: `goals.tex`, `parameters.tex` and `tasks.tex` for an assignment, `N.tex` for an exercise. Run it again whenever a `task.md` changes, and commit both.
 
 ---
 

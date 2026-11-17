@@ -7,19 +7,19 @@ files:
     visible: true
     placeholders:
       - offset: 0
-        length: 2311
+        length: 2282
         placeholder_text: "/* TODO: Implement Antique class. */"
   - name: src/antiques/Painting.java
     visible: true
     placeholders:
       - offset: 0
-        length: 1218
+        length: 1189
         placeholder_text: "/* TODO: Implement Painting class. */"
   - name: src/antiques/Furniture.java
     visible: true
     placeholders:
       - offset: 0
-        length: 1214
+        length: 1185
         placeholder_text: "/* TODO: Implement Furniture class. */"
   - name: src/antiques/Collection.java
     visible: true
@@ -31,7 +31,7 @@ files:
     visible: true
     placeholders:
       - offset: 0
-        length: 648
+        length: 801
         placeholder_text: "/* TODO: Implement InvalidPriceException class. */"
   - name: src/exceptions/YearOutOfRangeException.java
     visible: true
@@ -55,5 +55,5 @@ files:
     visible: true
     placeholders:
       - offset: 0
-        length: 4715
+        length: 4669
         placeholder_text: "/* TODO: Implement Main class. */"

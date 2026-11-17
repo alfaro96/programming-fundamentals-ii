@@ -7,43 +7,43 @@ files:
     visible: true
     placeholders:
       - offset: 0
-        length: 656
+        length: 809
         placeholder_text: "/* TODO: Implement InvalidPriceException class. */"
   - name: src/exceptions/InvalidSquareMetersException.java
     visible: true
     placeholders:
       - offset: 0
-        length: 883
+        length: 1035
         placeholder_text: "/* TODO: Implement InvalidSquareMetersException class. */"
   - name: src/housing/Housing.java
     visible: true
     placeholders:
       - offset: 0
-        length: 1458
+        length: 1429
         placeholder_text: "/* TODO: Implement Housing class. */"
   - name: src/housing/SingleFamily.java
     visible: true
     placeholders:
       - offset: 0
-        length: 2409
+        length: 2338
         placeholder_text: "/* TODO: Implement SingleFamily class. */"
   - name: src/housing/Chalet.java
     visible: true
     placeholders:
       - offset: 0
-        length: 1771
+        length: 1700
         placeholder_text: "/* TODO: Implement Chalet class. */"
   - name: src/housing/CountryHouse.java
     visible: true
     placeholders:
       - offset: 0
-        length: 2058
+        length: 1987
         placeholder_text: "/* TODO: Implement CountryHouse class. */"
   - name: src/housing/Apartment.java
     visible: true
     placeholders:
       - offset: 0
-        length: 1348
+        length: 1319
         placeholder_text: "/* TODO: Implement Apartment class. */"
   - name: src/housing/RealEstate.java
     visible: true
@@ -55,5 +55,5 @@ files:
     visible: true
     placeholders:
       - offset: 0
-        length: 2341
+        length: 2318
         placeholder_text: "/* TODO: Implement Main class. */"

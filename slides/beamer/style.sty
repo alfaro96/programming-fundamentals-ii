@@ -1,0 +1,2003 @@
+% Visual theme of the Programming Fundamentals II slides.
+% Edit the values under "Deck geometry", "Palette" and the size sections; the rest consumes them.
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{style}[2026/11/03 Programming Fundamentals II beamer theme]
+
+% Already in a recent LaTeX kernel; loaded for an older one, which lacks them
+\RequirePackage{xparse}
+\RequirePackage{xfp}
+\RequirePackage{fontspec}
+\RequirePackage{varwidth}
+\RequirePackage{tikz}
+\usetikzlibrary{calc, positioning, arrows.meta, fit}
+\RequirePackage{colortbl}
+\RequirePackage{booktabs}
+\RequirePackage{tabularx}
+\RequirePackage{multirow}
+\RequirePackage[most]{tcolorbox}
+\RequirePackage{listings}
+
+% % % % % % % % % % Deck geometry % % % % % % % % % %
+% Sizes are px of a 1920 px wide canvas, so one px is the page width over 1920 (a 16:9 page is 160 x 90 mm).
+\newdimen\pf@px
+\pf@px=\dimexpr\paperwidth/1920\relax
+\newcommand\px[1]{\dimexpr\fpeval{#1}\pf@px\relax} % a length in canvas px, e.g. \px{75}
+
+\newdimen\pf@em
+\pf@em=47\pf@px % slide font size: every em below is of this
+\newcommand\slideem[1]{\dimexpr\fpeval{#1}\pf@em\relax} % a length in slide ems, e.g. \slideem{0.6}
+
+% Font size in slide ems and line height as a factor of it, e.g. \slidefont{0.48}{1.35}
+\newcommand\slidefont[2]{%
+  \fontsize{\the\dimexpr\fpeval{#1}\pf@em\relax}{\the\dimexpr\fpeval{(#1)*(#2)}\pf@em\relax}\selectfont}
+% The same in canvas px, for the cover
+\newcommand\pxfont[2]{%
+  \fontsize{\the\dimexpr\fpeval{#1}\pf@px\relax}{\the\dimexpr\fpeval{(#1)*(#2)}\pf@px\relax}\selectfont}
+
+\newdimen\pf@gutterx
+\pf@gutterx=75\pf@px % side gutter on every slide, cover included
+\newdimen\pf@hairline
+\pf@hairline=2\pf@px % table and code block lines
+\newdimen\pf@accentrule
+\pf@accentrule=4\pf@px % the contents discs' rings
+\newdimen\pf@radius
+\pf@radius=10\pf@px % the rounded corners of every box: cards, code, flow boxes, the toolbox
+\newdimen\pf@smallradius
+\pf@smallradius=6\pf@px % the same for small boxes: tools and keywords
+\newdimen\pf@arrowline
+\pf@arrowline=3\pf@px % the arrows of the diagrams
+
+% % % % % % % % % % Palette % % % % % % % % % %
+% In palette.tex, shared with the statements
+\input{palette}
+
+% % % % % % % % % % Typography % % % % % % % % % %
+% One family for headings and body (Inter, from the TeX distribution) and JetBrains Mono for code,
+% in its NL cut: no ligatures, so comment marks, != or -> show the characters students type.
+% \bfseries is SemiBold (600, headings and key words); fontseries eb is Bold (700, the cover).
+\setsansfont{Inter}[
+  Extension = .otf,
+  UprightFont = *-Regular,
+  ItalicFont = *-Italic,
+  BoldFont = *-SemiBold,
+  BoldItalicFont = *-SemiBoldItalic,
+  FontFace = {eb}{n}{*-Bold}]
+\input{codefont} % JetBrains Mono, from fonts/, shared with the statements
+\newcommand\heavyseries{\fontseries{eb}\selectfont}
+\usefonttheme{professionalfonts}
+
+% Slide title and subtitle
+\newcommand\pf@titlesize{1.25}
+\newcommand\pf@subtitlesize{0.9}
+\newcommand\pf@subtitlegap{0.2} % title to subtitle, em of the title
+\newcommand\pf@lineheightheading{1.2}
+\newcommand\pf@lineheightbody{1.4}
+\newdimen\pf@titletop
+\pf@titletop=65\pf@px % page edge to the title: a 75 px gutter, less the leading beamer already leaves
+
+% Slide number
+\newcommand\pf@numbersize{0.5}
+\newdimen\pf@numberoffset
+\pf@numberoffset=24\pf@px % from the right and bottom edges of the page
+
+% Cover type sizes and spacing, in canvas px
+\newcommand\pf@coversizecourse{50}
+\newcommand\pf@coversizetitle{76}
+\newcommand\pf@coversizesubtitle{60}
+\newcommand\pf@coversizeauthor{38}
+\newcommand\pf@coversizedegree{42}
+\newcommand\coverlinecourse{\pxfont{\pf@coversizecourse}{1.2}\heavyseries\color{colorCoverCourse}}
+\newcommand\coverlinetitle{\pxfont{\pf@coversizetitle}{1.2}\heavyseries\color{colorHeading}}
+\newcommand\coverlinesubtitle{\pxfont{\pf@coversizesubtitle}{1.2}\heavyseries\color{colorMuted}}
+\newcommand\coverlineauthor{\pxfont{\pf@coversizeauthor}{1.2}\heavyseries\color{colorCoverAuthor}}
+\newcommand\coverlinedegree{\pxfont{\pf@coversizedegree}{1.2}\heavyseries\color{colorCoverDegree}}
+\newcommand\covercoursegap{\px{75}} % course name to title
+\newcommand\covertitlegap{\px{11}} % title to subtitle
+\newcommand\covermetagap{\px{250}} % subtitle to author block
+\newcommand\coverauthorgap{\px{15}} % author to degree
+
+% Contents slide
+\newcommand\pf@contentsdim{0.25} % opacity of the other sections
+\newcommand\pf@contentsnumbertext{0.6} % the figure in each disc, em of the slide
+\newcommand\pf@contentsnumbersize{2.6} % the disc, em of that figure
+\newcommand\pf@contentsnumbergap{0.6} % disc to the section title, em of the slide
+
+% Rule cards
+\newcommand\pf@rulesgap{0.6} % between cards, em of the slide
+\newcommand\pf@ruletextsize{0.48}
+\newcommand\pf@ruletitlesize{0.6} % 1.25 em of the sentence under it
+\newcommand\pf@ruletitlegap{0.25} % title to its sentence, em of the title
+\newcommand\pf@rulepaddingy{0.4} % em of the slide
+\newcommand\pf@rulepaddingx{0.6}
+\newcommand\pf@ruletint{6} % card background, percent of its tone
+
+% Numbered marks on code lines and the notes they point to
+\newcommand\pf@markdisc{1.3} % the disc's diameter, em of the text beside it
+\newcommand\pf@marknumber{0.72} % its number, em of that text
+\newcommand\pf@digitheight{0.727} % Inter's digits over the baseline, em of the font
+\newcommand\pf@codenotegap{0.4} % the disc to the note's title, em of the slide
+\newcommand\pf@codenotetitlegap{0.3} % the disc and title to the text under them
+\newcommand\pf@codenotecolumngap{1.4} % between notes: with no background, they need more than cards
+\newcommand\pf@codenoterowgap{1.3} % between rows of notes
+
+% Takeaway at the bottom of a slide
+\newcommand\pf@notesize{0.58}
+\newcommand\pf@notepaddingy{0.5} % em of the takeaway text
+\newcommand\pf@notepaddingx{0.9}
+
+% Code
+\newcommand\pf@codesize{0.62}
+\newcommand\pf@codecompactsize{0.47} % long lines or many: fits with no scrolling
+\newcommand\pf@codedensesize{0.4} % a whole class next to more code
+\newcommand\pf@codetightsize{0.36} % two whole classes side by side, with their notes under them
+\newcommand\pf@codesnippetsize{0.33} % under a flow box, one column wide: a glimpse of a file, a console
+\newcommand\pf@codelineheight{1.5}
+\newcommand\pf@codepaddingy{0.9} % em of the code
+\newcommand\pf@codepaddingx{1.1}
+\newcommand\pf@codenumberwidth{1.2} % the line numbers' column, em of the code
+\newcommand\pf@codenumbergap{1} % line number to code, em of the code
+\newcommand\pf@codeedgetint{45} % a block's border, percent of its tone
+\newcommand\pf@codedim{0.6} % how much the lines out of focus fade: they keep 40% of their ink
+\newcommand\pf@blocktitlesize{0.55} % a file or column name over a block
+\newcommand\pf@blocktitlegap{0.3} % that name to its block, em of the slide
+
+% % % % % % % % % % Base % % % % % % % % % %
+% Lines exactly one line height apart, even where inline code (taller than Inter) shares the line;
+% for code, cards, takeaways and tools, and what the highlight bands assume
+\newcommand\pf@linegrid{\lineskiplimit=-16000pt\relax\lineskip=0pt\relax}
+\protected\def\pf@nohyphens{\hyphenpenalty=10000\relax} % whole words in notes and labels, never hyphenated
+\setbeamertemplate{navigation symbols}{}
+\setbeamersize{text margin left=\pf@gutterx, text margin right=\pf@gutterx}
+
+\setbeamercolor{normal text}{fg=colorText, bg=colorBg}
+\setbeamercolor{background canvas}{bg=colorBg}
+\setbeamercolor{structure}{fg=colorHeading}
+\setbeamercolor{alerted text}{fg=colorAccent}
+\setbeamercolor{frametitle}{fg=colorHeading}
+\setbeamercolor{framesubtitle}{fg=colorMuted}
+
+% Links: just the color, no box
+\hypersetup{hidelinks}
+\let\pf@href\href
+\renewcommand\href[2]{\pf@href{#1}{\textcolor{colorAccentTwo}{#2}}}
+
+% Lists: the marker in the accent
+\setbeamertemplate{itemize item}{\textcolor{colorAccent}{\textbullet}}
+\setbeamertemplate{itemize subitem}{\textcolor{colorAccent}{\textbullet}}
+\setbeamertemplate{enumerate item}{\textcolor{colorAccent}{\insertenumlabel.}}
+\setlength{\leftmargini}{\slideem{1.2}}
+\addtobeamertemplate{itemize/enumerate body begin}{\setlength{\itemsep}{\slideem{0.35}}}{}
+
+% % % % % % % % % % Title, subtitle and slide number % % % % % % % % % %
+% Slide number: just the figure, bottom right, in the subtitle gray
+\setbeamertemplate{footline}{%
+  \hfill{\slidefont{\pf@numbersize}{1}\bfseries\color{colorMuted}\insertframenumber}%
+  \hspace{\pf@numberoffset}\vspace{\pf@numberoffset}}
+
+\setbeamertemplate{frametitle}{%
+  \vskip\pf@titletop
+  {\slidefont{\pf@titlesize}{\pf@lineheightheading}\bfseries\color{colorHeading}\insertframetitle\par}%
+  \ifx\insertframesubtitle\@empty\else
+    \vskip\slideem{\pf@subtitlegap*\pf@titlesize}%
+    {\slidefont{\pf@subtitlesize}{\pf@lineheightheading}\bfseries\color{colorMuted}%
+      \insertframesubtitle\par}%
+  \fi}
+
+% % % % % % % % % % Contents slide % % % % % % % % % %
+% Before every section: the unit title, "Contents" and the sections, each numbered in a disc.
+% The section about to start in the accent, the ones already seen filled, the rest an outline.
+\AtBeginSection[]{%
+  \begin{frame}{\inserttitle}{\contentstitle}
+    \tableofcontents[currentsection] % with no subsections, beamer spaces the sections evenly
+  \end{frame}}
+
+% #1: the disc's colors; #2: opacity; #3: the title's weight
+\newcommand\pf@tocitem[3]{%
+  \begin{tikzpicture}[baseline=(title.base)]
+    \begin{scope}[transparency group, opacity=#2]
+      \node[circle, inner sep=0pt, line width=\pf@accentrule,
+        minimum size=\slideem{\pf@contentsnumbertext*\pf@contentsnumbersize},
+        font=\slidefont{\pf@contentsnumbertext}{1}\heavyseries, #1] (disc) {\inserttocsectionnumber};
+      \node[anchor=west, inner sep=0pt, text=colorContentsText, font=\slidefont{1}{\pf@lineheightbody}#3]
+        (title) at ([xshift=\slideem{\pf@contentsnumbergap}]disc.east) {\inserttocsection};
+    \end{scope}
+  \end{tikzpicture}}
+
+\setbeamertemplate{section in toc}{%
+  \pf@tocitem{fill=colorContentsCurrent, draw=colorContentsCurrent, text=colorBg}{1}{\heavyseries}}
+\setbeamertemplate{section in toc shaded}{%
+  \ifnum\inserttocsectionnumber<\value{section}%
+    \pf@tocitem{fill=colorContentsNumber, draw=colorContentsNumber, text=colorBg}{\pf@contentsdim}{}%
+  \else
+    \pf@tocitem{draw=colorContentsNumber, text=colorContentsNumber}{\pf@contentsdim}{}%
+  \fi}
+
+% \begin{recap} \recapitem<step>{Section}{Sentence} ... \end{recap}: the unit's summary, drawn as its
+% contents: every section dimmed on entry; on its step one turns the accent, as the section about to
+% start, with its sentence beside it, and on the next step it is filled, as the ones already seen
+\newcommand\pf@recapnumber{0.5} % the figure in each disc, em of the slide; the disc as in the contents
+\newcommand\pf@recaptitlesize{0.7}
+\newcommand\pf@recaptitlewidth{12.8} % the column of section names, em of the slide: the longest name, unit 4's, on one line
+\newcommand\pf@recaptextsize{0.58}
+\newcommand\pf@recapgap{0.6} % disc to name, and name to sentence, em of the slide
+\newcommand\pf@recaprowgap{0.45} % between sections
+\newcount\pf@recapcount
+\NewDocumentEnvironment{recap}{}{\par\global\pf@recapcount=0 }{\par}
+\NewDocumentCommand\recapitem{ D<>{1} m m }{%
+  \global\advance\pf@recapcount by 1
+  \noindent\begin{tikzpicture}[every node/.append style={outer sep=0pt}] % so the row is exactly \linewidth
+    \begin{scope}[transparency group, alt=<#1->{}{opacity=\pf@contentsdim}]
+      \node[circle, inner sep=0pt, line width=\pf@accentrule,
+        minimum size=\slideem{\pf@recapnumber*\pf@contentsnumbersize},
+        font=\slidefont{\pf@recapnumber}{1}\heavyseries,
+        text height=\slideem{\pf@digitheight*\pf@recapnumber}, text depth=0pt,
+        draw=colorContentsNumber, text=colorContentsNumber, % ahead: an outline
+        alt=<#1->{fill=colorContentsNumber, text=colorBg}{}, % seen: filled
+        alt=<#1| handout:0>{fill=colorContentsCurrent, draw=colorContentsCurrent, text=colorBg}{}] % now: the accent
+        (disc) {\the\pf@recapcount};
+      \node[anchor=west, inner sep=0pt, text width=\slideem{\pf@recaptitlewidth}, align=left,
+        text=colorContentsText, font=\slidefont{\pf@recaptitlesize}{1.2}\bfseries]
+        (title) at ([xshift=\slideem{\pf@recapgap}]disc.east) {#2};
+    \end{scope}
+    \node[anchor=west, inner sep=0pt, align=left, text=colorText,
+      text width=\dimexpr\linewidth-\slideem{\pf@recapnumber*\pf@contentsnumbersize+2*\pf@recapgap+\pf@recaptitlewidth}-\pf@accentrule\relax, % the disc's ring too
+      font=\slidefont{\pf@recaptextsize}{1.35}\pf@linegrid\pf@nohyphens, visible on=<#1->]
+      at ([xshift=\slideem{\pf@recapgap}]title.east) {#3};
+  \end{tikzpicture}\par\vskip\slideem{\pf@recaprowgap}}
+
+% % % % % % % % % % Callouts % % % % % % % % % %
+% pf callout={border}{background}: a rounded box, its tone in the background and, if any, a hairline
+% border (none for none); no side bar, which a rounded corner cannot follow. Cards and takeaways
+\tcbset{
+  pf callout/.style 2 args={
+    enhanced, arc=\pf@radius, boxsep=0pt, colback=#2,
+    /utils/exec={\def\pf@border{#1}\def\pf@none{none}},
+    /utils/exec={\ifx\pf@border\pf@none\tcbset{frame hidden, boxrule=0pt}\else
+      \tcbset{colframe=#1, boxrule=\pf@hairline}\fi}}}
+
+% % % % % % % % % % Rule cards % % % % % % % % % %
+% \begin{card}<overlay>[tone]{Title} One sentence. \end{card}; tone: info, warn, error, state, behavior
+\tcbset{
+  pf card/.style={
+    pf callout={none}{tone@#1!\pf@ruletint!colorBg},
+    left=\slideem{\pf@rulepaddingx}, right=\slideem{\pf@rulepaddingx},
+    top=\slideem{\pf@rulepaddingy}, bottom=\slideem{\pf@rulepaddingy},
+    fontupper=\slidefont{\pf@ruletextsize}{1.35}\color{colorText}\raggedright\pf@linegrid,
+    before upper={\def\pf@cardtone{tone@#1}}}}
+
+\newcommand\pf@cardtitle[1]{%
+  {\slidefont{\pf@ruletitlesize}{1.2}\bfseries\color{\pf@cardtone}#1\par}%
+  \vskip\slideem{\pf@ruletitlegap*\pf@ruletitlesize}}
+
+% Shown from its step on, with beamer's own \uncover
+\NewDocumentEnvironment{card}{ D<>{1-} O{info} m }{%
+  \begin{uncoverenv}<#1>%
+  \begin{tcolorbox}[pf card=#2,
+    before upper app={\if\relax\detokenize{#3}\relax\else\pf@cardtitle{#3}\fi}]}
+  {\end{tcolorbox}\end{uncoverenv}}
+
+% \begin{cards}[columns] holds cards in columns of one width, a row of them as tall as the tallest
+\NewDocumentEnvironment{cards}{ O{1} }{%
+  \begin{tcbraster}[raster columns=#1, raster valign=top, raster equal height=rows,
+    raster column skip=\slideem{\pf@rulesgap}, raster row skip=\slideem{\pf@rulesgap}]}
+  {\end{tcbraster}}
+
+% \blockgap between a block and the next one on the slide (code and its output, notes and a table);
+% \notesgap, wider, between code and the notes or table that read it, so they show as two parts
+\newcommand\pf@blockgap{0.6}
+\newcommand\pf@notesgap{1.2}
+\newcommand\blockgap{\par\vskip\slideem{\pf@blockgap}}
+\newcommand\notesgap{\par\vskip\slideem{\pf@notesgap}}
+% \boxrowgap between two box rows stacked one over the other, closer than between blocks, so they read
+% as one list (e.g. "Comparing strings")
+\newcommand\pf@boxrowgap{0.3}
+\newcommand\boxrowgap{\par\vskip\slideem{\pf@boxrowgap}}
+% \begin{boxrow} columns with a box in each (card, code, console) \end{boxrow}: every box in it as tall
+% as the tallest, its content centered; tcolorbox measures them on the build before, as it does for cards
+% The highlight bands and marks count lines from the top: no steps or marks on code in a boxrow
+\newcount\pf@boxrownumber
+\NewDocumentEnvironment{boxrow}{}{%
+  \global\advance\pf@boxrownumber by 1
+  \edef\pf@boxrowname{pf@boxrow\the\pf@boxrownumber}%
+  \tcbset{every box/.append style={equal height group=\pf@boxrowname, valign=center}}}
+  {}
+
+% % % % % % % % % % Code notes % % % % % % % % % %
+% A numbered disc, #1 the slide ems of the text beside it: on a code line (marks) and on its note
+\tikzset{pf mark/.style={circle, inner sep=0pt, fill=colorHeading, text=colorBg,
+  minimum size=\slideem{\pf@markdisc*#1}, font=\slidefont{\pf@marknumber*#1}{1}\bfseries,
+  text height=\slideem{\pf@digitheight*\pf@marknumber*#1}, text depth=0pt}} % so the digit is what gets centered
+
+% \begin{codenotes}[columns] \codenote<step>{Title}{Text} ... \end{codenotes}: what the marks of a
+% code block point to, numbered in the same order; no background, so the code stays in front
+\newcount\pf@codenotenumber
+\NewDocumentEnvironment{codenotes}{ O{3} }{%
+  \global\pf@codenotenumber=0
+  \begin{tcbraster}[raster columns=#1, raster valign=top, raster column skip=\slideem{\pf@codenotecolumngap},
+    raster row skip=\slideem{\pf@codenoterowgap}]}
+  {\end{tcbraster}}
+% \codenote<step>[tone]{Title}{Text}, tone as a card's (state, behavior, error...); \codenote* has no
+% number, for a note about the block that points at no line in it
+\NewDocumentCommand\codenote{ s D<>{1-} O{info} m m }{%
+  \IfBooleanF{#1}{\global\advance\pf@codenotenumber by 1 }%
+  \begin{uncoverenv}<#2>%
+  \begin{tcolorbox}[blank, fontupper=\slidefont{\pf@ruletextsize}{1.35}\color{colorText}\raggedright\pf@linegrid]
+    {\slidefont{\pf@ruletitlesize}{1.2}\bfseries\color{tone@#3}%
+     \IfBooleanF{#1}{\tikz[baseline=(pf@mark.base)]\node[pf mark=\pf@ruletitlesize, fill=tone@#3] (pf@mark)
+       {\the\pf@codenotenumber};\hspace{\slideem{\pf@codenotegap}}}%
+     #4\par}%
+    \if\relax\detokenize{#5}\relax\else % an empty text: a note that is only its title
+      \vskip\slideem{\pf@codenotetitlegap}%
+      #5
+    \fi
+  \end{tcolorbox}%
+  \end{uncoverenv}}
+
+% % % % % % % % % % Changed values % % % % % % % % % %
+% \highlight{text}: a value the slide points at, in bold and in the color of emphasis; not tinted, which in
+% a phone or a diagram would read as one more box. \changed<step>{old}{new}: old until the step, then new,
+% highlighted. \marked<step>{text}: the same text, highlighted from the step
+\newcommand\highlight[1]{\textbf{\color{colorAccent}#1}}
+\NewDocumentCommand\changed{ D<>{2-} m m }{\alt<#1>{\highlight{#3}}{#2}}
+\NewDocumentCommand\marked{ D<>{2-} m }{\alt<#1>{\highlight{#2}}{#2}}
+
+% % % % % % % % % % Phones % % % % % % % % % %
+% \begin{phones}[size] \phone[keys] ... \end{phones}: the bank's app on a row of phones, centered;
+% size is normal, large (alone on the slide) or small (under captions). The keys, all optional:
+% holder, initials, iban, balance and rate, the values (\changed and \marked work in them); template,
+% the empty screen of the class, with slots for the data; tones, an object's data in the tone of data
+% and its buttons in that of operations, as in the template; rate on, lock on (a padlock by the IBAN) and
+% tap on (Deposit pressed), the step each shows from; data mark and operations mark, a numbered disc in
+% the tone of data or of operations by each piece of data (photo, holder, account) or by the buttons,
+% with data mark on and operations mark on for its step. \phonegroup<step>{Title}{Caption}{phones} sets phones under a caption, and
+% \phonearrow<step> an arrow between groups
+\newdimen\pf@u % one unit of the phone: an em of the slide at small size
+\newcommand\pf@phonescale{1}
+\newcommand\pf@phonewidth{4.6} % in units: an iPhone 16 Pro, 71.5 by 149.6 mm
+\newcommand\pf@phoneheight{9.6}
+\newcommand\pf@phonegap{1.2} % between phones, em of the slide
+\newcommand\pf@phonearrowlength{2.2}
+\newcommand\pf@phonetitlegap{0.2} % a group's title to its caption
+\newcommand\pf@phonecaptiongap{0.7} % that caption to the phones
+\newif\ifpf@phonefirst
+\NewDocumentEnvironment{phones}{ O{normal} }{%
+  \par\begin{center}%
+  \csname pf@phonesize@#1\endcsname
+  \pf@u=\slideem{\pf@phonescale}\relax
+  \global\pf@phonefirsttrue}
+  {\end{center}}
+\newcommand\pf@phonesize@normal{\renewcommand\pf@phonescale{1.25}}
+\newcommand\pf@phonesize@large{\renewcommand\pf@phonescale{1.5}}
+\newcommand\pf@phonesize@small{\renewcommand\pf@phonescale{1}}
+\newcommand\pf@phonesep{\ifpf@phonefirst\global\pf@phonefirstfalse\else\hspace{\slideem{\pf@phonegap}}\fi}
+
+\pgfkeys{/pf/phone/.is family, /pf/phone,
+  holder/.store in=\pf@ph@holder, initials/.store in=\pf@ph@initials, iban/.store in=\pf@ph@iban,
+  balance/.store in=\pf@ph@balance, rate/.store in=\pf@ph@rate,
+  rate on/.store in=\pf@ph@rateon, lock on/.store in=\pf@ph@lockon, tap on/.store in=\pf@ph@tapon,
+  template/.code={\let\ifpf@ph@template\iftrue\let\ifpf@ph@tones\iftrue}, tones/.code={\let\ifpf@ph@tones\iftrue},
+  data mark/.store in=\pf@ph@datamark, data mark on/.store in=\pf@ph@datamarkon,
+  operations mark/.store in=\pf@ph@opsmark, operations mark on/.store in=\pf@ph@opsmarkon}
+\newcommand\pf@phonedefaults{%
+  \let\ifpf@ph@template\iffalse\let\ifpf@ph@tones\iffalse
+  \def\pf@ph@holder{}\def\pf@ph@initials{}\def\pf@ph@iban{}\def\pf@ph@balance{}\def\pf@ph@rate{}%
+  \def\pf@ph@rateon{1-}\def\pf@ph@lockon{}\def\pf@ph@tapon{}%
+  \def\pf@ph@datamark{}\def\pf@ph@datamarkon{1-}\def\pf@ph@opsmark{}\def\pf@ph@opsmarkon{1-}}
+\newcommand\pf@phfont[2]{\slidefont{#1*\pf@phonescale}{#2}} % a size in units
+\newcommand\pf@phonebuttonsize{0.25} % the text on the buttons, in units
+\tikzset{
+  pf phone text/.style={inner sep=0pt, outer sep=0pt, anchor=base west, text=colorText},
+  pf phone button text/.style={inner sep=0pt, font=\pf@phfont{\pf@phonebuttonsize}{1}\bfseries, % as tall as its capitals,
+    text height=\slideem{\pf@digitheight*\pf@phonebuttonsize*\pf@phonescale}, text depth=0pt}, % so they are what gets centered
+  pf phone slot/.style={inner xsep=0.14\pf@u, inner ysep=0.08\pf@u, outer sep=0pt, anchor=base west,
+    draw=colorState!60!colorBg, line width=0.025\pf@u, fill=colorState!8!colorBg, rounded corners=0.12\pf@u,
+    text=colorState}}
+\newcommand\pf@phoneslot[3]{% at #1, the placeholder #2, in #3: the font of the value it stands for
+  \node[pf phone slot, font=#3] at #1 {#2};}
+
+% The phone itself, for every app: side buttons (action and volume on the left, power and camera control on
+% the right), the frame with its thin even bezel, the screen, the Dynamic Island, the status bar and the
+% home indicator; inside a phone's picture, in its units
+\newcommand\pf@phoneshell{%
+  \colorlet{pf@phonebody}{colorText!88!colorBg}%
+    \begin{scope}[pf@phonebody, rounded corners=0.03\pf@u]
+      \fill (-0.05,-1.45) rectangle (0.02,-1.85);
+      \fill (-0.05,-2.2) rectangle (0.02,-2.95);
+      \fill (-0.05,-3.15) rectangle (0.02,-3.9);
+      \fill (\pf@W-0.02,-2.45) rectangle (\pf@W+0.05,-3.6);
+      \fill (\pf@W-0.02,-5.6) rectangle (\pf@W+0.05,-6.25);
+    \end{scope}
+    \fill[pf@phonebody, rounded corners=0.8\pf@u] (0,0) rectangle (\pf@W,-\pf@H);
+    \fill[colorBg, rounded corners=0.67\pf@u] (0.13,-0.13) rectangle (\pf@W-0.13,-\pf@H+0.13);
+    \fill[black, rounded corners=0.17\pf@u] (\pf@W/2-0.6,-0.3) rectangle (\pf@W/2+0.6,-0.64);
+    \node[pf phone text, font=\pf@phfont{0.22}{1}\bfseries] at (0.55,-0.55) {9:41};
+    \foreach \i in {0,1,2,3} {\fill[colorText] (\pf@W-1.42+0.1*\i,-0.55) rectangle ++(0.065,0.06+0.035*\i);}
+    \draw[colorText, line width=0.025\pf@u, rounded corners=0.04\pf@u] (\pf@W-0.92,-0.39) rectangle (\pf@W-0.52,-0.56);
+    \fill[colorText, rounded corners=0.02\pf@u] (\pf@W-0.895,-0.415) rectangle (\pf@W-0.6,-0.535);
+    \fill[colorText, rounded corners=0.04\pf@u] (\pf@W/2-0.75,-\pf@H+0.3) rectangle (\pf@W/2+0.75,-\pf@H+0.37);}
+
+\NewDocumentCommand\phone{ O{} }{%
+  \pf@phonesep
+  \begingroup\pf@phonedefaults\pgfkeys{/pf/phone,#1}%
+  \begin{tikzpicture}[x=\pf@u, y=\pf@u, baseline={-\pf@phoneheight\pf@u}] % a dimension: a point would be in cm
+    \pgfmathsetmacro\pf@W{\pf@phonewidth}\pgfmathsetmacro\pf@H{\pf@phoneheight}%
+    \ifx\pf@ph@rate\@empty\def\pf@panelbottom{-5.75}\else\def\pf@panelbottom{-6.3}\fi
+    \pgfmathsetmacro\pf@buttony{\pf@panelbottom-0.85}%
+    \pf@phoneshell
+    % The data and the buttons, in their tones with tones (and in the template)
+    \ifpf@ph@tones\colorlet{pf@data}{colorState}\colorlet{pf@photo}{colorState}\colorlet{pf@button}{colorBehavior}%
+    \else\colorlet{pf@data}{colorText}\colorlet{pf@photo}{colorHeading}\colorlet{pf@button}{colorHeading}\fi
+    % The holder
+    \ifpf@ph@template
+      \draw[colorState!60!colorBg, line width=0.025\pf@u, fill=colorState!8!colorBg] (0.92,-1.45) circle (0.42);
+    \else
+      \fill[pf@photo!12!colorBg] (0.92,-1.45) circle (0.42);
+      \node[inner sep=0pt, text=pf@photo, font=\pf@phfont{0.28}{1}\bfseries] at (0.92,-1.45) {\pf@ph@initials};
+    \fi
+    \node[pf phone text, text=colorMuted, font=\pf@phfont{0.26}{1}] at (0.5,-2.35) {Hello,};
+    \ifpf@ph@template\pf@phoneslot{(0.5,-2.95)}{Holder}{\pf@phfont{0.3}{1}\bfseries}%
+    \else\node[pf phone text, text=pf@data, font=\pf@phfont{0.3}{1}\bfseries] at (0.5,-2.95) {\pf@ph@holder};\fi
+    % The account: its panel, IBAN, balance and rate
+    \fill[colorHeading!6!colorBg, rounded corners=0.25\pf@u] (0.35,-3.3) rectangle (\pf@W-0.35,\pf@panelbottom);
+    \node[pf phone text, text=colorMuted, font=\pf@phfont{0.22}{1}] at (0.6,-3.75) {Current account};
+    \ifpf@ph@template\pf@phoneslot{(0.6,-4.22)}{IBAN}{\pf@phfont{0.17}{1}\ttfamily}%
+    \else\node[pf phone text, text=pf@data, font=\pf@phfont{0.17}{1}\ttfamily] (pf@iban) at (0.6,-4.22) {\pf@ph@iban};
+      \ifx\pf@ph@lockon\@empty\else
+        \begin{scope}[visible on=<\pf@ph@lockon>, shift={([xshift=0.12\pf@u]pf@iban.base east)}]
+          % A padlock, centered on the digits: a body under a tall shackle
+          \draw[colorHeading, line width=0.03\pf@u] (0.035,0.06) -- (0.035,0.11)
+            arc[start angle=180, end angle=0, radius=0.05] -- (0.135,0.06);
+          \fill[colorHeading, rounded corners=0.02\pf@u] (0,-0.04) rectangle (0.17,0.075);
+        \end{scope}%
+      \fi
+    \fi
+    \ifpf@ph@template\pf@phoneslot{(0.6,-5.0)}{Balance}{\pf@phfont{0.5}{1}\bfseries}%
+    \else\node[pf phone text, text=pf@data, font=\pf@phfont{0.5}{1}\bfseries] at (0.6,-5.0) {\pf@ph@balance};\fi
+    \node[pf phone text, text=colorMuted, font=\pf@phfont{0.22}{1}] at (0.6,-5.45) {Available balance};
+    \ifx\pf@ph@rate\@empty\else
+      \node[pf phone text, text=colorMuted, font=\pf@phfont{0.22}{1}, visible on=<\pf@ph@rateon>] at (0.6,-5.95)
+        {Interest rate \textcolor{colorText}{\pf@ph@rate}};
+    \fi
+    % The buttons
+    \fill[pf@button, rounded corners=0.36\pf@u] (0.35,\pf@buttony+0.36) rectangle (\pf@W/2-0.1,\pf@buttony-0.36);
+    % Pressed: the button turns the color of operations, what a tap on it runs
+    \ifx\pf@ph@tapon\@empty\else
+      \fill[colorBehavior, rounded corners=0.36\pf@u, visible on=<\pf@ph@tapon>]
+        (0.35,\pf@buttony+0.36) rectangle (\pf@W/2-0.1,\pf@buttony-0.36);
+    \fi
+    \node[pf phone button text, text=colorBg] at ({(0.35+\pf@W/2-0.1)/2},\pf@buttony) {+ Deposit};
+    \draw[pf@button, line width=0.04\pf@u, rounded corners=0.36\pf@u]
+      (\pf@W/2+0.1,\pf@buttony+0.36) rectangle (\pf@W-0.35,\pf@buttony-0.36);
+    \node[pf phone button text, text=pf@button] at ({(\pf@W/2+0.1+\pf@W-0.35)/2},\pf@buttony) {− Withdraw};
+    % The marks, just outside the screen
+    \ifx\pf@ph@datamark\@empty\else % by each piece of data: the photo, the holder and the account
+      \pgfmathsetmacro\pf@panelmiddle{(-3.3+\pf@panelbottom)/2}%
+      \foreach \pf@y in {-1.45,-2.85,\pf@panelmiddle}
+        {\node[pf mark=\pf@phonescale*0.6, fill=tone@state, anchor=west, visible on=<\pf@ph@datamarkon>]
+          at (\pf@W+0.25,\pf@y) {\pf@ph@datamark};}
+    \fi
+    \ifx\pf@ph@opsmark\@empty\else
+      \node[pf mark=\pf@phonescale*0.6, fill=tone@behavior, anchor=west, visible on=<\pf@ph@opsmarkon>]
+        at (\pf@W+0.25,\pf@buttony) {\pf@ph@opsmark};
+    \fi
+  \end{tikzpicture}%
+  \endgroup}
+
+% \devicephone[keys]: the home app's screen for one device, the running example of unit 3, in the same
+% phones row. The keys, all optional: icon (light, thermostat or speaker), kind, name, power (On or Off),
+% label, value and bar (its level, 0 to 100, as a bar under the value; bar to moves it on the step bar
+% on, a number), set (the label of the button that sets it); template, the screen every device shares, with slots
+% for its data and dashed boxes for what each kind adds, its data and its button; tones, as \phone's; tap on (the set button
+% pressed); data mark, operations mark, own data mark and own operation mark, with their ... on steps,
+% numbered discs by the shared data, the shared buttons, and each kind's own data and own button (own data tone
+% and own operation tone, state and behavior unless given, for a note of another tone)
+\pgfkeys{/pf/device/.is family, /pf/device,
+  icon/.store in=\pf@dv@icon, kind/.store in=\pf@dv@kind, name/.store in=\pf@dv@name,
+  power/.store in=\pf@dv@power, label/.store in=\pf@dv@label, value/.store in=\pf@dv@value,
+  bar/.store in=\pf@dv@bar, bar to/.store in=\pf@dv@barto, bar on/.store in=\pf@dv@baron,
+  set/.store in=\pf@dv@set, tap on/.store in=\pf@dv@tapon,
+  template/.code={\let\ifpf@dv@template\iftrue\let\ifpf@dv@tones\iftrue}, tones/.code={\let\ifpf@dv@tones\iftrue},
+  data mark/.store in=\pf@dv@datamark, data mark on/.store in=\pf@dv@datamarkon,
+  operations mark/.store in=\pf@dv@opsmark, operations mark on/.store in=\pf@dv@opsmarkon,
+  own data mark/.store in=\pf@dv@owndatamark, own data mark on/.store in=\pf@dv@owndatamarkon,
+  own operation mark/.store in=\pf@dv@ownopmark, own operation mark on/.store in=\pf@dv@ownopmarkon,
+  own data tone/.store in=\pf@dv@owndatatone, own operation tone/.store in=\pf@dv@ownoptone}
+\newcommand\pf@devicedefaults{%
+  \let\ifpf@dv@template\iffalse\let\ifpf@dv@tones\iffalse
+  \def\pf@dv@icon{}\def\pf@dv@kind{Device}\def\pf@dv@name{}\def\pf@dv@power{Off}\def\pf@dv@label{}%
+  \def\pf@dv@value{}\def\pf@dv@bar{}\def\pf@dv@barto{}\def\pf@dv@baron{2}\def\pf@dv@set{}\def\pf@dv@tapon{}%
+  \def\pf@dv@datamark{}\def\pf@dv@datamarkon{1-}\def\pf@dv@opsmark{}\def\pf@dv@opsmarkon{1-}%
+  \def\pf@dv@owndatamark{}\def\pf@dv@owndatamarkon{1-}\def\pf@dv@ownopmark{}\def\pf@dv@ownopmarkon{1-}%
+  \def\pf@dv@owndatatone{state}\def\pf@dv@ownoptone{behavior}}
+\newcommand\pf@devicebar{0.12} % the level bar's height, in units
+\newcommand\pf@devicepanel{-5.6} % the bottom of the panel with the device's own value, in units
+\newcommand\pf@devicebuttons{-6.45} % the middle of the Turn on and Turn off buttons
+\newcommand\pf@deviceset{-7.4} % the middle of the wide button that sets its value
+% An icon of #1 (light, thermostat or speaker) in the current color, centered on the origin, in units
+\newcommand\pf@deviceicon[1]{\csname pf@deviceicon@#1\endcsname}
+\newcommand\pf@deviceicon@light{%
+  \fill (0,0.06) circle (0.16);
+  \fill[rounded corners=0.02\pf@u] (-0.08,-0.22) rectangle (0.08,-0.08);}
+\newcommand\pf@deviceicon@thermostat{%
+  \fill[rounded corners=0.05\pf@u] (-0.05,-0.08) rectangle (0.05,0.24);
+  \fill (0,-0.12) circle (0.1);}
+\newcommand\pf@deviceicon@speaker{%
+  \fill (-0.19,-0.07) rectangle (-0.09,0.07);
+  \fill (-0.09,0.07) -- (0.03,0.17) -- (0.03,-0.17) -- (-0.09,-0.07) -- cycle;
+  \draw[line width=0.03\pf@u] (0.09,-0.08) arc[start angle=-40, end angle=40, radius=0.125];}
+% A button between #1 and #2 across, at #3 down: filled (#4 = fill) or outlined, with the text #5
+\newcommand\pf@devicebutton[5]{%
+  \ifx\relax#4\relax
+    \draw[pf@button, line width=0.04\pf@u, rounded corners=0.36\pf@u] (#1,#3+0.36) rectangle (#2,#3-0.36);
+    \node[pf phone button text, text=pf@button] at ({(#1+#2)/2},#3) {#5};
+  \else % its outline too, so a pressed button over an outlined one covers it whole
+    \filldraw[pf@button, line width=0.04\pf@u, rounded corners=0.36\pf@u] (#1,#3+0.36) rectangle (#2,#3-0.36);
+    \node[pf phone button text, text=colorBg] at ({(#1+#2)/2},#3) {#5};
+  \fi}
+\NewDocumentCommand\devicephone{ O{} }{%
+  \pf@phonesep
+  \begingroup\pf@devicedefaults\pgfkeys{/pf/device,#1}%
+  \begin{tikzpicture}[x=\pf@u, y=\pf@u, baseline={-\pf@phoneheight\pf@u}]
+    \pgfmathsetmacro\pf@W{\pf@phonewidth}\pgfmathsetmacro\pf@H{\pf@phoneheight}%
+    \pf@phoneshell
+    \ifpf@dv@tones\colorlet{pf@data}{colorState}\colorlet{pf@photo}{colorState}\colorlet{pf@button}{colorBehavior}%
+    \else\colorlet{pf@data}{colorText}\colorlet{pf@photo}{colorHeading}\colorlet{pf@button}{colorHeading}\fi
+    % The device: its icon, its kind, its name and whether it is on
+    \ifpf@dv@template
+      \draw[colorState!60!colorBg, line width=0.025\pf@u, fill=colorState!8!colorBg] (0.92,-1.45) circle (0.42);
+    \else
+      \fill[pf@photo!12!colorBg] (0.92,-1.45) circle (0.42);
+      \ifx\pf@dv@icon\@empty\else\begin{scope}[shift={(0.92,-1.45)}, pf@photo]\pf@deviceicon{\pf@dv@icon}\end{scope}\fi
+    \fi
+    \node[pf phone text, text=colorMuted, font=\pf@phfont{0.26}{1}] at (0.5,-2.35) {\pf@dv@kind};
+    \ifpf@dv@template
+      \pf@phoneslot{(0.5,-2.95)}{Name}{\pf@phfont{0.3}{1}\bfseries}%
+      \pf@phoneslot{(0.5,-3.5)}{Status}{\pf@phfont{0.24}{1}\bfseries}%
+    \else
+      \node[pf phone text, text=pf@data, font=\pf@phfont{0.3}{1}\bfseries] at (0.5,-2.95) {\pf@dv@name};
+      \def\pf@on{On}%
+      \ifx\pf@dv@power\pf@on\colorlet{pf@power}{tone@ok}\else\colorlet{pf@power}{colorMuted}\fi
+      \ifpf@dv@tones\colorlet{pf@power}{pf@data}\fi
+      \node[pf phone text, text=pf@power, font=\pf@phfont{0.24}{1}\bfseries] at (0.5,-3.5) {\pf@dv@power};
+    \fi
+    % Its own part: the panel with its value, and the button that sets it; in the template, a dashed box
+    \ifpf@dv@template
+      % dashed, as what each kind fills in its own way; in the tones of data and of operations, as the shared ones
+      \draw[colorState!60!colorBg, fill=colorState!8!colorBg, line width=0.025\pf@u,
+        dash pattern=on 0.12\pf@u off 0.08\pf@u, rounded corners=0.25\pf@u]
+        (0.35,-3.95) rectangle (\pf@W-0.35,\pf@devicepanel);
+      \node[inner sep=0pt, text=colorState, font=\pf@phfont{0.22}{1}\bfseries]
+        at ({\pf@W/2},{(-3.95+\pf@devicepanel)/2}) {Its own data};
+      % and, under the shared buttons, where each kind's own button goes
+      \draw[colorBehavior, fill=colorBehavior!8!colorBg, line width=0.04\pf@u,
+        dash pattern=on 0.12\pf@u off 0.08\pf@u, rounded corners=0.36\pf@u]
+        (0.35,\pf@deviceset+0.36) rectangle (\pf@W-0.35,\pf@deviceset-0.36);
+      \node[pf phone button text, text=colorBehavior] at ({\pf@W/2},\pf@deviceset) {Its own operation};
+    \else
+      \fill[colorHeading!6!colorBg, rounded corners=0.25\pf@u] (0.35,-3.95) rectangle (\pf@W-0.35,\pf@devicepanel);
+      \node[pf phone text, text=colorMuted, font=\pf@phfont{0.22}{1}] at (0.6,-4.4) {\pf@dv@label};
+      \node[pf phone text, text=pf@data, font=\pf@phfont{0.5}{1}\bfseries] at (0.6,-5.0) {\pf@dv@value};
+      \ifx\pf@dv@bar\@empty\else
+        \fill[colorHeading!15!colorBg, rounded corners=0.06\pf@u]
+          (0.6,-5.2) rectangle (\pf@W-0.6,-5.2-\pf@devicebar);
+        \ifx\pf@dv@barto\@empty
+          \fill[pf@data, rounded corners=0.06\pf@u] (0.6,-5.2) rectangle ({0.6+(\pf@W-1.2)*\pf@dv@bar/100},-5.2-\pf@devicebar);
+        \else
+          \fill[pf@data, rounded corners=0.06\pf@u, visible on=<-\the\numexpr\pf@dv@baron-1\relax| handout:0>]
+            (0.6,-5.2) rectangle ({0.6+(\pf@W-1.2)*\pf@dv@bar/100},-5.2-\pf@devicebar);
+          \fill[colorAccent, rounded corners=0.06\pf@u, visible on=<\pf@dv@baron->]
+            (0.6,-5.2) rectangle ({0.6+(\pf@W-1.2)*\pf@dv@barto/100},-5.2-\pf@devicebar);
+        \fi
+      \fi
+    \fi
+    % The buttons every device shares, and the one that sets its own value
+    \pf@devicebutton{0.35}{\pf@W/2-0.1}{\pf@devicebuttons}{fill}{Turn on}%
+    \pf@devicebutton{\pf@W/2+0.1}{\pf@W-0.35}{\pf@devicebuttons}{}{Turn off}%
+    \ifx\pf@dv@set\@empty\else
+      \pf@devicebutton{0.35}{\pf@W-0.35}{\pf@deviceset}{}{\pf@dv@set}%
+      \ifx\pf@dv@tapon\@empty\else % pressed: the color of operations, what a tap on it runs
+        \begin{scope}[visible on=<\pf@dv@tapon>]
+          \colorlet{pf@button}{colorBehavior}\pf@devicebutton{0.35}{\pf@W-0.35}{\pf@deviceset}{fill}{\pf@dv@set}%
+        \end{scope}%
+      \fi
+    \fi
+    % The marks, just outside the screen
+    \ifx\pf@dv@datamark\@empty\else
+      \node[pf mark=\pf@phonescale*0.6, fill=tone@state, anchor=west, visible on=<\pf@dv@datamarkon>]
+        at (\pf@W+0.25,-3.15) {\pf@dv@datamark}; % between its name and whether it is on
+    \fi
+    \ifx\pf@dv@opsmark\@empty\else
+      \node[pf mark=\pf@phonescale*0.6, fill=tone@behavior, anchor=west, visible on=<\pf@dv@opsmarkon>]
+        at (\pf@W+0.25,\pf@devicebuttons) {\pf@dv@opsmark};
+    \fi
+    \ifx\pf@dv@owndatamark\@empty\else
+      \node[pf mark=\pf@phonescale*0.6, fill=tone@\pf@dv@owndatatone, anchor=west, visible on=<\pf@dv@owndatamarkon>]
+        at (\pf@W+0.25,{(-3.95+\pf@devicepanel)/2}) {\pf@dv@owndatamark};
+    \fi
+    \ifx\pf@dv@ownopmark\@empty\else
+      \node[pf mark=\pf@phonescale*0.6, fill=tone@\pf@dv@ownoptone, anchor=west, visible on=<\pf@dv@ownopmarkon>]
+        at (\pf@W+0.25,\pf@deviceset) {\pf@dv@ownopmark};
+    \fi
+  \end{tikzpicture}%
+  \endgroup}
+
+% \homephone[tap on]{\hometile[icon]{Name}{Status} ...}: the home app's first screen, a tile per device,
+% each with its name and a status line (\changed works in it), over an All off button, pressed on tap on
+\newcommand\pf@hometiletop{-2.65} % the first tile's top, in units
+\newcommand\pf@hometileheight{1.05}
+\newcommand\pf@hometilegap{0.22}
+\newcommand\pf@homeoff{-7.35} % the middle of the All off button
+\newcount\pf@hometilecount
+\NewDocumentCommand\hometile{ O{light} m m }{%
+  \pgfmathsetmacro\pf@tiletop{\pf@hometiletop-\the\pf@hometilecount*(\pf@hometileheight+\pf@hometilegap)}%
+  \global\advance\pf@hometilecount by 1
+  \global\pf@tilemarks=0
+  \fill[colorHeading!6!colorBg, rounded corners=0.22\pf@u]
+    (0.35,\pf@tiletop) rectangle (\pf@W-0.35,\pf@tiletop-\pf@hometileheight);
+  \fill[colorHeading!12!colorBg] (0.85,\pf@tiletop-\pf@hometileheight/2) circle (0.3);
+  \begin{scope}[shift={(0.85,\pf@tiletop-\pf@hometileheight/2)}, scale=0.75, colorHeading]\pf@deviceicon{#1}\end{scope}
+  \node[pf phone text, font=\pf@phfont{0.24}{1}\bfseries] at (1.35,\pf@tiletop-0.43) {#2};
+  \node[pf phone text, text=colorMuted, font=\pf@phfont{0.21}{1}] at (1.35,\pf@tiletop-0.8) {#3};}
+% \tilemark<step>[tone]{number}, right after a \hometile: a numbered disc by that tile, just outside the screen,
+% for the notes beside; a second one on the same tile goes to the right of the first
+\newcommand\pf@tilemarkgap{0.12} % between two discs of a tile, in units
+\newcount\pf@tilemarks
+\NewDocumentCommand\tilemark{ D<>{1-} O{info} m }{%
+  \ifnum\pf@tilemarks=0
+    \coordinate (pf@tilemarkat) at (\pf@W+0.25,\pf@tiletop-\pf@hometileheight/2);
+  \else
+    \coordinate (pf@tilemarkat) at ([xshift=\pf@tilemarkgap\pf@u]pf@tilemark.east);
+  \fi
+  \node[pf mark=\pf@phonescale*0.6, fill=tone@#2, anchor=west, visible on=<#1>] (pf@tilemark) at (pf@tilemarkat) {#3};
+  \global\advance\pf@tilemarks by 1 }
+\NewDocumentCommand\homephone{ O{} m }{%
+  \pf@phonesep
+  \begingroup\def\pf@hm@tapon{#1}%
+  \begin{tikzpicture}[x=\pf@u, y=\pf@u, baseline={-\pf@phoneheight\pf@u}]
+    \pgfmathsetmacro\pf@W{\pf@phonewidth}\pgfmathsetmacro\pf@H{\pf@phoneheight}%
+    \pf@phoneshell
+    \colorlet{pf@button}{colorHeading}%
+    \node[pf phone text, text=colorMuted, font=\pf@phfont{0.26}{1}] at (0.5,-1.55) {Good evening,};
+    \node[pf phone text, font=\pf@phfont{0.34}{1}\bfseries] at (0.5,-2.15) {My home};
+    \global\pf@hometilecount=0 #2%
+    \pf@devicebutton{0.35}{\pf@W-0.35}{\pf@homeoff}{fill}{All off}%
+    \ifx\pf@hm@tapon\@empty\else
+      \begin{scope}[visible on=<\pf@hm@tapon>]
+        \colorlet{pf@button}{colorBehavior}\pf@devicebutton{0.35}{\pf@W-0.35}{\pf@homeoff}{fill}{All off}%
+      \end{scope}%
+    \fi
+  \end{tikzpicture}%
+  \endgroup}
+
+\NewDocumentCommand\phonegroup{ D<>{1-} m m m }{%
+  \pf@phonesep
+  \begin{uncoverenv}<#1>%
+  % In the caption's font: a tabular's rows are as tall as the strut of the font it starts in, so in
+  % the frame's text the caption would sit far below the title
+  {\slidefont{\pf@ruletextsize}{1.35}%
+  \begin{tabular}[b]{@{}c@{}}
+    {\slidefont{\pf@ruletitlesize}{1.2}\bfseries\color{colorHeading}#2}\\[\slideem{\pf@phonetitlegap}]
+    {\color{colorText}#3}\\[\slideem{\pf@phonecaptiongap}]
+    \global\pf@phonefirsttrue#4%
+  \end{tabular}}%
+  \end{uncoverenv}%
+  \global\pf@phonefirstfalse}
+\NewDocumentCommand\phonearrow{ D<>{1-} }{%
+  \pf@phonesep
+  \tikz[x=\pf@u, y=\pf@u, baseline=0pt] % half a phone's height over the baseline, the phones' bottom
+    \draw[flow arrow, visible on=<#1>] (0,\pf@phoneheight/2) -- ++(\slideem{\pf@phonearrowlength},0);%
+  \global\pf@phonefirstfalse}
+
+% % % % % % % % % % Memory diagrams % % % % % % % % % %
+% \begin{memory}[rows] ... \end{memory}: the stack, with the variables of the method that runs, next to
+% the heap, with the objects; rows, the stack's rows. Both frames are as tall as the taller of the two,
+% the stack or what the heap holds, and both are centered in it. On a row of the stack:
+% \memvar<step>{row}{name}{value}, a value held in the variable; \memref<step>[type]{row}{name}{address}{object},
+% a reference, with an arrow to the object (and the variable's type over its cell, when it is not the object's class);
+% \memref* bends its arrow halfway between the frames to the middle of the object, so several reach it at one point; \memnull<step>{row}{name}, a reference to none. In the heap,
+% each named before the arrows that reach it: \memobject<step>{name}{row}{Class}{field/value, ...}, from
+% that row down; \memstring<step>{name}{first row}{last row}{text}, a String across those rows
+\newcommand\pf@memsize{0.56} % the text, em of the slide
+\newcommand\pf@memrow{1.5} % a row of the stack, em of the slide
+\newcommand\pf@mempad{0.55}
+\newcommand\pf@memstackwidth{7.4}
+\newcommand\pf@memheapwidth{10.6}
+\newcommand\pf@memgap{1.8} % stack to heap
+\newcommand\pf@memcellwidth{3.1}
+\newcommand\pf@memcellheight{0.95}
+\newcommand\pf@memtitlegap{0.3} % the frames to Stack and Heap, from their baseline
+\newcommand\pf@memclassgap{0.3} % an object's class to the object, over it
+\newcommand\pf@memnulllength{0.9}
+\newcommand\pf@memrows{3}
+\tikzset{
+  pf mem cell/.style={draw=colorCodeEdge, fill=colorBg, line width=\pf@hairline, rounded corners=\pf@smallradius,
+    minimum width=\slideem{\pf@memcellwidth}, minimum height=\slideem{\pf@memcellheight}, inner sep=0pt,
+    font=\slidefont{\pf@memsize}{1.2}\ttfamily, text=colorText},
+  pf mem name/.style={inner sep=0pt, font=\slidefont{\pf@memsize}{1.2}\ttfamily, text=colorText},
+  pf mem arrow/.style={draw=colorText!70, line width=\pf@arrowline, -{Latex[round, length=\the\pf@flowheadlength]}},
+  pf mem class/.style={inner sep=0pt, font=\slidefont{\pf@memsize}{1.2}\ttfamily\bfseries, text=colorHeading},
+  pf mem object/.style={draw=colorHeading!40!colorBg, fill=colorHeading!5!colorBg, line width=\pf@hairline,
+    rounded corners=\pf@radius, inner sep=\slideem{\pf@mempad}, anchor=north west}}
+% The body runs twice: the first time it only measures what the heap holds (\ifpf@memmeasure), from the
+% top of the rows down (\pf@memtop to \pf@memlow), so the second can draw the frames and center both
+% sides in them, each shifted by its own \pf@mem...shift
+\newif\ifpf@memmeasure
+\newdimen\pf@memtop \newdimen\pf@memlow \newdimen\pf@memheight
+\newdimen\pf@memstackshift \newdimen\pf@memheapshift
+\newdimen\pf@memtypeover % how far a type over the first row's cell rises above the rows
+\newdimen\pf@memstackheight
+\newbox\pf@memtypebox
+\newcommand\pf@memextent[2]{% a heap item from #1 to #2 below the top of the rows
+  \ifdim\dimexpr#1\relax<\pf@memtop\global\pf@memtop=\dimexpr#1\relax\fi
+  \ifdim\dimexpr#2\relax>\pf@memlow\global\pf@memlow=\dimexpr#2\relax\fi}
+\newcommand\pf@memy[1]{\the\dimexpr-\slideem{\pf@mempad+(#1-0.5)*\pf@memrow}-\pf@memstackshift\relax} % a row's middle
+\newcommand\pf@memheapy[1]{\the\dimexpr-\slideem{\pf@mempad}-(#1)-\pf@memheapshift\relax} % #1 below the top of the rows
+\NewDocumentEnvironment{memory}{ O{3} +b }{%
+  \def\pf@memrows{#1}
+  \begin{tikzpicture}[font=\slidefont{\pf@memsize}{1.2}]
+    \global\pf@memtop=\maxdimen\global\pf@memlow=-\maxdimen\global\pf@memtypeover=0pt
+    \pf@memmeasuretrue#2\pf@memmeasurefalse
+    \ifdim\pf@memtop=\maxdimen\global\pf@memtop=0pt\global\pf@memlow=0pt\fi % an empty heap
+    % The stack's rows; with a type over the first cell, from that type to the last cell, as the heap's objects
+    % count from their class, so a variable and its object line up when both have a label over them
+    \pf@memstackheight=\slideem{\pf@memrows*\pf@memrow}%
+    \ifdim\pf@memtypeover>0pt
+      \pf@memstackheight=\dimexpr\pf@memstackheight-\slideem{(\pf@memrow-\pf@memcellheight)/2}+\pf@memtypeover\relax\fi
+    \pf@memheight=\dimexpr\pf@memlow-\pf@memtop\relax
+    \ifdim\pf@memheight<\pf@memstackheight\pf@memheight=\pf@memstackheight\fi
+    \pf@memheapshift=\dimexpr(\pf@memheight-\pf@memlow+\pf@memtop)/2-\pf@memtop\relax
+    \pf@memstackshift=\dimexpr(\pf@memheight-\pf@memstackheight)/2+\pf@memtypeover\relax
+    \pgfmathsetlengthmacro\pf@membottom{-\pf@memheight-\slideem{2*\pf@mempad}}%
+    \draw[draw=colorCodeEdge, line width=\pf@hairline, rounded corners=\pf@radius]
+      (0,0) rectangle (\slideem{\pf@memstackwidth},\pf@membottom);
+    \draw[draw=colorCodeEdge, line width=\pf@hairline, rounded corners=\pf@radius]
+      (\slideem{\pf@memstackwidth+\pf@memgap},0) rectangle (\slideem{\pf@memstackwidth+\pf@memgap+\pf@memheapwidth},\pf@membottom);
+    % On their baseline, so the p of Heap does not lift it
+    \node[anchor=base, inner sep=0pt, font=\slidefont{\pf@ruletitlesize}{1.2}\bfseries, text=colorHeading]
+      at (\slideem{\pf@memstackwidth/2},\slideem{\pf@memtitlegap}) {Stack};
+    \node[anchor=base, inner sep=0pt, font=\slidefont{\pf@ruletitlesize}{1.2}\bfseries, text=colorHeading]
+      at (\slideem{\pf@memstackwidth+\pf@memgap+\pf@memheapwidth/2},\slideem{\pf@memtitlegap}) {Heap};
+    #2
+  \end{tikzpicture}}{}
+% The variable's name and its cell, on a row
+\newcommand\pf@memcell[4]{% #1 row, #2 name, #3 value, #4 extra cell style
+  \node[pf mem name, anchor=west] at (\slideem{\pf@mempad},\pf@memy{#1}) {#2};
+  \node[pf mem cell, anchor=east, #4] (pf@memcell) at (\slideem{\pf@memstackwidth-\pf@mempad},\pf@memy{#1}) {#3};}
+\NewDocumentCommand\memvar{ D<>{1-} m m m }{\ifpf@memmeasure\else
+  \begin{scope}[visible on=<#1>]\pf@memcell{#2}{#3}{#4}{}\end{scope}\fi}
+\newcommand\memnullvalue{\textcolor{colorMuted}{null}} % an attribute of an object that refers to nothing
+\NewDocumentCommand\memnull{ D<>{1-} m m }{\ifpf@memmeasure\else
+  \begin{scope}[visible on=<#1>]
+    \pf@memcell{#2}{#3}{null}{text=colorMuted}
+    \draw[draw=colorMuted, line width=\pf@arrowline, dashed] (pf@memcell.east) -- ++(\slideem{\pf@memnulllength},0) coordinate (pf@memend);
+    \draw[draw=colorMuted, line width=\pf@arrowline] ([yshift=\slideem{0.25}]pf@memend) -- ([yshift=-\slideem{0.25}]pf@memend);
+  \end{scope}\fi}
+\NewDocumentCommand\memref{ s D<>{1-} O{} m m m m }{\ifpf@memmeasure
+  \if\relax\detokenize{#3}\relax\else\ifnum#4=1 % a type over the first row: how far it rises above the rows
+    \pgfinterruptpicture
+      \global\setbox\pf@memtypebox=\hbox{\slidefont{\pf@memsize}{1.2}\ttfamily\bfseries #3}%
+    \endpgfinterruptpicture
+    \global\pf@memtypeover=\dimexpr\slideem{\pf@memclassgap-(\pf@memrow-\pf@memcellheight)/2}+\ht\pf@memtypebox
+      +\dp\pf@memtypebox\relax
+  \fi\fi
+\else
+  \begin{scope}[visible on=<#2>]
+    \pf@memcell{#4}{#5}{#6}{}
+    \if\relax\detokenize{#3}\relax\else % its type over the cell, as an object's class over the object
+      \node[pf mem class, anchor=south] at ([yshift=\slideem{\pf@memclassgap}]pf@memcell.north) {#3};\fi
+    \IfBooleanTF{#1}
+      {\draw[pf mem arrow] (pf@memcell.east) -- (\slideem{\pf@memstackwidth+\pf@memgap/2},0 |- pf@memcell.east)
+         |- (pf@mem@#7.west);}% bent, halfway between the frames, to the middle of the object
+      {\draw[pf mem arrow] (pf@memcell.east) -- (pf@memcell.east -| pf@mem@#7.west);}
+  \end{scope}\fi}
+\ExplSyntaxOn
+% An object: a row per attribute (its class goes over it, as a label)
+\cs_new_protected:Npn \__pf_mem_object:nn #1#2
+  {
+    \tl_clear:N \l_tmpa_tl
+    \clist_map_inline:nn {#2}
+      {
+        \seq_set_split:Nnn \l_tmpb_seq { / } {##1}
+        \tl_if_empty:NF \l_tmpa_tl { \tl_put_right:Nn \l_tmpa_tl { \\ } } % between rows
+        \tl_put_right:Nx \l_tmpa_tl
+          {
+            \seq_item:Nn \l_tmpb_seq { 1 } &
+            \exp_not:N \tikz [ baseline = (pf@c.base) ] \exp_not:N \node [ pf~mem~cell ] ~ (pf@c) ~
+              { \seq_item:Nn \l_tmpb_seq { 2 } } ; % in x, an item comes back unexpanded
+          }
+      }
+    \slidefont{\pf@memsize}{1.2} \ttfamily \renewcommand\arraystretch{1.25}
+    \begin{tabular}{@{}l@{\hspace{\slideem{0.5}}}l@{}}
+      \tl_use:N \l_tmpa_tl
+    \end{tabular}
+  }
+\NewDocumentCommand\memobject{ D<>{1-} m m m m }
+  {
+    \ifpf@memmeasure
+      \pgfinterruptpicture % typeset as outside the picture, where its own \tikz cells can be
+        \hbox_gset:Nn \g_tmpa_box { \__pf_mem_object:nn {#4} {#5} }
+        \hbox_gset:Nn \g_tmpb_box { \slidefont{\pf@memsize}{1.2} \ttfamily \bfseries #4 }
+      \endpgfinterruptpicture
+      \pf@memextent { \slideem{(#3-1)*\pf@memrow-\pf@memclassgap} - \box_ht:N \g_tmpb_box - \box_dp:N \g_tmpb_box }
+        { \slideem{(#3-1)*\pf@memrow+2*\pf@mempad} + \box_ht:N \g_tmpa_box + \box_dp:N \g_tmpa_box }
+    \else
+      \begin{scope}[visible~on=<#1>]
+        \node[pf~mem~object, anchor=north] (pf@mem@#2) % centered in the heap
+          at (\slideem{\pf@memstackwidth+\pf@memgap+\pf@memheapwidth/2}, \pf@memheapy{\slideem{(#3-1)*\pf@memrow}})
+          { \__pf_mem_object:nn {#4} {#5} };
+        \node[pf~mem~class, anchor=south] at ([yshift=\slideem{\pf@memclassgap}] pf@mem@#2.north) {#4};
+      \end{scope}
+    \fi
+  }
+\ExplSyntaxOff
+\NewDocumentCommand\memstring{ D<>{1-} m m m m }{%
+  \ifpf@memmeasure
+    \pf@memextent{\slideem{(#3-1)*\pf@memrow+\pf@mempad/2}}{\slideem{#4*\pf@memrow-\pf@mempad/2}}%
+  \else
+  \begin{scope}[visible on=<#1>]
+    \node[pf mem object, anchor=center, inner ysep=0pt, minimum height=\slideem{(#4-#3+1)*\pf@memrow-\pf@mempad},
+      minimum width=\slideem{\pf@memcellwidth+2*\pf@mempad}, font=\slidefont{\pf@memsize}{1.2}\ttfamily] (pf@mem@#2)
+      at (\slideem{\pf@memstackwidth+\pf@memgap+\pf@memheapwidth/2}, \pf@memheapy{\slideem{((#3+#4)/2-0.5)*\pf@memrow}}) {#5}; % centered in the heap
+  \end{scope}%
+  \fi}
+
+% % % % % % % % % % Class diagrams % % % % % % % % % %
+% \begin{classdiagram} \classbox<step>{id}{column}{superclass}{Class}{attributes}{methods} ... \end{classdiagram}:
+% classes drawn as in UML, the name over its attributes (name: Type, in the tone of data) and its methods
+% (name(Types): Type, of operations), left-aligned, each part only if it has something, comma lists one per line. A class with a superclass's id sits under it,
+% with the hollow-headed arrow to it; column places it across, in columns (0, 1, 2, or 0.5 between them)
+\newcommand\pf@classsize{0.36} % the text, em of the slide
+\newcommand\pf@classcolumn{7.4} % between the centers of two columns, em of the slide: room for a typed method
+\newcommand\pf@classgap{2.6} % a class to its subclasses, em of the slide: room for the arrows and their disc
+\newcommand\pf@classminwidth{4} % the narrowest box, em of the slide
+\newcommand\pf@classpadx{0.4}
+\newcommand\pf@classpady{0.28}
+\newcommand\pf@classhead{0.55} % the open arrowhead of inheritance, em of the slide
+\tikzset{
+  pf class part/.style={inner xsep=\slideem{\pf@classpadx}, inner ysep=\slideem{\pf@classpady}, outer sep=0pt,
+    text width=\pf@classtextwidth, align=left, anchor=north, font=\slidefont{\pf@classsize}{1.35}\ttfamily},
+  pf class box/.style={draw=colorHeading!40!colorBg, fill=colorHeading!5!colorBg, line width=\pf@hairline,
+    rounded corners=\pf@radius, inner sep=0pt},
+  pf inherits/.style={draw=colorText!70, line width=\pf@arrowline, % an arrow tip takes no \dimexpr: its size, worked out
+    -{Triangle[open, length=\pf@classheadlength, width=\pf@classheadlength]}}}
+\edef\pf@classheadlength{\the\slideem{\pf@classhead}}
+\newcount\pf@classdiagram % each diagram drawn, every step of a frame included, so its classes' facts are its own
+\NewDocumentEnvironment{classdiagram}{ +b }{%
+  \global\advance\pf@classdiagram by 1
+  \begin{tikzpicture}#1\end{tikzpicture}}{}
+% \classmark<step>[tone]{above or below}{id}{number}: a numbered disc over or under a class's box, centered, for the
+% notes beside the diagram (above for a superclass, whose arrows leave from its bottom); \inheritmark<step>[tone]
+% {subclass}{number}, the same right of the arrow that leaves the subclass, halfway up to where it turns, or of the
+% line up to the arrowhead if it is the only subclass, its arrow then straight
+\newcommand\pf@classmarksize{\pf@ruletitlesize} % a disc, as the one of its note beside: one of a code size,
+% first loaded here, would move the lines of the code blocks after it
+\newcommand\pf@classmarkgap{0.2} % the box's edge, or the arrowhead, to its disc, em of the slide
+\NewDocumentCommand\classmark{ D<>{1-} O{info} m m m }{%
+  \node[pf mark=\pf@classmarksize, fill=tone@#2, visible on=<#1>, pf class mark #3=#4] {#5};}
+\tikzset{
+  pf class mark above/.style={anchor=south, at={([yshift=\slideem{\pf@classmarkgap}]pf@class@#1.north)}},
+  pf class mark below/.style={anchor=north, at={([yshift=-\slideem{\pf@classmarkgap}]pf@class@#1.south)}}}
+% \inheritmark* puts it over the stretch across that is that subclass's alone, from where its arrow turns to its
+% superclass, for a subclass whose turn another arrow leaves from too (\classwrong)
+\newcommand\pf@inheritmarkacross[4]{% step, tone, subclass, number
+  \edef\pf@inheritsuper{\csname pf@cl@super@\the\pf@classdiagram @#3\endcsname}%
+  \coordinate (pf@mid) at ($(pf@class@#3.north)!0.5!(pf@class@\pf@inheritsuper.south)$);
+  \node[pf mark=\pf@classmarksize, fill=tone@#2, anchor=south, visible on=<#1>] at ([yshift=\slideem{\pf@classmarkgap}]
+    $(pf@class@#3.north |- pf@mid)!0.5!(pf@class@\pf@inheritsuper.south |- pf@mid)$) {#4};}
+\NewDocumentCommand\inheritmark{ s D<>{1-} O{info} m m }{%
+  \IfBooleanTF{#1}{\pf@inheritmarkacross{#2}{#3}{#4}{#5}}{%
+  \edef\pf@inheritrise{\ifnum\csname pf@cl@kids@\the\pf@classdiagram @\csname pf@cl@super@\the\pf@classdiagram
+    @#4\endcsname\endcsname=1 (\pf@classgap-\pf@classhead)/2\else \pf@classgap/4\fi}% the line without its head
+  % when straight, or the stretch down from where it turns
+  \node[pf mark=\pf@classmarksize, fill=tone@#3, anchor=west, visible on=<#2>]
+    at ([xshift=\slideem{\pf@classmarkgap}, yshift=\slideem{\pf@inheritrise}]pf@class@#4.north) {#5};}}
+% \classwrong<step>[tone]{subclass}{superclass}{number}: an inheritance that is not allowed, dashed and in its tone
+% (warn by default), from where the subclass's arrow turns to where the superclass's own arrow goes up, joining
+% it, with a numbered disc over its middle
+\newcommand\pf@classwrongdash{0.25} % the dashes, em of the slide
+\NewDocumentCommand\classwrong{ D<>{1-} O{warn} m m m }{%
+  \begin{scope}[visible on=<#1>]
+    \coordinate (pf@mid) at ($(pf@class@#3.north)!0.5!(pf@class@#4.south)$);
+    \draw[draw=tone@#2, line width=\pf@arrowline, dash pattern=on \slideem{\pf@classwrongdash} off \slideem{\pf@classwrongdash}]
+      (pf@class@#3.north |- pf@mid) -- (pf@class@#4.south |- pf@mid);
+    \node[pf mark=\pf@classmarksize, fill=tone@#2, anchor=south] at ([yshift=\slideem{\pf@classmarkgap}]
+      $(pf@class@#3.north |- pf@mid)!0.5!(pf@class@#4.south |- pf@mid)$) {#5};
+  \end{scope}}
+\ExplSyntaxOn
+\cs_new:Npn \pf@classlines #1 { \clist_use:nn {#1} { \strut \\ } \strut } % a comma list, a line each, all as tall
+\ExplSyntaxOff
+\newcommand\pf@ifblank[3]{\if\relax\detokenize{#1}\relax#2\else#3\fi}
+\newsavebox\pf@classmeasure
+\newlength\pf@classtextwidth
+\newcommand\pf@classwiden[1]{% the parts' text width grows to the widest line of #1
+  \pgfinterruptpicture % measured as outside the picture, where there is a font
+    \global\setbox\pf@classmeasure\hbox{\slidefont{\pf@classsize}{1.35}\ttfamily\bfseries\begin{tabular}{@{}l@{}}#1\end{tabular}}%
+  \endpgfinterruptpicture
+  \ifdim\wd\pf@classmeasure>\pf@classtextwidth\setlength\pf@classtextwidth{\wd\pf@classmeasure}\fi}
+% The name, attributes and methods of the class in \pf@cl@..., one node each, from pf@at down; #1, options for
+% all of them: drawn first unseen, to know the box's size, then over the box, as a layer would keep none of
+% the scope's step
+\newcommand\pf@classparts[1]{%
+  \node[pf class part, align=center, text=colorHeading, font=\slidefont{\pf@classsize}{1.35}\ttfamily\bfseries, #1]
+    (pf@part) at (pf@at) {\strut\pf@cl@name};
+  \coordinate (pf@first) at (pf@part.north west);
+  \def\pf@classseps{}% the parts' borders, drawn across the whole box once its width is known
+  \ifx\pf@cl@attributes\@empty\else
+    \coordinate (pf@sepattributes) at (pf@part.south);\edef\pf@classseps{\pf@classseps,attributes}%
+    \node[pf class part, text=colorState, #1] (pf@part) at (pf@part.south) {\expandafter\pf@classlines\expandafter{\pf@cl@attributes}};
+  \fi
+  \ifx\pf@cl@methods\@empty\else
+    \coordinate (pf@sepmethods) at (pf@part.south);\edef\pf@classseps{\pf@classseps,methods}%
+    \node[pf class part, text=colorBehavior, #1] (pf@part) at (pf@part.south) {\expandafter\pf@classlines\expandafter{\pf@cl@methods}};
+  \fi}
+% \classbox* is a class that implements the interface above it: its arrow dashed, as in UML; an interface's name
+% is written \interfacename{List}, with the stereotype over it
+\newcommand\interfacename[1]{{\mdseries\guillemotleft interface\guillemotright}\\#1}
+% \classunused<step> right before a \classbox: from the step, the class and its arrow dim and a cross goes over its
+% box, for a part of the hierarchy the course leaves aside
+\def\pf@cl@unused{} % not \newcommand, whose \long would never match \@empty
+\NewDocumentCommand\classunused{ D<>{1-} }{\gdef\pf@cl@unused{#1}}
+\newcommand\pf@classimplementsdash{0.25} % the dashes of an arrow to an interface, em of the slide
+\edef\pf@classdashlength{\the\slideem{\pf@classimplementsdash}} % a dash pattern takes no \dimexpr: worked out
+\tikzset{pf implements/.style={dash pattern=on \pf@classdashlength\space off \pf@classdashlength},
+  pf extends/.style={}}
+\NewDocumentCommand\classbox{ s D<>{1-} m m m m m m }{%
+  \IfBooleanTF{#1}{\def\pf@cl@arrow{pf implements}}{\def\pf@cl@arrow{pf extends}}%
+  \pf@classboxbody{#2}{#3}{#4}{#5}{#6}{#7}{#8}}
+\newcommand\pf@classboxbody[7]{%
+  \def\pf@cl@id{#2}\def\pf@cl@name{#5}%
+  \pf@ifblank{#4}{}{% its superclass, and how many subclasses that has, for \inheritmark; named after the diagram
+    \expandafter\xdef\csname pf@cl@super@\the\pf@classdiagram @#2\endcsname{#4}%
+    \edef\pf@kids{\the\numexpr\ifcsname pf@cl@kids@\the\pf@classdiagram @#4\endcsname % counted before naming it,
+      \csname pf@cl@kids@\the\pf@classdiagram @#4\endcsname\else0\fi+1\relax}% which would make it \relax
+    \expandafter\global\expandafter\let\csname pf@cl@kids@\the\pf@classdiagram @#4\endcsname\pf@kids}%
+  \def\pf@cl@attributes{#6}\def\pf@cl@methods{#7}%
+  \setlength\pf@classtextwidth{\dimexpr\slideem{\pf@classminwidth}-2\slideem{\pf@classpadx}\relax}%
+  \pf@classwiden{#5}\pf@ifblank{#6}{}{\pf@classwiden{\pf@classlines{#6}}}\pf@ifblank{#7}{}{\pf@classwiden{\pf@classlines{#7}}}%
+  \ifx\pf@cl@unused\@empty\tikzset{pf class state/.style={}}\else
+    \edef\pf@tmp{\noexpand\tikzset{pf class state/.style={transparency group,
+      alt={<\pf@cl@unused>{opacity=\pf@keywordunused}{}}}}}\pf@tmp\fi
+  \begin{scope}[visible on=<#1>, pf class state]
+    \pf@ifblank{#4}{\coordinate (pf@at) at (\slideem{#3*\pf@classcolumn},0);}
+      {\path let \p1=(pf@class@#4.south) in coordinate (pf@at) at (\slideem{#3*\pf@classcolumn},\y1-\slideem{\pf@classgap});}
+    \pf@classparts{text opacity=0}%
+    \node[pf class box, fit=(pf@first)(pf@part.south east)] (pf@class@#2) {};
+    \pf@classparts{}%
+    \foreach \pf@sep in \pf@classseps {\ifx\pf@sep\@empty\else
+      \draw[colorHeading!40!colorBg, line width=\pf@hairline]
+        (pf@class@#2.west |- pf@sep\pf@sep) -- (pf@class@#2.east |- pf@sep\pf@sep);\fi}
+    \pf@ifblank{#4}{}{%
+      \coordinate (pf@mid) at ($(pf@class@#2.north)!0.5!(pf@class@#4.south)$);
+      \draw[pf inherits, \pf@cl@arrow] (pf@class@#2.north) -- (pf@class@#2.north |- pf@mid) -| (pf@class@#4.south);}
+    \ifx\pf@cl@unused\@empty\else
+      \begin{scope}[visible on=<\pf@cl@unused>] % the cross, clipped to the inside of the box's border, round
+        \clip[rounded corners=\pf@radius-0.5\pf@hairline] % corners too: the anchors lie half a border out
+          ([shift={(\pf@hairline,-\pf@hairline)}]pf@class@#2.north west) rectangle
+          ([shift={(-\pf@hairline,\pf@hairline)}]pf@class@#2.south east);
+        \draw[paletteRed, line width=\pf@hairline]
+          (pf@class@#2.north west) -- (pf@class@#2.south east) (pf@class@#2.north east) -- (pf@class@#2.south west);
+      \end{scope}%
+    \fi
+  \end{scope}%
+  \gdef\pf@cl@unused{}}
+
+% % % % % % % % % % File explorer % % % % % % % % % %
+% \begin{explorer} \explorerrow<step>[marked on]{depth}{folder or java}{Name} ... \end{explorer}: a project's
+% files as an editor shows them, under an Explorer title, each row indented by its depth; marked on
+% highlights a row on those steps, as a code block's line
+\newcommand\pf@explorersize{0.5} % the text, em of the slide
+\newcommand\pf@explorerrow{1.05} % a row's height, em of the slide
+\newcommand\pf@explorerindent{1.1} % a level deeper, em of the slide
+\newcommand\pf@explorerwidth{9.5}
+\newcommand\pf@explorericonsize{0.42} % an icon's height, em of the slide
+\newcount\pf@explorercount
+\NewDocumentEnvironment{explorer}{}{%
+  \begin{tikzpicture}[font=\slidefont{\pf@explorersize}{1.2}]
+    \global\pf@explorercount=0
+    \node[anchor=base west, inner sep=0pt, text=colorMuted, font=\slidefont{\pf@explorersize}{1.2}\bfseries]
+      at (\slideem{\pf@codepaddingx*\pf@explorersize}, -\slideem{0.7*\pf@explorerrow}) {EXPLORER};}
+  {\pgfmathsetlengthmacro\pf@explorerbottom{-\slideem{(\the\pf@explorercount+1.4)*\pf@explorerrow}}%
+    \draw[draw=colorCodeEdge, fill=none, line width=\pf@hairline, rounded corners=\pf@radius]
+      (0,0) rectangle (\slideem{\pf@explorerwidth},\pf@explorerbottom);
+  \end{tikzpicture}}
+\NewDocumentCommand\explorerrow{ D<>{1-} O{} m m m }{%
+  \global\advance\pf@explorercount by 1
+  \pgfmathsetlengthmacro\pf@rowy{-\slideem{(\the\pf@explorercount+0.6)*\pf@explorerrow}}%
+  \begin{scope}[visible on=<#1>]
+    \if\relax\detokenize{#2}\relax\else
+      \fill[colorCodeCurrentLine, visible on=<#2| handout:0>] (\slideem{0.15},\pf@rowy+\slideem{\pf@explorerrow/2})
+        rectangle (\slideem{\pf@explorerwidth-0.15},\pf@rowy-\slideem{\pf@explorerrow/2});
+    \fi
+    \begin{scope}[shift={(\slideem{\pf@codepaddingx*\pf@explorersize+#3*\pf@explorerindent},\pf@rowy)},
+        x=\slideem{\pf@explorericonsize}, y=\slideem{\pf@explorericonsize}]
+      \csname pf@explorericon@#4\endcsname
+    \end{scope}
+    \node[anchor=west, inner sep=0pt, text=colorText, font=\slidefont{\pf@explorersize}{1.2}\ttfamily]
+      at (\slideem{\pf@codepaddingx*\pf@explorersize+#3*\pf@explorerindent+0.75},\pf@rowy) {#5};
+  \end{scope}}
+\newcommand\pf@explorericon@folder{% a folder, its tab up on the left
+  \fill[colorHeading!70!colorBg, rounded corners=0.08\pf@em] (0,-0.4) rectangle (1.1,0.32);
+  \fill[colorHeading!70!colorBg, rounded corners=0.06\pf@em] (0,0.2) rectangle (0.45,0.45);}
+\newcommand\pf@explorericon@java{% a page, in the color of code
+  \fill[colorAccentTwo!80!colorBg, rounded corners=0.06\pf@em] (0.1,-0.5) rectangle (0.9,0.5);
+  \fill[colorBg] (0.25,0.15) rectangle (0.75,0.22);
+  \fill[colorBg] (0.25,-0.05) rectangle (0.75,0.02);
+  \fill[colorBg] (0.25,-0.25) rectangle (0.6,-0.18);}
+
+% % % % % % % % % % Question % % % % % % % % % %
+% \question{Question}<step>{Follow-up}: a question to the class before a concept, on a frame of its own
+% with no title, large and in the color of titles; the follow-up, optional, comes on its step
+\newcommand\pf@questionsize{2} % em of the slide: alone on the slide, it fills it
+\newcommand\pf@questionlineheight{1.3}
+\newcommand\pf@questiongap{1.2} % the question to its follow-up, em of the question
+\newcommand\pf@questionwidth{0.92} % of the text width, so a question breaks into balanced lines
+\newcommand\pf@questiontext[1]{%
+  \parbox[t]{\pf@questionwidth\textwidth}{\slidefont{\pf@questionsize}{\pf@questionlineheight}\bfseries
+    \color{colorHeading}\raggedright\pf@nohyphens#1}\par}
+\NewDocumentCommand\question{ m D<>{2-} g }{%
+  \pf@questiontext{#1}%
+  \IfValueT{#3}{\vskip\slideem{\pf@questiongap*\pf@questionsize}\uncover<#2>{\pf@questiontext{#3}}}%
+  % In the middle of the slide: this fill and the frame's top one, as the bottom one is cancelled (as the
+  % takeaway does)
+  \par\vskip0pt plus 1fill\vskip-\beamer@framebottomskip}
+
+% % % % % % % % % % Takeaway % % % % % % % % % %
+% \takeaway<overlay>{Text}: highlighted and as wide as its text, at the bottom left of the slide
+\newcommand\pf@takeawaygap{0.6} % the least room between the content and the takeaway, em of the slide
+\tcbset{
+  pf takeaway/.style={
+    pf callout={colorAccent}{colorHighlightSoft}, hbox,
+    left=\slideem{\pf@notepaddingx*\pf@notesize},
+    right=\slideem{\pf@notepaddingx*\pf@notesize},
+    top=\slideem{\pf@notepaddingy*\pf@notesize}, bottom=\slideem{\pf@notepaddingy*\pf@notesize}}}
+
+\NewDocumentCommand\takeaway{ D<>{1-} m }{%
+  % At the bottom: the glue after it cancels the frame's own bottom glue, and the fill before it
+  % centers the content between title and takeaway, as beamer does (at the top with [t])
+  \par\vskip\slideem{\pf@takeawaygap} plus 1fill
+  \begin{uncoverenv}<#1>%
+  \begin{tcolorbox}[pf takeaway]
+    \begin{varwidth}{\dimexpr\linewidth-2\pf@hairline-2\slideem{\pf@notepaddingx*\pf@notesize}\relax}
+      \slidefont{\pf@notesize}{\pf@lineheightbody}\color{colorText}\raggedright\pf@linegrid\pf@nohyphens#2
+    \end{varwidth}
+  \end{tcolorbox}%
+  \end{uncoverenv}%
+  \par\vskip-\beamer@framebottomskip}
+
+% % % % % % % % % % Code % % % % % % % % % %
+% Syntax colors: IntelliJ's Islands Light scheme, mapped onto the palette.
+% Tokens not listed read as plain text, as in the IDE.
+\lstdefinestyle{pf base}{
+  basicstyle=\slidefont{\pf@codesizenow}{\pf@codelineheight}\ttfamily\color{colorText}\pf@linegrid,
+  columns=fullflexible, keepspaces=true, showstringspaces=false, upquote=true, tabsize=4,
+  aboveskip=0pt, belowskip=0pt, lineskip=0pt}
+
+\lstdefinestyle{pf code}{
+  style=pf base,
+  keywordstyle=\color{colorCodeKeyword},
+  keywordstyle={[2]\color{colorCodeAnnotation}},
+  stringstyle=\color{colorCodeString},
+  commentstyle=\color{colorMuted}\itshape,
+  numbers=left, numberstyle=\color{colorMuted},
+  numbersep=\slideem{\pf@codenumbergap*\pf@codesizenow},
+  xleftmargin=\slideem{(\pf@codenumberwidth+\pf@codenumbergap)*\pf@codesizenow}}
+
+\lstdefinelanguage{pfjava}[]{Java}{
+  alsoletter={@},
+  morekeywords={var, record, sealed, permits, yield},
+  morekeywords=[2]{@Override, @FunctionalInterface, @Deprecated, @SuppressWarnings}}
+\lstdefinelanguage{pfc}[ANSI]{C}{}
+
+% Steps: the lines each overlay highlights, one step per |, as in {1,5|2,4|3}. The others fade, unless dim=false;
+% an empty step leaves the block plain and none fades it whole. The handout shows the code plain.
+\ExplSyntaxOn
+\seq_new:N \l__pf_steps_seq
+\int_new:N \l__pf_from_int
+\int_new:N \l__pf_step_int
+\tl_new:N \l__pf_path_tl
+\tl_new:N \l__pf_first_tl
+\tl_new:N \l__pf_last_tl
+\bool_new:N \l__pf_dim_bool
+\dim_new:N \l__pf_size_dim
+\dim_new:N \l__pf_pady_dim
+\dim_new:N \l__pf_padx_dim
+\dim_new:N \l__pf_line_dim
+\clist_new:N \l__pf_marks_clist
+\seq_new:N \l__pf_lines_seq
+\int_new:N \l__pf_mark_int
+\int_new:N \l__pf_markfrom_int
+\clist_new:N \l__pf_strikes_clist
+\clist_new:N \l__pf_adds_clist
+\dim_new:N \l__pf_char_dim
+
+\tcbset{
+  steps/.code = { \seq_set_split:Nnn \l__pf_steps_seq { | } {#1} },
+  steps~from/.code = { \int_set:Nn \l__pf_from_int {#1} },
+  dim/.code = { \use:c { bool_set_#1:N } \l__pf_dim_bool },
+  marks/.code = { \clist_set:Nn \l__pf_marks_clist {#1} },
+  marks~from/.code = { \int_set:Nn \l__pf_markfrom_int {#1} },
+  lines/.code = { \seq_set_split:Nnn \l__pf_lines_seq { | } {#1} },
+  strike/.code = { \clist_set:Nn \l__pf_strikes_clist {#1} },
+  add/.code = { \clist_set:Nn \l__pf_adds_clist {#1} },
+}
+
+% The padding and line height of a block whose text is #1 slide ems, which the bands are measured in
+\cs_new_protected:Npn \pf_code_setup:n #1
+  {
+    \dim_set:Nn \l__pf_size_dim { \fp_eval:n {#1} \pf@em }
+    \dim_set:Nn \l__pf_pady_dim { \pf@codepaddingy \l__pf_size_dim }
+    \dim_set:Nn \l__pf_padx_dim { \pf@codepaddingx \l__pf_size_dim }
+    \dim_set:Nn \l__pf_line_dim { \pf@codelineheight \l__pf_size_dim }
+    % A character's width, for strike: measured here, as in the picture there is no font
+    \hbox_set:Nn \l_tmpa_box { \slidefont{#1}{\pf@codelineheight}\ttfamily 0 }
+    \dim_set:Nn \l__pf_char_dim { \box_wd:N \l_tmpa_box }
+  }
+
+% A rectangle across the content, between two depths below the top of the frame's interior
+\cs_new:Npn \__pf_rect:nn #1 #2
+  {
+    ([xshift=\dim_use:N \l__pf_padx_dim, yshift=#1]interior.north~west)~rectangle~
+    ([xshift=-\dim_use:N \l__pf_padx_dim, yshift=#2]interior.north~east)~
+  }
+
+% Adds to the path the band of each range in the comma list #1 (3, 5-7); none marks no line
+\cs_new_protected:Npn \__pf_add_ranges:n #1
+  {
+    \clist_map_inline:nn {#1}
+      {
+        \str_if_eq:nnF {##1} { none } { \__pf_add_range:n {##1} }
+      }
+  }
+\cs_new_protected:Npn \__pf_add_range:n #1
+  {
+        \seq_set_split:Nnn \l_tmpb_seq { - } {#1}
+        \tl_set:Nx \l__pf_first_tl { \seq_item:Nn \l_tmpb_seq { 1 } }
+        \tl_set:Nx \l__pf_last_tl
+          {
+            \int_compare:nNnTF { \seq_count:N \l_tmpb_seq } > { 1 }
+              { \seq_item:Nn \l_tmpb_seq { 2 } } { \l__pf_first_tl }
+          }
+        \tl_put_right:Nx \l__pf_path_tl
+          {
+            \__pf_rect:nn
+              { \dim_eval:n { - \l__pf_pady_dim - \l__pf_line_dim * ( \l__pf_first_tl - 1 ) } }
+              { \dim_eval:n { - \l__pf_pady_dim - \l__pf_line_dim * \l__pf_last_tl } }
+          }
+  }
+
+% Draws #1 (fill options) over the path of each non-empty step, on that step's overlay only;
+% #2 is true to start the path with the whole content, so the even-odd rule fades all but the bands
+\cs_new_protected:Npn \__pf_draw_steps:nn #1 #2
+  {
+    \int_zero:N \l__pf_step_int
+    \seq_map_inline:Nn \l__pf_steps_seq
+      {
+        \tl_if_blank:nF {##1}
+          {
+            \tl_clear:N \l__pf_path_tl
+            \bool_if:nT {#2}
+              {
+                \tl_put_right:Nx \l__pf_path_tl
+                  {
+                    ([xshift=\dim_use:N \l__pf_padx_dim, yshift=-\dim_use:N \l__pf_pady_dim]interior.north~west)~rectangle~
+                    ([xshift=-\dim_use:N \l__pf_padx_dim, yshift=\dim_use:N \l__pf_pady_dim]interior.south~east)~
+                  }
+              }
+            \__pf_add_ranges:n {##1}
+            \use:x
+              {
+                \exp_not:N \only < \int_eval:n { \l__pf_from_int + \l__pf_step_int } | handout:0 >
+                  { \exp_not:N \fill [#1] ~ \exp_not:V \l__pf_path_tl ; }
+              }
+          }
+        \int_incr:N \l__pf_step_int
+      }
+  }
+
+% marks={1/3, 6-7/4/state, 1+3+10/5}, lines/step/tone: a disc numbered 1, 2... in order, at the end of each
+% line (centered on a range), from its step on; tone as a card's, info (blue) if left out. Several places
+% joined by + repeat one number, for a note about several lines, and steps joined by + give each its own
+% (1+3+10/5+6+7; the last one for the places left); a disc on a place taken already goes to the left of
+% the one there; ranges keep the column, and a disc that would touch one of them, or its bar, moves left
+% of it, so none covers another. In print, where every step shows at once and no line is highlighted, a range also gets a
+% bar in its tone left of its discs, from its first line to its last
+\newcommand\pf@marksidegap{0.25} % between two discs on one line, em of the text beside them
+\newcommand\pf@markbar{0.25} % the bar by a range's lines, em of the code
+\newcommand\pf@markbargap{0.55} % that bar to the discs, em of the code
+\newcommand\pf@markbarinset{0.15} % its ends, inside the first and last lines, a line's height
+\tl_new:N \l__pf_tone_tl
+\tl_new:N \l__pf_markstep_tl
+\tl_new:N \l__pf_place_tl
+\int_new:N \l__pf_taken_int
+\int_new:N \l__pf_count_int
+\prop_new:N \l__pf_taken_prop
+\prop_new:N \l__pf_count_prop
+\prop_new:N \l__pf_base_prop % where a place's discs start, from the right, em of the code
+\prop_new:N \l__pf_used_prop % how much of each line the discs and bars take, from the right, em of the code
+\fp_new:N \l__pf_base_fp
+\fp_new:N \l__pf_width_fp
+\fp_new:N \l__pf_next_fp
+\bool_new:N \l__pf_clash_bool
+\bool_new:N \l__pf_ranged_bool
+\prop_new:N \l__pf_ranged_prop
+\prop_new:N \l__pf_bar_prop
+% Whether #2 wide at #1 (from the right) touches, closer than #5, anything taken on lines #3 to #4; if so,
+% \l__pf_next_fp is the first place left of all it touches
+\cs_new_protected:Npn \__pf_mark_clash:nnnnn #1#2#3#4#5
+  {
+    \bool_set_false:N \l__pf_clash_bool
+    \fp_set:Nn \l__pf_next_fp {#1}
+    \int_step_inline:nnn {#3} {#4}
+      {
+        \prop_get:NnNT \l__pf_used_prop {##1} \l_tmpb_tl
+          {
+            \clist_map_inline:Nn \l_tmpb_tl
+              {
+                \__pf_mark_interval:w ####1 \q_stop
+                \fp_compare:nT { #1 < \l__pf_to_fp + #5 && #1 + #2 + #5 > \l__pf_from_fp }
+                  {
+                    \bool_set_true:N \l__pf_clash_bool
+                    \fp_set:Nn \l__pf_next_fp { max ( \l__pf_next_fp , \l__pf_to_fp + #5 ) }
+                  }
+              }
+          }
+      }
+  }
+\fp_new:N \l__pf_from_fp
+\fp_new:N \l__pf_to_fp
+\cs_new_protected:Npn \__pf_mark_interval:w #1 ; #2 \q_stop
+  { \fp_set:Nn \l__pf_from_fp {#1} \fp_set:Nn \l__pf_to_fp {#2} }
+% Takes #1 to #2 (from the right) on lines #3 to #4
+\cs_new_protected:Npn \__pf_mark_take:nnnn #1#2#3#4
+  {
+    \int_step_inline:nnn {#3} {#4}
+      {
+        \prop_get:NnNF \l__pf_used_prop {##1} \l_tmpb_tl { \tl_clear:N \l_tmpb_tl }
+        \tl_if_empty:NF \l_tmpb_tl { \tl_put_right:Nn \l_tmpb_tl { , } }
+        \tl_put_right:Nx \l_tmpb_tl { #1 ; #2 }
+        \prop_put:NnV \l__pf_used_prop {##1} \l_tmpb_tl
+      }
+  }
+\seq_new:N \l__pf_places_seq
+\seq_new:N \l__pf_marksteps_seq
+\int_new:N \l__pf_place_int
+\cs_generate_variant:Nn \prop_put:Nnn { NVx , NnV , NVn }
+\cs_generate_variant:Nn \seq_set_split:Nnn { Nnx }
+\prg_generate_conditional_variant:Nnn \prop_get:NnN { NV } { TF }
+\prg_generate_conditional_variant:Nnn \prop_if_in:Nn { NV } { p }
+\cs_generate_variant:Nn \prop_get:NnN { NVN }
+% A place's first and last lines, and its key: its middle, where its discs go
+\cs_new_protected:Npn \__pf_mark_place:n #1
+  {
+    \seq_set_split:Nnn \l_tmpa_seq { - } {#1}
+    \tl_set:Nx \l__pf_first_tl { \seq_item:Nn \l_tmpa_seq { 1 } }
+    \tl_set:Nx \l__pf_last_tl { \seq_item:Nn \l_tmpa_seq { -1 } }
+    \tl_set:Nx \l__pf_place_tl { \fp_eval:n { ( \l__pf_first_tl + \l__pf_last_tl ) / 2 } }
+  }
+% How many discs a place holds, in prop #1, into int #2
+\cs_new_protected:Npn \__pf_mark_get:NN #1#2
+  {
+    \prop_get:NVNTF #1 \l__pf_place_tl \l_tmpa_tl
+      { \int_set:Nn #2 { \l_tmpa_tl } } { \int_zero:N #2 }
+  }
+\cs_new_protected:Npn \__pf_count_mark:n #1
+  {
+    \__pf_mark_place:n {#1}
+    \__pf_mark_get:NN \l__pf_count_prop \l__pf_count_int
+    \prop_put:NVx \l__pf_count_prop \l__pf_place_tl { \int_eval:n { \l__pf_count_int + 1 } }
+  }
+% Whether the discs of a place share it with a range (their middle the same), so a bar goes left of them all
+\cs_new_protected:Npn \__pf_range_mark:n #1
+  {
+    \__pf_mark_place:n {#1}
+    \int_compare:nNnT { \l__pf_first_tl } < { \l__pf_last_tl }
+      { \prop_put:NVn \l__pf_ranged_prop \l__pf_place_tl { 1 } }
+  }
+% Lays out a place's discs, all of them at once, as far right as they go without touching what is laid out
+% already on the lines they cover (two for the middle of an even range); a range also takes its bar, left
+% of them, on all its lines. Ranges first (\l__pf_ranged_bool), so they keep the column, then the rest
+\cs_new_protected:Npn \__pf_layout_mark:n #1
+  {
+    \__pf_mark_place:n {#1}
+    \bool_if:nT
+      {
+        ! \prop_if_in_p:NV \l__pf_base_prop \l__pf_place_tl
+        && ! \bool_xor_p:nn { \l__pf_ranged_bool } { \prop_if_in_p:NV \l__pf_ranged_prop \l__pf_place_tl }
+      }
+      {
+        \__pf_mark_get:NN \l__pf_count_prop \l__pf_count_int
+        \fp_set:Nn \l__pf_width_fp { \l__pf_count_int * \pf@markdisc + ( \l__pf_count_int - 1 ) * \pf@marksidegap }
+        \fp_zero:N \l__pf_base_fp
+        \bool_set_true:N \l__pf_clash_bool
+        \bool_while_do:Nn \l__pf_clash_bool
+          {
+            \__pf_mark_clash:nnnnn { \fp_use:N \l__pf_base_fp } { \fp_use:N \l__pf_width_fp }
+              { \int_div_truncate:nn { \l__pf_first_tl + \l__pf_last_tl } { 2 } }
+              { \int_div_truncate:nn { \l__pf_first_tl + \l__pf_last_tl + 1 } { 2 } } { \pf@marksidegap }
+            \bool_if:NT \l__pf_clash_bool { \fp_set_eq:NN \l__pf_base_fp \l__pf_next_fp }
+          }
+        \prop_put:NVx \l__pf_base_prop \l__pf_place_tl { \fp_use:N \l__pf_base_fp }
+        \__pf_mark_take:nnnn { \fp_use:N \l__pf_base_fp } { \fp_eval:n { \l__pf_base_fp + \l__pf_width_fp } }
+          { \int_div_truncate:nn { \l__pf_first_tl + \l__pf_last_tl } { 2 } }
+          { \int_div_truncate:nn { \l__pf_first_tl + \l__pf_last_tl + 1 } { 2 } }
+      }
+    % The bar of a range, once its place is laid out: left of its discs, with the gap a bar keeps from discs;
+    % in class, with no bar, nothing
+    \bool_if:nT
+      {
+        \bool_if_p:N \l__pf_ranged_bool && \int_compare_p:nNn { \l__pf_first_tl } < { \l__pf_last_tl }
+        && ! \prop_if_in_p:NV \l__pf_bar_prop \l__pf_place_tl
+      }
+      {
+        \prop_put:NVn \l__pf_bar_prop \l__pf_place_tl { 1 }
+        \prop_get:NVN \l__pf_base_prop \l__pf_place_tl \l_tmpa_tl
+        \__pf_mark_get:NN \l__pf_count_prop \l__pf_count_int
+        \fp_set:Nn \l__pf_width_fp { \l_tmpa_tl + \l__pf_count_int * \pf@markdisc + ( \l__pf_count_int - 1 ) * \pf@marksidegap }
+        \mode<handout>
+          { % only in print, the one place it is drawn
+            \__pf_mark_take:nnnn { \fp_eval:n { \l__pf_width_fp + \pf@markbargap } }
+              { \fp_eval:n { \l__pf_width_fp + 2 * \pf@markbargap + \pf@markbar - \pf@marksidegap } }
+              { \l__pf_first_tl } { \l__pf_last_tl }
+          }
+      }
+  }
+\cs_new_protected:Npn \__pf_draw_mark:n #1
+  {
+    \int_incr:N \l__pf_place_int
+    \tl_set:Nx \l__pf_markstep_tl
+      { \seq_item:Nn \l__pf_marksteps_seq
+        { \int_min:nn { \l__pf_place_int } { \seq_count:N \l__pf_marksteps_seq } } }
+    \__pf_mark_place:n {#1}
+    % How many discs this place holds already: this one goes to their left
+    \__pf_mark_get:NN \l__pf_taken_prop \l__pf_taken_int
+    \__pf_mark_get:NN \l__pf_count_prop \l__pf_count_int
+    \prop_put:NVx \l__pf_taken_prop \l__pf_place_tl { \int_eval:n { \l__pf_taken_int + 1 } }
+    % Where the discs of its place start, laid out before any is drawn
+    \prop_get:NVN \l__pf_base_prop \l__pf_place_tl \l_tmpa_tl
+    \fp_set:Nn \l__pf_base_fp { \l_tmpa_tl }
+    \bool_set:Nn \l__pf_clash_bool
+      { \int_compare_p:nNn { \l__pf_first_tl } < { \l__pf_last_tl } && ! \prop_if_in_p:NV \l__pf_bar_prop \l__pf_place_tl }
+    \use:x
+      {
+        % The bar, once per place, left of all its discs
+        \bool_lazy_and:nnT
+          { \int_compare_p:nNn { \l__pf_first_tl } < { \l__pf_last_tl } }
+          { ! \prop_if_in_p:NV \l__pf_bar_prop \l__pf_place_tl }
+          {
+            \exp_not:N \mode < handout >
+              {
+                \exp_not:N \draw [ tone@\l__pf_tone_tl , line~cap = round ,
+                    line~width = \fp_to_dim:n { \pf@markbar * \pf@codesizenow * \pf@em } ] ~
+                  ( [ xshift = - \fp_to_dim:n { \l__pf_padx_dim + ( \l__pf_base_fp + \l__pf_count_int * \pf@markdisc
+                        + ( \l__pf_count_int - 1 ) * \pf@marksidegap + \pf@markbargap + \pf@markbar / 2 )
+                        * \pf@codesizenow * \pf@em } ,
+                      yshift = - \fp_to_dim:n { \l__pf_pady_dim + ( \l__pf_first_tl - 1 + \pf@markbarinset ) * \l__pf_line_dim } ]
+                    interior.north~east ) ~ -- ~ ++ ( 0 ,
+                    - \fp_to_dim:n { ( \l__pf_last_tl - \l__pf_first_tl + 1 - 2 * \pf@markbarinset ) * \l__pf_line_dim } ) ;
+              }
+          }
+        \exp_not:N \only < \l__pf_markstep_tl - >
+          {
+            \exp_not:N \node [ pf~mark = \pf@codesizenow , fill = tone@\l__pf_tone_tl , anchor = east ] ~ at ~
+              ( [ xshift = - \fp_to_dim:n { \l__pf_padx_dim + ( \l__pf_base_fp + \l__pf_taken_int
+                    * ( \pf@markdisc + \pf@marksidegap ) ) * \pf@codesizenow * \pf@em } ,
+                  yshift = - \fp_to_dim:n { \l__pf_pady_dim + ( \l__pf_first_tl + \l__pf_last_tl - 1 ) / 2 * \l__pf_line_dim } ]
+                interior.north~east ) { \int_use:N \l__pf_mark_int } ;
+          }
+      }
+    \bool_if:NT \l__pf_clash_bool { \prop_put:NVn \l__pf_bar_prop \l__pf_place_tl { 1 } }
+  }
+% Each mark's number, steps and tone, then \__pf_..._mark:n on each of its places
+\cs_new_protected:Npn \__pf_map_marks:N #1
+  {
+    \int_set:Nn \l__pf_mark_int { \l__pf_markfrom_int - 1 }
+    \clist_map_inline:Nn \l__pf_marks_clist
+      {
+        \int_incr:N \l__pf_mark_int
+        \seq_set_split:Nnn \l_tmpb_seq { / } {##1}
+        % A fourth field numbers it, and the next ones go on from there: a block showing only some notes
+        \int_compare:nNnT { \seq_count:N \l_tmpb_seq } > { 3 }
+          { \int_set:Nn \l__pf_mark_int { \seq_item:Nn \l_tmpb_seq { 4 } } }
+        \seq_set_split:Nnx \l__pf_marksteps_seq { + } { \seq_item:Nn \l_tmpb_seq { 2 } }
+        \int_zero:N \l__pf_place_int
+        \tl_set:Nx \l__pf_tone_tl
+          { \int_compare:nNnTF { \seq_count:N \l_tmpb_seq } > { 2 } { \seq_item:Nn \l_tmpb_seq { 3 } } { info } }
+        \seq_set_split:Nnx \l__pf_places_seq { + } { \seq_item:Nn \l_tmpb_seq { 1 } }
+        \seq_map_function:NN \l__pf_places_seq #1
+      }
+  }
+% First how many discs each place holds, so a bar can go left of them all; then the discs
+\cs_new_protected:Npn \__pf_draw_marks:
+  {
+    \prop_clear:N \l__pf_count_prop
+    \prop_clear:N \l__pf_taken_prop
+    \prop_clear:N \l__pf_base_prop
+    \prop_clear:N \l__pf_used_prop
+    \prop_clear:N \l__pf_ranged_prop
+    \prop_clear:N \l__pf_bar_prop
+    \__pf_map_marks:N \__pf_count_mark:n
+    \__pf_map_marks:N \__pf_range_mark:n
+    \bool_set_true:N \l__pf_ranged_bool
+    \__pf_map_marks:N \__pf_layout_mark:n
+    \bool_set_false:N \l__pf_ranged_bool
+    \__pf_map_marks:N \__pf_layout_mark:n
+    \prop_clear:N \l__pf_bar_prop
+    \__pf_map_marks:N \__pf_draw_mark:n
+  }
+\NewDocumentCommand \pfcodemarks { } { \__pf_draw_marks: }
+
+% lines={1|2|3}: the code written line by line, one step each from steps from: on each, the lines after
+% the given one are hidden, so the class can be asked for the next; after the last, all show
+% (covered in the block's own background, tcbcolback, so a console's red tint shows no patch)
+\cs_new_protected:Npn \__pf_draw_lines:
+  {
+    \int_zero:N \l__pf_step_int
+    \seq_map_inline:Nn \l__pf_lines_seq
+      {
+        \tl_if_blank:nF {##1} { \use:x
+          {
+            \exp_not:N \only < \int_eval:n { \l__pf_from_int + \l__pf_step_int } | handout:0 >
+              {
+                \exp_not:N \fill [ tcbcolback ] ~
+                  ( [ xshift = \dim_use:N \l__pf_padx_dim ,
+                      yshift = \dim_eval:n { - \l__pf_pady_dim - \l__pf_line_dim * ##1 } ] interior.north~west ) ~ rectangle ~
+                  ( [ xshift = - \dim_use:N \l__pf_padx_dim ] interior.south~east ) ;
+              }
+          } }
+        \int_incr:N \l__pf_step_int
+      }
+  }
+\NewDocumentCommand \pfcodelines { } { \__pf_draw_lines: }
+
+% strike={14/3}, line/step: a line that does not compile, written as any other and crossed out from the
+% step on, for the error note that points at it, by a line in the tone of errors from its first character
+% to its last. The listing's file gives the line's text: in a monospaced font, its columns give the ends
+\newcommand\pf@strikeraise{0} % the line through the text, from the middle of its row, em of the code: halfway up the small letters, most of any code
+\newcommand\pf@strikethickness{0.1} % em of the code
+\newcommand\pf@codelistingfile{\jobname.listing}
+\ior_new:N \g__pf_code_ior
+\str_new:N \l__pf_codeline_str
+\dim_new:N \l__pf_codeleft_dim
+\cs_new_protected:Npn \__pf_draw_strike:n #1
+  {
+    \seq_set_split:Nnn \l_tmpb_seq { / } {#1}
+    \tl_set:Nx \l__pf_first_tl { \seq_item:Nn \l_tmpb_seq { 1 } }
+    \ior_open:Nn \g__pf_code_ior { \pf@codelistingfile }
+    \prg_replicate:nn { \l__pf_first_tl } { \ior_str_get:NN \g__pf_code_ior \l__pf_codeline_str }
+    \ior_close:N \g__pf_code_ior
+    \str_set_eq:NN \l_tmpa_str \l__pf_codeline_str
+    \tl_trim_spaces:N \l_tmpa_str
+    \tl_set:Nx \l_tmpb_tl
+      {
+        \exp_not:N \only < \seq_item:Nn \l_tmpb_seq { 2 } - >
+          {
+            \exp_not:N \draw [ tone@error , line~width = \fp_to_dim:n { \pf@strikethickness * \l__pf_size_dim } ] ~
+              ( [ xshift = \dim_eval:n { \l__pf_codeleft_dim + \l__pf_char_dim
+                    * ( \str_count:N \l__pf_codeline_str - \str_count:N \l_tmpa_str ) } ,
+                  yshift = \fp_to_dim:n { - \l__pf_pady_dim - ( \__pf_row:n { \l__pf_first_tl } - 0.5 ) * \l__pf_line_dim
+                    + \pf@strikeraise * \l__pf_size_dim } ]
+                interior.north~west ) ~ -- ~ ++ ( \dim_eval:n { \l__pf_char_dim * \str_count:N \l_tmpa_str } , 0 ) ;
+          }
+      }
+    \tl_use:N \l_tmpb_tl
+  }
+\cs_new_protected:Npn \__pf_draw_strikes:
+  {
+    \clist_if_empty:NF \l__pf_strikes_clist
+      {
+        \dim_set:Nn \l__pf_codeleft_dim
+          { \l__pf_padx_dim + \fp_to_dim:n { ( \pf@codenumberwidth + \pf@codenumbergap ) * \l__pf_size_dim } }
+        \clist_map_function:NN \l__pf_strikes_clist \__pf_draw_strike:n
+      }
+  }
+\NewDocumentCommand \pfcodestrikes { } { \__pf_draw_strikes: }
+\NewDocumentCommand \pfcodesetup { m } { \pf_code_setup:n {#1} }
+
+% add={9/4}, line/step: a line added on that step. Each step is typeset on its own, so on the ones before
+% it the block leaves it out and numbers the rest in order, and every line the block refers to (steps,
+% marks, strike) moves to the row it takes on that step; print shows every line
+\seq_new:N \l__pf_hidden_seq
+\int_new:N \l__pf_now_int
+\int_new:N \l__pf_hidemax_int
+\int_new:N \l__pf_hidecount_int
+\prop_new:N \l__pf_rows_prop
+\tl_new:N \l__pf_range_tl
+% The row line #1 takes on this step
+\cs_new:Npn \__pf_row:n #1
+  {
+    \int_compare:nNnTF {#1} > { \l__pf_hidemax_int }
+      { \int_eval:n { #1 - \l__pf_hidecount_int } } { \prop_item:Nn \l__pf_rows_prop {#1} }
+  }
+\cs_new_protected:Npn \__pf_to_rows:N #1
+  { \regex_replace_all:nnN { [0-9]+ } { \c{__pf_row:n} \cB\{ \0 \cE\} } #1 \tl_set:Nx #1 {#1} }
+\cs_new_protected:Npn \pf_code_hide:
+  {
+    \seq_clear:N \l__pf_hidden_seq
+    \int_zero:N \l__pf_hidemax_int
+    \int_set:Nn \l__pf_now_int { \beamer@slideinframe }
+    \mode<handout>{ \int_set_eq:NN \l__pf_now_int \c_max_int }
+    \clist_map_inline:Nn \l__pf_adds_clist
+      {
+        \seq_set_split:Nnn \l_tmpa_seq { / } {##1}
+        \int_compare:nNnT { \seq_item:Nn \l_tmpa_seq { 2 } } > { \l__pf_now_int }
+          { \seq_put_right:Nx \l__pf_hidden_seq { \seq_item:Nn \l_tmpa_seq { 1 } } }
+      }
+    \int_set:Nn \l__pf_hidecount_int { \seq_count:N \l__pf_hidden_seq }
+    \seq_if_empty:NF \l__pf_hidden_seq
+      {
+        \seq_sort:Nn \l__pf_hidden_seq
+          { \int_compare:nNnTF {##1} > {##2} { \sort_return_swapped: } { \sort_return_same: } }
+        \int_set:Nn \l__pf_hidemax_int { \seq_item:Nn \l__pf_hidden_seq { -1 } }
+        % Each line up to the last one left out, and its row
+        \prop_clear:N \l__pf_rows_prop
+        \int_zero:N \l_tmpa_int
+        \int_step_inline:nn { \l__pf_hidemax_int }
+          {
+            \prop_put:Nnx \l__pf_rows_prop {##1} { \int_eval:n { ##1 - \l_tmpa_int } }
+            \seq_if_in:NnT \l__pf_hidden_seq {##1} { \int_incr:N \l_tmpa_int }
+          }
+        % The lines the listing keeps: the ranges between those left out, the last one to the end
+        \tl_clear:N \l__pf_range_tl
+        \int_set:Nn \l_tmpb_int { 1 }
+        \seq_map_inline:Nn \l__pf_hidden_seq
+          {
+            \int_compare:nNnT {##1} > { \l_tmpb_int }
+              { \tl_put_right:Nx \l__pf_range_tl { \int_use:N \l_tmpb_int - \int_eval:n { ##1 - 1 } , } }
+            \int_set:Nn \l_tmpb_int { ##1 + 1 }
+          }
+        \tl_put_right:Nx \l__pf_range_tl { \int_use:N \l_tmpb_int - \int_use:N \c_max_int }
+        % After the listing options of the block, which pf code finish follows
+        \tcbset { listing~options/.expanded = { \exp_not:o { \kvtcb@listingoptions } , linerange = { \l__pf_range_tl } } }
+        % The steps and the marks' places, in rows
+        \seq_clear:N \l_tmpb_seq
+        \seq_map_inline:Nn \l__pf_steps_seq
+          {
+            \tl_set:Nn \l_tmpa_tl {##1}
+            \__pf_to_rows:N \l_tmpa_tl
+            \seq_put_right:NV \l_tmpb_seq \l_tmpa_tl
+          }
+        \seq_set_eq:NN \l__pf_steps_seq \l_tmpb_seq
+        \tl_clear:N \l_tmpb_tl
+        \clist_map_inline:Nn \l__pf_marks_clist
+          {
+            \seq_set_split:Nnn \l_tmpa_seq { / } {##1}
+            \seq_pop_left:NN \l_tmpa_seq \l_tmpa_tl
+            \__pf_to_rows:N \l_tmpa_tl
+            \tl_put_right:Nx \l_tmpb_tl { \l_tmpa_tl / \seq_use:Nn \l_tmpa_seq { / } , }
+          }
+        \clist_set:NV \l__pf_marks_clist \l_tmpb_tl
+      }
+  }
+\NewDocumentCommand \pfcodehide { } { \pf_code_hide: }
+\NewDocumentCommand \pfcodebands { } { \__pf_draw_steps:nn { colorCodeCurrentLine } { \c_false_bool } }
+\NewDocumentCommand \pfcodedim { }
+  {
+    \bool_if:NT \l__pf_dim_bool
+      { \__pf_draw_steps:nn { colorCodeBg, opacity=\pf@codedim, even~odd~rule } { \c_true_bool } }
+  }
+\ExplSyntaxOff
+
+% The frame every code block and terminal shares: a rounded hairline in #1, neutral but for errors
+\tcbset{
+  pf code size/.store in=\pf@codesizenow,
+  pf code size=\pf@codesize,
+  compact/.style={pf code size=\pf@codecompactsize},
+  dense/.style={pf code size=\pf@codedensesize},
+  packed/.style={pf code size=\pf@codetightsize},
+  pf code box/.style={
+    enhanced, listing only, arc=\pf@radius, boxsep=0pt,
+    colback=colorCodeBg, colframe=#1, boxrule=\pf@hairline,
+    before skip=0pt, after skip=0pt,
+    steps={}, steps from=1, dim=true, marks={}, marks from=1, lines={}, strike={}, add={}},
+  % After the block's own options, so compact and dense are known
+  pf code finish/.style={
+    code={\pfcodesetup{\pf@codesizenow}\pfcodehide},
+    left=\slideem{\pf@codepaddingx*\pf@codesizenow}, right=\slideem{\pf@codepaddingx*\pf@codesizenow},
+    top=\slideem{\pf@codepaddingy*\pf@codesizenow}, bottom=\slideem{\pf@codepaddingy*\pf@codesizenow},
+    underlay={\pfcodebands}, finish={\pfcodedim\pfcodelines\pfcodestrikes\pfcodemarks}}, % finish, unlike overlay, draws over the text
+  % C and Java side by side: every line readable, only the differences highlighted
+  diff/.style={dim=false}}
+
+% \begin{codeblock}[steps={1,5|2,4|3}, steps from=2, compact]{java}; the language is java or c;
+% marks={1/3, 2/4} numbers lines for the notes of codenotes, from 1 or from marks from (a block whose notes
+% go on from another's); lines={1|2|3} writes it line by line; strike={9/4} crosses out a line that does not
+% compile; add={9/4} adds a line on a step
+\DeclareTCBListing{codeblock}{ O{} m }{%
+  pf code box=colorCodeEdge, #1, listing options={style=pf code, language=pf#2}, pf code finish}
+
+% \begin{console} what a program prints, with no line numbers; consoleerror tints it red
+\DeclareTCBListing{console}{ O{} }{%
+  pf code box=colorCodeEdge, #1, pf code finish,
+  listing options={style=pf base}}
+\DeclareTCBListing{consoleerror}{ O{} }{%
+  pf code box=paletteRed!\pf@codeedgetint!colorBg, colback=paletteRed!\pf@ruletint!colorCodeBg, #1, pf code finish,
+  listing options={style=pf base}}
+
+% Code in running text (\code in commands.tex): the code font on a rounded tint, in the color of the
+% text around it. The tint has a fixed height, in em of the text, whatever the code holds
+\newcommand\pf@inlineheight{0.78} % over the baseline, em of the text
+\newcommand\pf@inlinedepth{0.24} % under the baseline
+\newcommand\pf@inlinepaddingx{0.18} % around the code, em of the text
+\newcommand\pf@inlinepaddingy{0.06}
+\newcommand\inlinecode[1]{%
+  \tikz[baseline=(pf@inline.base)]\node[fill=colorCodeInline, rounded corners=\pf@smallradius,
+    inner xsep=\pf@inlinepaddingx em, inner ysep=\pf@inlinepaddingy em,
+    text height=\pf@inlineheight em, text depth=\pf@inlinedepth em] (pf@inline) {\texttt{#1}};}
+
+% \codeunused<step>{name}: \code that, from the step, dims and is crossed out, as the starred words of the keyword
+% grid, for the names a table lists but the course leaves aside (e.g. "Java's exceptions")
+\newcommand\pf@codeunusedraise{0.3} % the line through it, over the baseline, em of the text
+\NewDocumentCommand\codeunused{ D<>{1-} m }{%
+  \tikz[baseline=(pf@inline.base)]{%
+    \begin{scope}[transparency group, alt={<#1>{opacity=\pf@keywordunused}{}}]
+      \node[fill=colorCodeInline, rounded corners=\pf@smallradius,
+        inner xsep=\pf@inlinepaddingx em, inner ysep=\pf@inlinepaddingy em,
+        text height=\pf@inlineheight em, text depth=\pf@inlinedepth em] (pf@inline) {\texttt{#2}};
+      \draw[paletteRed, line width=\pf@hairline, visible on=<#1>]
+        ([xshift=\pf@inlinepaddingx em, yshift=\pf@codeunusedraise em]pf@inline.base west) --
+        ([xshift=-\pf@inlinepaddingx em, yshift=\pf@codeunusedraise em]pf@inline.base east);
+    \end{scope}}}
+
+% A file or column name over a block of code; always as tall as a line with code in it, so blocks side
+% by side line up whether their titles hold \code or not
+\newcommand\blocktitle[1]{%
+  {\slidefont{\pf@blocktitlesize}{1.2}\bfseries\color{colorHeading}\vphantom{\inlinecode{X}}#1\par}%
+  \vskip\slideem{\pf@blocktitlegap}}
+
+% % % % % % % % % % TikZ on a step % % % % % % % % % %
+% visible on=<2->: the node or path keeps its place and shows from that step on
+\tikzset{
+  alt/.code args={<#1>#2#3}{\alt<#1>{\pgfkeysalso{#2}}{\pgfkeysalso{#3}}},
+  visible on/.style={alt={#1{}{opacity=0}}},
+  dim on/.code args={<#1>}{\alt<#1| handout:0>{\pgfkeysalso{opacity=\pf@stepdim}}{}}} % dim on=<4->: faded from that step on, but not in print
+\newcommand\pf@stepdim{0.25} % what is left of something faded on a step
+
+% % % % % % % % % % Flow diagram % % % % % % % % % %
+% Five columns across the slide: boxes in columns 1, 3 and 5, arrows between them, an arrow over the
+% row from end to end (the IDE's Run button), and a dashed branch from the middle box down to a
+% lower row. Every command takes a step and TikZ options, e.g. \flowbox<2->[dim on=<4->]. See the
+% first slides of unit 1.
+\newcommand\pf@flowboxsize{0.7}
+\newcommand\pf@flowdetailsize{0.525} % the second line of a box, 0.75 em of the box text
+\newcommand\pf@flowboxheight{2.5} % em of the slide, so boxes of one or two lines match
+\newcommand\pf@flowboxtint{10} % box background, percent of its tone
+\newcommand\pf@flowlabelsize{0.5}
+\newcommand\pf@flowlabelgap{0.3} % an arrow to the text over and under it
+\newcommand\pf@flowhead{0.35} % arrowhead, em of the slide
+\newcommand\pf@flowdrop{3.4} % between the main row and the branch: room for a console under a box
+\newcommand\pf@flowcaptiongap{0.3}
+\newcommand\pf@flowoverheight{1.1} % how far the arrow over the row rises above the boxes, em of the slide
+\newdimen\pf@flowcol
+\newdimen\pf@flowheadlength % arrow tips take a plain length, not an expression
+\pf@flowheadlength=\slideem{\pf@flowhead}
+
+\colorlet{tone@source}{colorHeading}
+\colorlet{tone@output}{colorMuted} % whatever the compiler generates: neutral, as orange means take care
+\colorlet{tone@ok}{colorAccentTwo}
+
+\tikzset{
+  flow box/.style={draw=tone@#1, fill=tone@#1!\pf@flowboxtint!colorBg, line width=\pf@hairline,
+    rounded corners=\pf@radius,
+    minimum width=\pf@flowcol-\pf@hairline, minimum height=\slideem{\pf@flowboxheight}, inner sep=0pt, % the line inside the column
+    align=center, text=colorText, font=\slidefont{\pf@flowboxsize}{1.3}},
+  flow arrow/.style={draw=colorText, line width=\pf@arrowline, line cap=round,
+    -{Latex[round, length=\the\pf@flowheadlength, width=\the\pf@flowheadlength]}},
+  flow label/.style={inner sep=0pt, text=colorText, align=center,
+    font=\slidefont{\pf@flowlabelsize}{1.25}\pf@nohyphens}, % whole words, as on the web
+  flow command/.style={inner sep=0pt, text=colorText, font=\slidefont{\pf@flowlabelsize}{1.25}\ttfamily}}
+
+% \begin{flow} ... \end{flow}: one row of boxes, with an optional branch under it
+\NewDocumentEnvironment{flow}{}
+  {\par\noindent\pf@flowcol=\dimexpr\linewidth/5\relax\begin{tikzpicture}}
+  {\end{tikzpicture}\par}
+
+% \flowbox<step>{name}{column}{row}{tone}{Title}{second line}: row 0 is the main row, 1 the branch;
+% tone is source, output, ok or error
+\NewDocumentCommand\flowbox{ D<>{1-} O{} m m m m m m }{%
+  % A transparency group, so whatever a box holds hides and fades with it
+  \begin{scope}[transparency group, visible on=<#1>, #2]
+    \node[flow box=#6] (#3)
+      at ({(#4-0.5)*\pf@flowcol}, {-#5*\slideem{\pf@flowboxheight+\pf@flowdrop}})
+      {{\bfseries #7}\if\relax\detokenize{#8}\relax\else
+        \\[\slideem{0.2*\pf@flowboxsize}]{\slidefont{\pf@flowdetailsize}{1.3}#8}\fi};
+  \end{scope}}
+
+% \flowarrow<step>[options]{from}{to}{label over it}{command under it}
+\NewDocumentCommand\flowarrow{ D<>{1-} O{} m m m m }{%
+  \begin{scope}[transparency group, visible on=<#1>, #2] % faded as one, or line and tip overlap
+    \draw[flow arrow] (#3.east) -- (#4.west)
+      node[midway, above=\slideem{\pf@flowlabelgap}, flow label] {#5}
+      node[midway, below=\slideem{\pf@flowlabelgap}, flow command] {#6};
+  \end{scope}}
+
+% \flowover<step>[options]{from}{to}{label}: over the row, straight up from one box, across and down
+% into another, its label over the middle
+\NewDocumentCommand\flowover{ D<>{1-} O{} m m m }{%
+  \begin{scope}[transparency group, visible on=<#1>, #2] % faded as one, or line and tip overlap
+    \draw[flow arrow] (#3.north) -- ++(0,\slideem{\pf@flowoverheight})
+      -| node[pos=0.25, above=\slideem{\pf@flowlabelgap}, flow label] {#5} (#4.north);
+  \end{scope}}
+
+% \flowbranch<step>[options]{from}{to}{label}{command}: dashed, down from a box and on to one in the branch row
+\NewDocumentCommand\flowbranch{ D<>{1-} O{} m m m m }{%
+  \begin{scope}[transparency group, visible on=<#1>, #2] % faded as one, or line and tip overlap
+    \draw[flow arrow, dashed] (#3.south) |- (#4.west)
+      node[pos=0.75, above=\slideem{\pf@flowlabelgap}, flow label] {#5}
+      node[pos=0.75, below=\slideem{\pf@flowlabelgap}, flow command] {#6};
+  \end{scope}}
+
+% \flowcaption<step>[options]{box}{text}: a short description under a box
+\NewDocumentCommand\flowcaption{ D<>{1-} O{} m m }{%
+  \node[flow label, anchor=north, text width=\pf@flowcol, visible on=<#1>, #2]
+    at ([yshift=-\slideem{\pf@flowcaptiongap}]#3.south) {#4};}
+
+% \flowconsole<step>[tone]{box}{lines}: what a box holds or prints, under it and as wide, drawn as a
+% console block; lines split by \; error tints it as consoleerror. Named <box>console, so a branch
+% or a caption can start from it
+\newcommand\pf@flowconsolegap{0.5} % the box to its console, em of the slide
+\NewDocumentCommand\flowconsole{ D<>{1-} O{plain} m m }{%
+  \def\pf@tone{#2}\def\pf@error{error}%
+  \ifx\pf@tone\pf@error
+    \tikzset{pf console tone/.style={draw=paletteRed!\pf@codeedgetint!colorBg, fill=paletteRed!\pf@ruletint!colorCodeBg}}%
+  \else
+    \tikzset{pf console tone/.style={draw=colorCodeEdge, fill=colorCodeBg}}%
+  \fi
+  \begin{scope}[visible on=<#1>]
+    \node[anchor=north, rounded corners=\pf@radius, line width=\pf@hairline, pf console tone,
+      text width=\dimexpr\pf@flowcol-2\pf@hairline-2\slideem{\pf@codepaddingx*\pf@codesnippetsize}\relax, % as wide as its box
+      inner xsep=\slideem{\pf@codepaddingx*\pf@codesnippetsize}, inner ysep=\slideem{\pf@codepaddingy*\pf@codesnippetsize}, % as a code block
+      align=left, text=colorText, font=\slidefont{\pf@codesnippetsize}{\pf@codelineheight}\ttfamily]
+      (#3console) at ([yshift=-\slideem{\pf@flowconsolegap}]#3.south) {#4};
+  \end{scope}}
+
+% A small code block under a box, as wide as the box, in the free part of the branch row: build it in
+% \begin{lrbox}{\flowsnippetbox} \begin{codeblock}[snippet]{c} ... \end{codeblock} \end{lrbox},
+% then \flowsnippet<step>{box} sets it under that box
+\newsavebox\flowsnippetbox
+\newcommand\pf@snippetgap{0.5} % the box to the code under it, em of the slide
+\tcbset{snippet/.style={pf code size=\pf@codesnippetsize, width=\dimexpr\linewidth/5-\pf@hairline\relax}} % one box
+\NewDocumentCommand\flowsnippet{ D<>{1-} m }{%
+  \begin{scope}[transparency group, visible on=<#1>]
+    \node[anchor=north west, inner sep=0pt] at ([yshift=-\slideem{\pf@snippetgap}]#2.south west)
+      {\usebox\flowsnippetbox};
+  \end{scope}}
+
+% The Run button of an IDE, for an arrow's label
+\newcommand\runicon{\tikz[baseline=-0.1em]\fill[colorAccentTwo] (0,-0.5em) -- (0,0.5em) -- (0.85em,0) -- cycle;}
+
+% % % % % % % % % % Toolbox % % % % % % % % % %
+% \begin{toolbox}{Java Development Kit}{JDK}[what it is for]: a frame holding groups of tools,
+% \toolgroup in columns, or a nested \begin{runtime} block with its parts
+\newcommand\pf@toolboxpadding{0.6}
+\newcommand\pf@toolboxgap{0.45}
+\newcommand\pf@toolboxtint{6}
+\newcommand\pf@toolboxbandtint{14} % the nested block, a step darker
+\newcommand\pf@toolboxlabelsize{0.7}
+\newcommand\pf@toolboxabbrsize{0.56} % 0.8 em of the label
+\newcommand\pf@toolboxabbrgap{0.15} % the name to its abbreviation, em of the slide
+\newcommand\pf@toolboxdescsize{0.55}
+\newcommand\pf@toolboxgroupsize{0.45}
+\newcommand\pf@toolpadding{0.3}
+\newcommand\pf@toolcommandsize{0.65}
+\newcommand\pf@tooltextsize{0.45}
+\newcommand\pf@toolpartsize{0.55} % the parts of the nested block: fewer words, more room
+\colorlet{colorToolEdge}{colorHeading!25!colorBg}
+
+\tcbset{
+  pf toolbox/.style={enhanced, arc=\pf@radius, boxsep=0pt, boxrule=\pf@hairline,
+    colframe=colorHeading, colback=colorHeading!#1!colorBg,
+    left=\slideem{\pf@toolboxpadding}, right=\slideem{\pf@toolboxpadding},
+    top=\slideem{\pf@toolboxpadding}, bottom=\slideem{\pf@toolboxpadding},
+    before skip=0pt, after skip=0pt},
+  pf tool/.style={enhanced, arc=\pf@smallradius, boxsep=0pt, boxrule=\pf@hairline,
+    colframe=colorToolEdge, colback=colorBg, left=\slideem{\pf@toolpadding},
+    right=\slideem{\pf@toolpadding}, top=\slideem{\pf@toolpadding}, bottom=\slideem{\pf@toolpadding},
+    before skip=0pt},
+  pf toolgroup/.style={blank, boxsep=0pt, left=0pt, right=0pt, top=0pt, bottom=0pt}}
+
+\newcommand\pf@toolboxhead[3]{%
+  {\slidefont{\pf@toolboxlabelsize}{1.2}\heavyseries\color{colorHeading}#1\par
+   \vskip\slideem{\pf@toolboxabbrgap}\slidefont{\pf@toolboxabbrsize}{1.2}#2\par}%
+  \if\relax\detokenize{#3}\relax\else
+    \vskip\slideem{0.3}{\slidefont{\pf@toolboxdescsize}{1.3}\raggedright #3\par}%
+  \fi
+  \vskip\slideem{\pf@toolboxgap+0.5}}
+
+\NewDocumentEnvironment{toolbox}{ m m O{} }
+  {\begin{tcolorbox}[pf toolbox=\pf@toolboxtint]\pf@toolboxhead{#1}{#2}{#3}}
+  {\end{tcolorbox}}
+
+% \begin{toolgroups} \toolgroup<2->{Build and run}{\tool{javac}{...}\tool{java}{...}} ... \end{toolgroups}
+\NewDocumentEnvironment{toolgroups}{ O{3} }
+  {\begin{tcbraster}[raster columns=#1, raster valign=top, raster column skip=\slideem{\pf@toolboxgap},
+    raster before skip=0pt, raster after skip=0pt]}
+  {\end{tcbraster}}
+\NewDocumentCommand\toolgroup{ D<>{1-} m m }{%
+  \begin{tcolorbox}[pf toolgroup]
+    \begin{uncoverenv}<#1>%
+      {\slidefont{\pf@toolboxgroupsize}{1.2}\bfseries\color{colorMuted}#2\par}%
+      \vskip\slideem{\pf@toolboxgap}#3%
+    \end{uncoverenv}
+  \end{tcolorbox}}
+% A command: its name as code and what it does
+\newcommand\tool[2]{%
+  \begin{tcolorbox}[pf tool, after skip=\slideem{\pf@toolboxgap}]
+    {\slidefont{\pf@toolcommandsize}{1.2}\ttfamily\color{colorText}#1\par}%
+    \vskip\slideem{0.15}{\slidefont{\pf@tooltextsize}{1.3}\raggedright\pf@linegrid#2\par}%
+  \end{tcolorbox}}
+
+% \begin{runtime}<2->{Java Runtime Environment}{JRE}{what it is for} \toolpart<3->{JVM}{...} \end{runtime}
+\NewDocumentEnvironment{runtime}{ D<>{1-} m m m }
+  {\begin{uncoverenv}<#1>\begin{tcolorbox}[pf toolbox=\pf@toolboxbandtint]\pf@toolboxhead{#2}{#3}{#4}%
+   \begin{tcbraster}[raster columns=2, raster valign=top, raster column skip=\slideem{\pf@toolboxgap},
+     raster before skip=0pt, raster after skip=0pt]}
+  {\end{tcbraster}\end{tcolorbox}\end{uncoverenv}}
+% A part rather than a command: named in the heading blue, not as code
+\NewDocumentCommand\toolpart{ D<>{1-} m m }{%
+  \begin{uncoverenv}<#1>%
+  \begin{tcolorbox}[pf tool]
+    {\slidefont{\pf@toolcommandsize}{1.2}\bfseries\color{colorHeading}#2\par}%
+    \vskip\slideem{0.15}{\slidefont{\pf@toolpartsize}{1.3}\raggedright\pf@linegrid#3\par}%
+  \end{tcolorbox}%
+  \end{uncoverenv}}
+
+% % % % % % % % % % Data table % % % % % % % % % %
+% \begin{datatable}{l l X}: hairlines under every row (\tablerule), a heading-blue line under the
+% header and after each group (\grouprule); answers on a step go in \uncover, so their lines stay
+\newcommand\pf@tablesize{0.52}
+\newcommand\pf@tablepaddingx{0.7} % em of the table text
+\newcommand\pf@tablestretch{1.65} % row height, so a row has about 0.45 em above and below its text
+\newcommand\pf@tabledensesize{0.44} % [dense]: a reference table too long for the slide (e.g. "Java's exceptions")
+\newcommand\pf@tabledensestretch{1.45}
+
+% \begin{datatable}[dense]{l Y}: dense, smaller text and rows
+\newenvironment{datatable}[2][]
+  {\par\noindent
+   \def\pf@tableoption{#1}\def\pf@tabledense{dense}%
+   \ifx\pf@tableoption\pf@tabledense
+     \let\pf@tablesizenow\pf@tabledensesize\let\pf@tablestretchnow\pf@tabledensestretch
+   \else
+     \let\pf@tablesizenow\pf@tablesize\let\pf@tablestretchnow\pf@tablestretch
+   \fi
+   \slidefont{\pf@tablesizenow}{1.35}%
+   \setlength\tabcolsep{\slideem{\pf@tablepaddingx*\pf@tablesizenow}}%
+   \renewcommand\arraystretch{\pf@tablestretchnow}%
+   \setlength\aboverulesep{0pt}\setlength\belowrulesep{0pt}% the rows' own height is the padding
+   \renewcommand\tabularxcolumn[1]{m{##1}}% X as m, centered as M
+   \tabularx{\linewidth}{#2}}
+  {\endtabularx\par}
+\newcommand\tablerule{\arrayrulecolor{colorCodeEdge}\specialrule{\pf@hairline}{0pt}{0pt}}
+\newcommand\grouprule{\arrayrulecolor{colorHeading}\specialrule{\pf@hairline}{0pt}{0pt}}
+\newcommand\tablehead[1]{\textbf{\textcolor{colorHeading}{#1}}} % a column's name
+\newcommand\tablelabel[1]{\textbf{\textcolor{colorHeading}{#1}}} % a row's feature, in a comparison
+% \leavevmode: a cell that starts with \uncover would otherwise sit a line lower; m: every cell centered on
+% the row's tallest
+\newcolumntype{M}{>{\centering\arraybackslash\leavevmode}m{6.5em}} % a column of marks, as wide as "Convention?"
+\newcolumntype{Y}{>{\raggedright\arraybackslash\leavevmode}X} % a column that takes the spare width
+\newcolumntype{C}{>{\centering\arraybackslash\leavevmode}X} % marks sharing the spare width, in a table of marks only
+% \celllines{first \\ second}: a cell's text on several lines, as close together as in a paragraph,
+% e.g. a call too long for its column, broken where Java allows it; centered on the row's other cells,
+% with the same padding above and below as a row of one line
+\newsavebox\pf@cellbox
+\newcommand\celllines[1]{%
+  \sbox\pf@cellbox{\renewcommand\arraystretch{1}\begin{tabular}{@{}l@{}}#1\end{tabular}}%
+  \rule[-\dimexpr\dp\pf@cellbox+\pf@tablestretchnow\dp\strutbox-\dp\strutbox\relax]{0pt}%
+    {\dimexpr\ht\pf@cellbox+\dp\pf@cellbox+(\pf@tablestretchnow\ht\strutbox-\ht\strutbox)%
+      +(\pf@tablestretchnow\dp\strutbox-\dp\strutbox)\relax}%
+  \usebox\pf@cellbox}
+% A line under part of a row, such as the rows a category cell spans: \partrule{2-5}
+\newcommand\partrule[1]{\arrayrulecolor{colorCodeEdge}\cmidrule[\pf@hairline]{#1}}
+
+% % % % % % % % % % Keyword grid % % % % % % % % % %
+% \keywordgrid<2->{abstract, *assert, boolean}: five columns, in order across the rows; from the step,
+% the starred ones dim and are crossed out
+\newcommand\pf@keywordcolumns{5}
+\newcommand\pf@keywordsize{0.55}
+\newcommand\pf@keywordgap{0.2} % em of the words
+\newcommand\pf@keywordpaddingy{0.15}
+\newcommand\pf@keywordpaddingx{0.5}
+\newcommand\pf@keywordtint{6}
+\newcommand\pf@keywordunused{0.35}
+\newdimen\pf@keywordwidth
+\newdimen\pf@keywordtext
+
+\ExplSyntaxOn
+\int_new:N \l__pf_keyword_int
+\NewDocumentCommand \keywordgrid { D<>{1-} m }
+  {
+    \par\noindent
+    \group_begin:
+    \slidefont{\pf@keywordsize}{1.3}
+    \dim_set:Nn \pf@keywordwidth
+      { ( \linewidth - \slideem{\pf@keywordgap*\pf@keywordsize*(\pf@keywordcolumns-1)} ) / \pf@keywordcolumns - 1pt }
+    \int_zero:N \l__pf_keyword_int
+    \clist_map_inline:nn {#2}
+      {
+        \int_compare:nNnT { \int_mod:nn { \l__pf_keyword_int } { \pf@keywordcolumns } } = { 0 }
+          {
+            \int_compare:nNnT { \l__pf_keyword_int } > { 0 }
+              { \par\nointerlineskip\vskip\slideem{\pf@keywordgap*\pf@keywordsize}\noindent }
+          }
+        \int_compare:nNnF { \int_mod:nn { \l__pf_keyword_int } { \pf@keywordcolumns } } = { 0 }
+          { \hfill } % the gap, with the 1 pt each cell gives up against rounding
+        \tl_if_head_eq_charcode:nNTF {##1} *
+          { \exp_args:Nx \__pf_keyword:nnn { \tl_tail:n {##1} } {#1} { true } }
+          { \__pf_keyword:nnn {##1} {#1} { false } }
+        \int_incr:N \l__pf_keyword_int
+      }
+    \par
+    \group_end:
+  }
+\cs_new_protected:Npn \__pf_keyword:nnn #1 #2 #3
+  {
+    \settowidth \pf@keywordtext { \ttfamily #1 }
+    \str_if_eq:nnTF {#3} { true }
+      { \tikzset { pf~keyword~state/.style = { alt={<#2>{opacity=\pf@keywordunused}{}} } } }
+      { \tikzset { pf~keyword~state/.style = { } } }
+    \begin{tikzpicture}[baseline=(k.base)]
+      \begin{scope}[transparency~group, pf~keyword~state]
+        \node[fill=colorHeading!\pf@keywordtint!colorBg, rounded~corners=\pf@smallradius, inner~xsep=\slideem{\pf@keywordpaddingx*\pf@keywordsize},
+          inner~ysep=\slideem{\pf@keywordpaddingy*\pf@keywordsize}, minimum~width=\pf@keywordwidth,
+          text~width=\dim_eval:n { \pf@keywordwidth - 2\slideem{\pf@keywordpaddingx*\pf@keywordsize} },
+          anchor=base~west, text=colorCodeKeyword, font=\ttfamily] (k) at (0,0) {\strut #1};
+        \str_if_eq:nnT {#3} { true }
+          {
+            \draw[paletteRed, line~width=\pf@hairline, visible~on=<#2>]
+              ([xshift=\slideem{\pf@keywordpaddingx*\pf@keywordsize}, yshift=0.3em]k.base~west) -- ++(\pf@keywordtext,0);
+          }
+      \end{scope}
+    \end{tikzpicture}
+  }
+\ExplSyntaxOff
+
+% % % % % % % % % % Widening chain % % % % % % % % % %
+% \widening<2-><3->{byte, short, int}{Widening title}{its sentence}{Narrowing title}{its sentence}: the
+% types in a row, joined by a widening arrow to the right (teal, from the first step) over a narrowing
+% one to the left (orange, from the second); each explained in its color, over and under the chain
+\newcommand\pf@wideningsize{0.9}
+\newcommand\pf@wideninggap{0.6} % type to arrow, em of the chain
+\newcommand\pf@wideninglength{2} % em of the chain
+\newcommand\pf@wideningarrowgap{0.7} % between the two arrows of a pair, em of the chain
+\newcommand\pf@wideninglabelgap{1.2} % the chain to the text over and under it, em of the slide
+\newcommand\pf@wideningtextgap{0.1} % a title to its sentence, beyond the sentence's line height, em of the slide
+\newcommand\pf@wideningtitlesize{0.7}
+\newcommand\pf@wideningtextsize{0.58}
+
+% A title in #1 over its sentence, centered: the text of each side of the chain; its node sets the
+% sentence's font, so the line break takes the sentence's line height, not the chain's
+\newcommand\pf@wideninglabel[3]{%
+  {\slidefont{\pf@wideningtitlesize}{1.2}\bfseries\color{#1}#2}\\[\slideem{\pf@wideningtextgap}]%
+  {\slidefont{\pf@wideningtextsize}{1.35}\color{colorText}#3}}
+
+\ExplSyntaxOn
+\seq_new:N \l__pf_widening_seq
+\NewDocumentCommand \widening { D<>{1-} D<>{1-} m m m m m }
+  {
+    \seq_set_from_clist:Nn \l__pf_widening_seq {#3}
+    \par
+    \begin{center}
+    \slidefont{\pf@wideningsize}{1.2}
+    \begin{tikzpicture}[every~node/.style={inner~sep=0pt, text=colorCodeKeyword, font=\ttfamily}]
+      \node (t1) at (0,0) {\seq_item:Nn \l__pf_widening_seq { 1 }};
+      \int_step_inline:nnn { 2 } { \seq_count:N \l__pf_widening_seq }
+        {
+          \node[anchor=base~west] (t##1) at ([xshift=\slideem{(2*\pf@wideninggap+\pf@wideninglength)*\pf@wideningsize}]t\int_eval:n{##1-1}.base~east)
+            {\seq_item:Nn \l__pf_widening_seq {##1}};
+          \draw[flow~arrow, draw=colorAccentTwo, visible~on=<#1>]
+            ([xshift=\slideem{\pf@wideninggap*\pf@wideningsize}, yshift=\slideem{(0.3+\pf@wideningarrowgap/2)*\pf@wideningsize}]t\int_eval:n{##1-1}.base~east)
+            -- ++(\slideem{\pf@wideninglength*\pf@wideningsize},0);
+          \draw[flow~arrow, draw=paletteOrange, visible~on=<#2>]
+            ([xshift=-\slideem{\pf@wideninggap*\pf@wideningsize}, yshift=\slideem{(0.3-\pf@wideningarrowgap/2)*\pf@wideningsize}]t##1.base~west)
+            -- ++(-\slideem{\pf@wideninglength*\pf@wideningsize},0);
+        }
+      \coordinate (pf@chaintop) at (current~bounding~box.north);
+      \coordinate (pf@chainbottom) at (current~bounding~box.south);
+      \node[anchor=south, align=center, font=\normalfont\slidefont{\pf@wideningtextsize}{1.35}, visible~on=<#1>]
+        at ([yshift=\slideem{\pf@wideninglabelgap}]pf@chaintop) {\pf@wideninglabel{colorAccentTwo}{#4}{#5}};
+      \node[anchor=north, align=center, font=\normalfont\slidefont{\pf@wideningtextsize}{1.35}, visible~on=<#2>]
+        at ([yshift=-\slideem{\pf@wideninglabelgap}]pf@chainbottom) {\pf@wideninglabel{paletteOrange}{#6}{#7}};
+    \end{tikzpicture}
+    \end{center}
+  }
+\ExplSyntaxOff
+\endinput

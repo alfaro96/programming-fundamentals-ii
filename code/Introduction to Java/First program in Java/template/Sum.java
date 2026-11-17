@@ -1,5 +1,5 @@
 /* TODO: Document the Sum class. */
-public class Sum {
+class Sum {
 
     /* TODO: Document and implement sum1. */
 

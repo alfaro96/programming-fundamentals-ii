@@ -29,8 +29,7 @@ public class SingleFamily extends Housing {
      * @throws InvalidPriceException if {@code price} is negative.
      * @throws InvalidSquareMetersException if {@code basementSize} is negative.
      */
-    public SingleFamily(double price, int numberOfFloors, double basementSize)
-            throws InvalidPriceException, InvalidSquareMetersException {
+    public SingleFamily(double price, int numberOfFloors, double basementSize) {
         super(price);
         if (basementSize < 0) {
             throw new InvalidSquareMetersException("basementSize", basementSize);

@@ -32,7 +32,7 @@ Write a program that calculates the **sum of the integers from $0$ to $n$** in t
 
 Once the project workspace has been generated, remove the `Main.java` file inside the source (`src`) folder of your project and copy the `Sum.java` template provided with this assignment into it. Each `TODO` comment in the template marks a part you have to write.
 
-In Java, functions are called **methods**. You declare one as a function in C, with the `public` and `static` keywords in front, for example `public static int sum1(int n)`. These keywords are required by Java; for now, write them as they are, as in `main`: what they mean will be covered in later sessions.
+In Java, functions are called **methods**. You declare one as a function in C, with the `static` keyword in front, for example `static int sum1(int n)`. Java requires it here, as `main` calls these methods directly; for now, write it as it is: what it means will be covered in later sessions.
 
 1. **Iterative sum**: write a method named `sum1` that receives an `int` $n$ and returns the sum of the integers from $0$ to $n$: $sum1(n) = \sum_{i = 0}^{n} i$.
     * **Logic**: translate the implementation from C. Initialize a variable to $0$ and use a `for` loop to add the values from $0$ to $n$.

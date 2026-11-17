@@ -1,0 +1,105 @@
+Write a program that works with \textbf{complex numbers}, made of a real part and an imaginary part: \(real + imaginary \cdot i\).
+
+\subsection{Environment setup}
+
+\begin{enumerate}
+
+    \item \textbf{Create the project}: select \uibutton{New Project}, choose \uibutton{Java} and name it \uibutton{Laboratory assignment 1}.
+
+    \item \textbf{Create the classes}: inside the source (\texttt{src}) folder, create two classes, \texttt{ComplexNumber} and \texttt{Main}, each in its own file with its name: \texttt{ComplexNumber.java} and \texttt{Main.java}.
+
+\end{enumerate}
+
+\subsection{Implementation of the \texttt{ComplexNumber} class}
+
+\begin{enumerate}
+
+    \item \textbf{Attributes}: two attributes of type \texttt{double}, \texttt{real} and \texttt{imaginary}.
+
+    \item \textbf{Constructors}: write the following \textbf{four constructors}:
+
+        \begin{itemize}
+
+            \item \textbf{Default constructor}: sets both parts to \(0\).
+
+            \item \textbf{Integer constructor}: receives the two parts as \texttt{int} values.
+
+            \item \textbf{Double constructor}: receives the two parts as \texttt{double} values.
+
+            \item \textbf{Copy constructor}: receives another \texttt{ComplexNumber} and creates a new object with the same parts.
+
+        \end{itemize}
+
+    \item \textbf{Methods}: none of the operations changes the complex numbers it works with: each one creates a new complex number with \texttt{new} and returns it.
+
+        \begin{itemize}
+
+            \item \texttt{add()}: adds another complex number to this one and returns a \textbf{new} complex number: \((a + bi) + (c + di) = (a + c) + (b + d)i\).
+
+            \item \texttt{subtract()}: subtracts another complex number from this one and returns a \textbf{new} complex number: \((a + bi) - (c + di) = (a - c) + (b - d)i\).
+
+            \item \texttt{multiply()}: \textbf{overload} this method so that it accepts either a real number or another complex number, and returns a \textbf{new} complex number in both cases:
+
+                \begin{itemize}
+
+                    \item By a real number \(k\): \((a + bi) \cdot k = ak + bki\).
+
+                    \item By a complex number: \((a + bi)(c + di) = (ac - bd) + (ad + bc)i\), since \(i^2 = -1\).
+
+                \end{itemize}
+
+            \item \texttt{describe()}: returns a \texttt{String} with the complex number in the usual mathematical form, \(real + imaginary \cdot i\).
+
+                \begin{itemize}
+
+                    \item \textbf{Logic}: join with \texttt{+} the real part, \texttt{" + "}, the imaginary part and \texttt{"i"}.
+
+                    \item \textbf{Example}: for a complex number with \texttt{real = 3.5} and \texttt{imaginary = 2.0}, the method must return exactly the \texttt{String} \texttt{"3.5 + 2.0i"}.
+
+                \end{itemize}
+
+            \item \texttt{isEqualTo()}: given another complex number, checks whether both are equal. The parts are \texttt{double} values, which carry rounding errors (\texttt{0.1 + 0.2} is not exactly \texttt{0.3}), so compare them with a tolerance: two parts are equal when they differ by less than a constant \texttt{EPSILON = 1e-9}, declared \texttt{static final} in the class. \texttt{Math.abs} gives the absolute value of a difference.
+
+        \end{itemize}
+
+\end{enumerate}
+
+\subsection{Testing and documentation}
+
+\begin{enumerate}
+
+    \item \textbf{Incremental testing}: test each constructor and method right after writing it, and make sure it works before moving on to the next one, instead of trying to debug the whole program at the end.
+
+    \item \textbf{Verification}: write the \texttt{main} method of the \texttt{Main} class to test the \texttt{ComplexNumber} class.
+
+        \begin{itemize}
+
+            \item Check that the four constructors set the attributes correctly, and that changing a copy does not change the original.
+
+            \item Test the operations (\texttt{add}, \texttt{subtract} and both versions of \texttt{multiply}) and compare the results with the ones you work out by hand.
+
+            \item Check that \texttt{describe()} and \texttt{isEqualTo()} give the expected results, also for numbers that differ only by a rounding error, such as \texttt{0.1 + 0.2} and \texttt{0.3}.
+
+        \end{itemize}
+
+    \item \textbf{Style}: write \texttt{this.} before every attribute, such as \texttt{this.real}, and before every call to another method of the same object, even where no parameter has the same name, as in the exercises.
+
+    \item \textbf{Documentation comments}: document every class, attribute, constructor and method with \textbf{Javadoc comments} (\texttt{/** ... */}), following the same rules as in the previous assignment.
+
+    \item \textbf{Documentation generation}: open the \uibutton{Tools} menu, select \uibutton{Generate JavaDoc...} and generate the documentation in the \texttt{doc} folder of your project. Since neither class is declared \texttt{public}, choose \uibutton{package} as the visibility level so that they appear in it. Then open its \texttt{index.html} file in a web browser and check that every class and method is documented.
+
+\end{enumerate}
+
+\subsection{Extra: \texttt{ComplexNumberArray} class}
+
+Write a class that represents an array of complex numbers:
+
+\begin{itemize}
+
+    \item \textbf{Attributes}: an array of \texttt{ComplexNumber} objects.
+
+    \item \textbf{Constructor}: receives a length and creates an array of that length, filled with complex numbers with random parts. \texttt{Math.random()} returns a random \texttt{double} between \(0\) and \(1\).
+
+    \item \textbf{Methods}: \texttt{sumArray()}, which returns a \textbf{new} complex number with the sum of all of them, and \texttt{describe()}, which returns a \texttt{String} with every complex number of the array. Since it joins one piece of text per complex number, a \texttt{StringBuilder} is a better fit than \texttt{+}.
+
+\end{itemize}

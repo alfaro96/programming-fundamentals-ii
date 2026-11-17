@@ -23,11 +23,9 @@ public class Tests {
 
   /**
    * Verifies that the {@code toString} methods include every attribute, the price among them.
-   *
-   * @throws Exception if a constructor rejects a valid value.
    */
   @Test
-  public void testToStringOverrides() throws Exception {
+  public void testToStringOverrides() {
     Antique p = new Painting("A1", 150, 800.0, "Oil");
     Antique f = new Furniture("A2", 200, 300.0, "Wood");
 
@@ -42,11 +40,9 @@ public class Tests {
   /**
    * Verifies that a negative price throws an {@link InvalidPriceException} whose message
    * includes it, and that a price of 0 is valid.
-   *
-   * @throws Exception if a constructor rejects a price of 0.
    */
   @Test
-  public void testNegativePrice() throws Exception {
+  public void testNegativePrice() {
     try {
       new Furniture("F1", 1750, -999.0, "Oak");
       fail("A negative price should throw an InvalidPriceException");
@@ -65,11 +61,9 @@ public class Tests {
   /**
    * Verifies that a year out of range throws a {@link YearOutOfRangeException}, and that the
    * first and last years of the range are valid.
-   *
-   * @throws Exception if a constructor rejects a valid value.
    */
   @Test
-  public void testYearOutOfRange() throws Exception {
+  public void testYearOutOfRange() {
     try {
       new Furniture("F1", 0, 100.0, "Oak");
       fail("Year 0 should throw a YearOutOfRangeException");

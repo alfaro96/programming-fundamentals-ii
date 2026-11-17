@@ -19,22 +19,22 @@ public class Main {
      * Fills a {@link RealEstate} with three valid properties, prints its summary, and then
      * tries to create two invalid ones, printing the message of each exception.
      *
+     * <p>The valid properties need no {@code try}/{@code catch}: the exceptions are unchecked,
+     * and a correct program checks its values before calling a constructor. The two invalid
+     * attempts are caught just to see each message instead of stopping.</p>
+     *
      * @param args the command line arguments, not used.
      */
     public static void main(String[] args) {
         RealEstate agency = new RealEstate(3);
 
-        try {
-            Chalet luxuryChalet = new Chalet(200000.0, 2, 50.0, 300.0);
-            SingleFamily standardHome = new SingleFamily(150000.0, 1, 40.0);
-            CountryHouse hugeEstate = new CountryHouse(300000.0, 1000.0, luxuryChalet);
+        Chalet luxuryChalet = new Chalet(200000.0, 2, 50.0, 300.0);
+        SingleFamily standardHome = new SingleFamily(150000.0, 1, 40.0);
+        CountryHouse hugeEstate = new CountryHouse(300000.0, 1000.0, luxuryChalet);
 
-            agency.addHousing(luxuryChalet);
-            agency.addHousing(standardHome);
-            agency.addHousing(hugeEstate);
-        } catch (InvalidPriceException | InvalidSquareMetersException e) {
-            System.out.println("Could not create a housing: " + e.getMessage());
-        }
+        agency.addHousing(luxuryChalet);
+        agency.addHousing(standardHome);
+        agency.addHousing(hugeEstate);
 
         System.out.println("--- Real Estate summary ---");
         System.out.println("SingleFamily homes (excluding chalets): " + agency.countNonChaletSingleFamily());
@@ -57,8 +57,6 @@ public class Main {
         try {
             Chalet chalet = new Chalet(250000.0, 2, 40.0, -100.0);
             System.out.println(chalet);
-        } catch (InvalidPriceException e) {
-            System.out.println(e.getMessage());
         } catch (InvalidSquareMetersException e) {
             System.out.println(e.getMessage());
         }

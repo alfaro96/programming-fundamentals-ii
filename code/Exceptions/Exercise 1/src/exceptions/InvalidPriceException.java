@@ -3,12 +3,14 @@ package exceptions;
 /**
  * Signals that a housing property has been given a negative price.
  *
- * <p>It is a checked exception: every constructor that may throw it has to declare it, and
- * every caller has to catch it or declare it in turn.</p>
+ * <p>It is an unchecked exception, since a negative price is a mistake in the code that calls
+ * the constructor, which should check the value first. It extends {@link RuntimeException}, so
+ * the constructors that throw it do not have to declare it, although a caller can still catch
+ * it.</p>
  *
  * @author Juan Carlos Alfaro Jiménez
  */
-public class InvalidPriceException extends Exception {
+public class InvalidPriceException extends RuntimeException {
 
     /**
      * Constructs a new {@link InvalidPriceException} whose message includes the invalid price.

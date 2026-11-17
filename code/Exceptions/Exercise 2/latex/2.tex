@@ -1,0 +1,49 @@
+Start from your solution to Exercise 2 of Unit 3: Inheritance, the \texttt{antiques} package with \texttt{Antique}, \texttt{Painting}, \texttt{Furniture} and \texttt{Collection}, and make it report its errors with exceptions.
+
+\begin{itemize}
+
+    \item Add a price to every antique:
+
+        \begin{itemize}
+
+            \item \texttt{Antique} gets an attribute \texttt{double price}, which its constructor receives after \texttt{year}, and a getter for it.
+
+            \item The constructors of \texttt{Painting} and \texttt{Furniture} receive the price after \texttt{year} too, and every \texttt{toString()} includes it.
+
+        \end{itemize}
+
+    \item Create a package called \texttt{exceptions} with the following exceptions:
+
+        \begin{itemize}
+
+            \item \texttt{InvalidPriceException}, an unchecked exception (it extends \texttt{RuntimeException}) thrown by the constructor of \texttt{Antique} when the price is negative. Its constructor receives the price.
+
+            \item \texttt{YearOutOfRangeException}, an unchecked exception too, thrown by the constructor of \texttt{Antique} when the year is not between \texttt{Antique.MIN\_YEAR} and \texttt{Antique.MAX\_YEAR}, two constants equal to 1 and 1900, and by \texttt{addFurniture()} and \texttt{deleteFurniture()} when the matrix has no row for the century of the year. Its constructor receives the year.
+
+            \item \texttt{CollectionFullException}, a checked exception (it extends \texttt{Exception}) thrown by \texttt{addFurniture()} when the row of the century has no \texttt{null} position, instead of leaving the antique out without a word. Its constructor receives the century.
+
+            \item \texttt{FurnitureNotFoundException}, a checked exception thrown by \texttt{deleteFurniture()} when there is no furniture dated in the given year. Its constructor receives the year.
+
+        \end{itemize}
+
+        Each constructor builds a message that includes the value it receives. A negative price or a year out of range is a mistake in the code that passes it, which should check the value first, so those two exceptions are unchecked. A full century or a year with no furniture can happen even in a correct program, so the other two are checked, and the methods that may throw them have to declare them.
+
+\end{itemize}
+
+Replace the \texttt{Main} class with a menu that is shown again after every option, until the user chooses to exit:
+
+\begin{itemize}
+
+    \item \texttt{1}: add a piece of furniture, reading its identifier, year, price and material from the keyboard with a \texttt{Scanner}.
+
+    \item \texttt{2}: add a painting, reading its identifier, year, price and technique.
+
+    \item \texttt{3}: delete the furniture of a year read from the keyboard.
+
+    \item \texttt{4}: display the matrix with \texttt{displayMatrix()}.
+
+    \item \texttt{0}: exit.
+
+\end{itemize}
+
+The collection covers centuries 1 to 19, with room for 4 antiques per century. When an option fails, the program prints the message of the exception and shows the menu again. This includes the \texttt{InputMismatchException} that \texttt{Scanner} throws when the user types a word where a number is expected: discard what was typed with \texttt{nextLine()} before showing the menu again.

@@ -1,4 +1,5 @@
-# Publishes the web version of the slides
+# Publishes the slides of every unit, the statements of its exercises and assignments, and an index page
+# that links them
 name: Publish slides
 
 on:
@@ -19,7 +20,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # Builds the web version of the slides
+  # Builds the slides and the index page
   build:
     runs-on: ubuntu-latest
     defaults:
@@ -27,9 +28,18 @@ jobs:
         working-directory: slides
     steps:
       - uses: actions/checkout@v7
+      # Made here, since the image writes as root: the index page then has to write into it
+      - run: mkdir -p production/web
+      # The class and print slides of every unit, and the statements of its exercises and assignments, in TeX
+      # Live's image: latexmk, XeLaTeX and every package
+      - uses: xu-cheng/texlive-action@v2
+        with:
+          scheme: full
+          run: cd slides && sh scripts/beamer.sh && sh scripts/statements.sh
       - uses: actions/setup-node@v7
         with:
           node-version: 24
+      # The index page, with a button for each kind of slide and a link for each statement
       - run: npm run build
       - uses: actions/upload-pages-artifact@v5
         with:

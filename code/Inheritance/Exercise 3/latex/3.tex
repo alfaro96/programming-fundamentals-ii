@@ -1,0 +1,117 @@
+In this exercise, you are asked to implement a set of geometric figures using inheritance. You will start by creating an abstract class for general geometric figures, then create subclasses for specific types of figures like regular polygons and parallelograms. Finally, you will implement a container class to manage a collection of these figures. Follow the steps below:
+
+\begin{enumerate}
+
+    \item Create a package named \texttt{shapes}.
+
+    \item Implement an abstract class called \texttt{GeometricFigure} within the \texttt{shapes} package with the following attributes:
+
+        \begin{itemize}
+
+            \item \texttt{String fillColor}
+
+            \item \texttt{String borderColor}
+
+        \end{itemize}
+
+    Define two constructors:
+
+        \begin{itemize}
+
+            \item \texttt{GeometricFigure(String fillColor)}
+
+            \item \texttt{GeometricFigure(String fillColor, String borderColor)}. \textbf{This constructor must call the previous constructor explicitly}.
+
+        \end{itemize}
+
+    Define the following methods:
+
+        \begin{itemize}
+
+            \item \texttt{double calculatePerimeter()}: Calculates the perimeter of the geometric figure. If possible, implement it; otherwise, make sure subclasses must implement it.
+
+            \item \texttt{double calculateArea()}: Calculates the area of the geometric figure. If possible, implement it; otherwise, make sure subclasses must implement it.
+
+        \end{itemize}
+
+    \textbf{Ensure that neither constructors nor attributes are public}. Decide the best visibility for each one.
+
+    \item Create a package named \texttt{shapes.polygons}.
+
+    \item Create a class called \texttt{RegularPolygon}, which is a subclass of \texttt{GeometricFigure}, within the \texttt{shapes.polygons} package. This class should have the following attributes:
+
+        \begin{itemize}
+
+            \item \texttt{int numberOfSides}
+
+            \item \texttt{double sideLength}
+
+            \item \texttt{double angle}
+
+        \end{itemize}
+
+    Define a constructor with the following format:
+
+        \begin{itemize}
+
+            \item \texttt{RegularPolygon(int numberOfSides, double sideLength, double angle, String fillColor, String borderColor)}
+
+        \end{itemize}
+
+    \textbf{This constructor must call the parent class constructor}.
+
+    In this class, make public what you consider necessary, except for the attributes.
+
+    \item Create a package named \texttt{shapes.quadrilaterals}.
+
+    \item Create a class called \texttt{Parallelogram}, a subclass of \texttt{GeometricFigure}, within the \texttt{shapes.quadrilaterals} package with the following attributes:
+
+        \begin{itemize}
+
+            \item \texttt{double side1, side2}
+
+            \item \texttt{double angle1, angle2}
+
+        \end{itemize}
+
+    Define two constructors:
+
+        \begin{itemize}
+
+            \item \texttt{Parallelogram(String fillColor, String borderColor, double side1, double side2, double angle1, double angle2)}
+
+            \item \texttt{Parallelogram(double side, double angle, String fillColor, String borderColor)}
+
+        \end{itemize}
+
+    \textbf{Always ensure that constructors call the parent class constructor, otherwise they will try to call the default one}.
+
+    Add any setters and getters you deem necessary. In this class, make public what you consider appropriate, except for the attributes.
+
+    \item Create a package named \texttt{shapes.container}.
+
+    \item Implement a class called \texttt{FiguresContainer} within the \texttt{shapes.container} package with the following attributes:
+
+        \begin{itemize}
+
+            \item A single two-dimensional matrix \texttt{M} that will contain both \texttt{RegularPolygon} and \texttt{Parallelogram} objects.
+
+            \item \texttt{int rows}
+
+            \item \texttt{int columns}
+
+        \end{itemize}
+
+    \textbf{The size of the matrix will be set in the constructor of the class and will initially be empty}.
+
+    Add setters and getters as needed.
+
+    \item Create a method called \texttt{addFigure} that can receive either a \texttt{RegularPolygon} or a \texttt{Parallelogram} object as the first argument and add it to the corresponding row and column passed as arguments.
+
+    \item Create a method called \texttt{sumAreas} that returns the sum of the areas of the figures located on the main diagonal. \textbf{Be careful with positions that are} \texttt{null}\textbf{. If the matrix is not square, the method will return} \texttt{-1}.
+
+    \item Create a method called \texttt{sumPerimeters} that returns the sum of the perimeters of the figures located on the secondary diagonal. \textbf{Be careful with positions that are} \texttt{null}\textbf{. If the matrix is not square, the method will return} \texttt{-1}.
+
+\end{enumerate}
+
+In this class, make public what you consider appropriate, except for the attributes.

@@ -1,0 +1,103 @@
+The goal of this exercise is to write a \texttt{Matrix} class that represents an algebraic matrix of real numbers, with rows and columns. It is a good way to get used to arrays of arrays: \texttt{double[][] values} is an array whose elements are arrays, one per row, so \texttt{values[i][j]} is the value in row \texttt{i} and column \texttt{j}, both counted from 0. It is created as \texttt{new double[n][m]}, with \texttt{n} rows and \texttt{m} columns, and \texttt{values.length} gives the number of rows.
+
+\subsection{Implementation}
+
+Write a \texttt{Matrix} class with the following requirements:
+
+\begin{itemize}
+
+    \item \textbf{Attributes}:
+
+        \begin{itemize}
+
+            \item \texttt{int nRows}: the number of rows.
+
+            \item \texttt{int nCols}: the number of columns.
+
+            \item \texttt{double[][] values}: the values of the matrix, one array per row.
+
+        \end{itemize}
+
+    \item \textbf{Constructors}:
+
+        \begin{itemize}
+
+            \item \texttt{Matrix(int n)}: creates a square matrix of size \(n \times n\) with every value at 0.
+
+            \item \texttt{Matrix(int n, double val)}: creates a square matrix of size \(n \times n\) with every value at \texttt{val}.
+
+            \item \texttt{Matrix(int n, int m)}: creates a matrix of size \(n \times m\) with every value at 0.
+
+            \item \texttt{Matrix(int n, int m, double val)}: creates a matrix of size \(n \times m\) with every value at \texttt{val}.
+
+            \item \texttt{Matrix(double[][] values)}: creates a matrix with the size and values of the given array. The values are copied, so changing the array afterwards does not change the matrix.
+
+            \item \texttt{Matrix(Matrix other)}: creates a copy of another matrix, with its own values, so changing one of them does not change the other.
+
+        \end{itemize}
+
+    \item \textbf{Methods}:
+
+        \begin{itemize}
+
+            \item \texttt{add()}: adds another matrix of the same size to this one, position by position, and returns a \textbf{new} matrix with the result, or \texttt{null} if the sizes differ.
+
+            \item \texttt{scalarProduct()}: multiplies every value of the matrix by a number and returns a \textbf{new} matrix with the result.
+
+            \item \texttt{product()}: multiplies this matrix by another one and returns a \textbf{new} matrix with the result. The number of columns of the first matrix must match the number of rows of the second; if it does not, the method returns \texttt{null}. The value in row \(i\) and column \(j\) of the result is the sum of the products of row \(i\) of the first matrix by column \(j\) of the second, element by element.
+
+            \item \texttt{trace()}: returns the sum of the values on the main diagonal, from the top left to the bottom right. Only a square matrix has a trace; for any other matrix, the method returns 0.
+
+            \item \texttt{transpose()}: returns a \textbf{new} matrix with the rows of this one as columns: if this matrix is \(n \times m\), the result is \(m \times n\), and the value at position \((i, j)\) moves to \((j, i)\).
+
+            \item \texttt{display()}: prints the matrix on the screen, one row per line. Unlike \texttt{describe()} in the previous exercises, it does not return a \texttt{String}: it prints the values itself.
+
+        \end{itemize}
+
+\end{itemize}
+
+None of the operations changes the matrices it works with.
+
+\subsection{Recommendations}
+
+\begin{itemize}
+
+    \item \textbf{Incremental implementation}: write and test each method on its own before moving on to the next one, making sure each part works before building the rest of the class.
+
+    \item \textbf{Reuse}: a constructor can call another one with \texttt{this(...)}, so most of them can be written in a single line.
+
+\end{itemize}
+
+\subsection{Evaluation and testing}
+
+To complete the exercise, write a \texttt{Main} class with a \texttt{main} method that performs the following tests:
+
+\begin{enumerate}
+
+    \item \textbf{Class functionality}:
+
+        \begin{itemize}
+
+            \item Write the \texttt{Matrix} class with all the attributes, constructors and methods described.
+
+        \end{itemize}
+
+    \item \textbf{Testing in the} \texttt{main} \textbf{method}:
+
+        \begin{itemize}
+
+            \item Create several matrices with different values and sizes, using every constructor.
+
+            \item Operate with them (addition, products, trace and transpose) and display the results to check that they are correct.
+
+        \end{itemize}
+
+    \item \textbf{Clean code and documentation}:
+
+        \begin{itemize}
+
+            \item Make sure the code is clean and legible, with explanatory comments where necessary.
+
+        \end{itemize}
+
+\end{enumerate}

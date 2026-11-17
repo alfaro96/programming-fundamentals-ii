@@ -1,0 +1,85 @@
+The \texttt{antiques} package already holds part of a program to manage a collection of antiques: the \texttt{Antique} class, with an identifier (\texttt{id}) and a year (\texttt{year}), and the \texttt{Collection} class, which keeps the antiques in a matrix where row \texttt{i} holds those of century \texttt{i + 1}, with its constructor, \texttt{getAntiqueAt()} and \texttt{displayMatrix()}. Complete it with the following classes and methods:
+
+\begin{itemize}
+
+    \item \texttt{Painting} class that extends \texttt{Antique}, containing:
+
+        \begin{itemize}
+
+            \item An attribute \texttt{String technique}.
+
+            \item A constructor that receives \texttt{id}, \texttt{year} and \texttt{technique}, and initializes all the attributes of a \texttt{Painting}.
+
+            \item The \texttt{toString()} method, returning a \texttt{String} with all its attributes. This method will result in a compilation error due to access restrictions on the attributes of \texttt{Antique}. Modify their access permissions as needed, but using \texttt{public} is prohibited.
+
+        \end{itemize}
+
+    \item \texttt{Furniture} class that extends \texttt{Antique}, containing:
+
+        \begin{itemize}
+
+            \item An attribute \texttt{String material}.
+
+            \item A constructor that receives \texttt{id}, \texttt{year} and \texttt{material}, and initializes all the attributes of a \texttt{Furniture}.
+
+            \item The \texttt{toString()} method, returning a \texttt{String} with all its attributes.
+
+        \end{itemize}
+
+    \item \texttt{Collection} class, with two new methods:
+
+        \begin{itemize}
+
+            \item \texttt{addFurniture(Antique furniture)}, which inserts \texttt{furniture} into the row corresponding to its century, in the first \texttt{null} position of that row. If no spaces are available, the item is not inserted.
+
+            \item \texttt{deleteFurniture(int year)}, which removes from the collection all the furniture (only \texttt{Furniture} objects, not paintings) dated in the given year. The remaining antiques of that row move to the left, so the \texttt{null} positions stay at the end.
+
+        \end{itemize}
+
+\end{itemize}
+
+Suppose the matrix of antiques contains the following information, where row \texttt{i} corresponds to century \texttt{i}:
+
+\begin{center}
+    \begin{tabular}{lllll}
+        \hline
+        Century & Col 0 & Col 1 & Col 2 & Col 3 \\
+        \hline
+        \textbf{Century 1} & \texttt{A1} & \texttt{A2} & \texttt{A3} & \texttt{A4} \\
+        \textbf{Century 2} & \texttt{A5} & \texttt{A6} & \texttt{null} & \texttt{null} \\
+        \textbf{Century 3} & \texttt{A7} & \texttt{A8} & \texttt{A9} & \texttt{null} \\
+        \textbf{Century 4} & \texttt{A10} & \texttt{A11} & \texttt{A12} & \texttt{null} \\
+        \hline
+    \end{tabular}
+\end{center}
+
+Suppose antiques \texttt{A1} and \texttt{A11} are pieces of furniture dated to the years 45 and 350, respectively, and we call the method \texttt{deleteFurniture(45)} and \texttt{deleteFurniture(350)}. The resulting matrix will be:
+
+\begin{center}
+    \begin{tabular}{lllll}
+        \hline
+        Century & Col 0 & Col 1 & Col 2 & Col 3 \\
+        \hline
+        \textbf{Century 1} & \texttt{A2} & \texttt{A3} & \texttt{A4} & \texttt{null} \\
+        \textbf{Century 2} & \texttt{A5} & \texttt{A6} & \texttt{null} & \texttt{null} \\
+        \textbf{Century 3} & \texttt{A7} & \texttt{A8} & \texttt{A9} & \texttt{null} \\
+        \textbf{Century 4} & \texttt{A10} & \texttt{A12} & \texttt{null} & \texttt{null} \\
+        \hline
+    \end{tabular}
+\end{center}
+
+Create a main program class named \texttt{Main}, which:
+
+\begin{itemize}
+
+    \item Creates a \texttt{Collection} with a matrix like the one in the example, adding paintings and furniture with \texttt{addFurniture()}.
+
+    \item Displays the matrix with \texttt{displayMatrix()}.
+
+    \item Calls \texttt{deleteFurniture()} twice, as in the example.
+
+    \item Displays the resulting matrix again.
+
+    \item Prints one painting and one piece of furniture with \texttt{toString()}.
+
+\end{itemize}

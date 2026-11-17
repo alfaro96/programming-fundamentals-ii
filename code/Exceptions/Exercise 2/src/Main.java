@@ -86,7 +86,7 @@ public class Main {
      * @throws CollectionFullException if its century has no room for it.
      */
     private static void addFurniture(Scanner scanner, Collection collection)
-            throws InvalidPriceException, CollectionFullException {
+            throws CollectionFullException {
         System.out.print("Identifier: ");
         String id = scanner.nextLine();
         System.out.print("Year: ");
@@ -110,7 +110,7 @@ public class Main {
      * @throws CollectionFullException if its century has no room for it.
      */
     private static void addPainting(Scanner scanner, Collection collection)
-            throws InvalidPriceException, CollectionFullException {
+            throws CollectionFullException {
         System.out.print("Identifier: ");
         String id = scanner.nextLine();
         System.out.print("Year: ");

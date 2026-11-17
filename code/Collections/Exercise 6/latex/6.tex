@@ -1,0 +1,21 @@
+Start from the \texttt{Pet}, \texttt{Dog} and \texttt{Cat} classes of Exercise 4, and write a \textbf{\texttt{Main}} class whose \texttt{main} goes through a list of pets with iterators.
+
+Create a \texttt{List<Pet>} named \texttt{pets} with the dog \texttt{"Bobby"}, the dog \texttt{"Rex"}, the cat \texttt{"Garfield"}, the cat \texttt{"Boots"}, the dog \texttt{"Jimmy"} and the cat \texttt{"Luna"}, in that order. Then:
+
+\begin{enumerate}
+
+    \item Print \texttt{Step 1 - Iterator with no type}, and go through \texttt{pets} with an \texttt{Iterator} with no type in angle brackets, printing the name of each pet on its own line.
+
+    \item Print \texttt{Step 2 - Iterator<Pet>}, and do the same with an \texttt{Iterator<Pet>}.
+
+    \item Create a \texttt{List<String>} named \texttt{names} with the names of the pets, in the same order, and a second one, \texttt{copy}, with the same names. Print \texttt{Step 3 - Names: } followed by \texttt{names}.
+
+    \item Remove from \texttt{names} every name that does not have five letters, going through it with an iterator. Print \texttt{Step 4 - Five letters, with an iterator: } followed by \texttt{names}.
+
+    \item Do the same on \texttt{copy} without an iterator, with a loop by position. Print \texttt{Step 5 - Five letters, by position: } followed by \texttt{copy}.
+
+    \item Reverse \texttt{names}, and print \texttt{Step 6 - Reversed: } followed by it.
+
+\end{enumerate}
+
+Think about which way the loop of step 5 has to go, and why a for-each loop that calls \texttt{remove} on the list does not work.

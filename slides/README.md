@@ -1,11 +1,15 @@
 # Programming Fundamentals II: Slides
 
-Course slides built with [reveal.js](https://revealjs.com/) via [`reveal-md`](https://github.com/webpro/reveal-md), designed to be built up gradually by dictating content to Claude Code.
+Course slides built with [beamer](https://ctan.org/pkg/beamer) and compiled with latexmk and XeLaTeX from [TeX Live](https://tug.org/texlive/), designed to be built up gradually by dictating content to Claude Code. Each unit is published as two PDFs:
+
+* **Class**: 16:9, one page per step, as shown during the lecture
+* **Print**: 16:9, one page per slide with every step visible, for students to print and study
 
 ## Requirements
 
-* [Node.js](https://nodejs.org/) installed (needed for `npx`).
-* [Claude Code](https://claude.com/product/claude-code) for the workflow described below (not required just to view or export the slides).
+* [TeX Live](https://tug.org/texlive/) ([MacTeX](https://tug.org/mactex/) on macOS), full scheme: it brings `latexmk`, `xelatex`, beamer, the Inter font and every package the slides load.
+* [Node.js](https://nodejs.org/), for the index page of the web version.
+* [Claude Code](https://claude.com/product/claude-code) for the workflow described below (not required just to build the slides).
 
 All the commands below run from this `slides/` folder:
 
@@ -13,69 +17,53 @@ All the commands below run from this `slides/` folder:
 cd slides
 ```
 
-## View the slides locally
+## Build
 
 ```bash
-npm run dev
+npm run pdf                  # both PDFs of every unit, into production/class/ and production/print/, and the statements of
+                             # the exercises and assignments in ../code/, into production/exercises/ and production/assignments/
+                             # (auxiliary files in production/aux/)
+npm run preview -- print     # the pages of a version as PNG, in production/preview/<version>/<unit>/
+npm run build                # production/web/: an index page with a button for each PDF and a link for each statement
 ```
 
-Starts a local server at http://localhost:1948. A change saved in `content/` reloads the page by itself; a change in `theme/` shows after reloading the page; a change in `reveal-md.json5` needs `npm run dev` restarted.
+`npm run preview` takes the version (`class` or `print`) and, optionally, one unit (e.g. `npm run preview -- class unit_1-introduction_java`). Each PDF is named after its unit's folder (e.g. `unit_1-introduction_java.pdf`).
 
-## Drawing on the slides
-
-The two round buttons at the bottom left open a pen to draw over the slide and a whiteboard (also the C and B keys), so it works on a tablet with no keyboard. While either is open, a palette on the left picks the color or the eraser. What is drawn stays on its slide until the page is reloaded, and never reaches the PDFs.
-
-## Settings
-
-`reveal-md.json5` holds the deck settings, each with a comment saying what it is for: the canvas size, 16:9 (which the slides, the class PDF and the screenshots take), the taller height of the 4:3 print PDF, the reveal.js options, the scripts and stylesheets it loads from `theme/`, the page template and the images folder. It is read only once, when `npm run dev` starts, so restart it after changing anything there. The scripts read it too, through `scripts/config.mjs`, so keep it as JSON plus `//` comments, with no trailing commas.
-
-## Export
+To check a unit while editing it, build it in its own folder:
 
 ```bash
-npm run pdf        # both PDF versions below, one file per unit, sized from reveal-md.json5
-npm run pdf:class  # class PDF in production/class/: 16:9, one page per step, as shown in class
-npm run pdf:print  # print PDF in production/print/: 4:3, one page per slide, every step visible, to print
-npm run build      # web version in production/web/, with an index page, host it anywhere
-```
-
-Each PDF is named after its unit file (e.g. `unit_1-introduction_java.pdf`). The print version keeps the width of the canvas and grows to `printHeight`, so every slide keeps its layout and the extra room falls above the bottom note.
-
-To check how a unit looks without opening a browser, `npm run preview` screenshots every slide into `production/preview/screen/<unit>/`; `npm run preview -- print <unit>` or `npm run preview -- class <unit>` does the same with the PDF pages. It uses the Puppeteer that `npm run pdf` downloads, so run that once first.
-
-The PDFs and the screenshots use the Chrome that Puppeteer downloads, so no browser needs to be installed. If it does not start on your machine, point `PUPPETEER_EXECUTABLE_PATH` at a Chrome that does in a `.env` file in this folder, which the scripts read and Git ignores:
-
-```bash
-PUPPETEER_EXECUTABLE_PATH="/path/to/chrome"
+cd beamer/units/unit_1-introduction_java
+latexmk -xelatex main.tex  # main.pdf here, 16:9; Git ignores it and its auxiliary files
 ```
 
 ## Publish on GitHub Pages
 
-```bash
-npm run build  # production/web/: the web version of every unit and an index page linking them
-```
-
-`.github/workflows/pages.yml` (at the repository root) runs that same build on every push to `main` and publishes `production/web/` to GitHub Pages. The PDFs are exported manually with `npm run pdf`. It needs, once, *Settings → Pages → Source: GitHub Actions* in the GitHub repository.
+`.github/workflows/pages.yml` (at the repository root) runs `scripts/beamer.sh` and `scripts/statements.sh` in a TeX Live image (`xu-cheng/texlive-action`), then `npm run build` on every push to `main`, and publishes `production/web/` to GitHub Pages. It needs, once, *Settings → Pages → Source: GitHub Actions* in the GitHub repository.
 
 ## Layout
 
 ```
-Programming Fundamentals II/  ← repository root
-├── README.md                 ← the course and the repository
-├── CLAUDE.md                 ← what each folder is, for Claude Code
-├── .github/workflows/        ← pages.yml, which publishes the web version
-├── code/                     ← JetBrains Academy course
-└── slides/                   ← this folder
-    ├── CLAUDE.md             ← instructions Claude Code follows here
-    ├── reveal-md.json5       ← deck settings: canvas size, reveal.js options
-    ├── .claude/commands/     ← /new-slide, /new-unit, etc.
-    ├── content/              ← one .md file per unit (unit_1-*.md, unit_2-*.md...) and assets/, their images
-    ├── theme/custom.css      ← ALL visual styling, in a single file
-    ├── theme/*.js            ← cover, contents, print handout and drawing helpers
-    ├── theme/reveal.html     ← the page around the slides: reveal-md's template, ready for tablets
-    ├── theme/vendor/         ← third-party plugins, copied as they are (the chalkboard, for drawing)
-    ├── templates/            ← one markdown mold per slide type
-    ├── scripts/              ← PDF export, screenshots, the web version's index page and the settings reader
-    └── production/           ← generated: class/, print/, web/ and preview/
+Programming Fundamentals II/   ← repository root
+├── README.md                  ← the course and the repository
+├── CLAUDE.md                  ← what each folder is, for Claude Code
+├── .github/workflows/         ← pages.yml, which builds and publishes the slides
+├── code/                      ← JetBrains Academy course
+└── slides/                    ← this folder
+    ├── CLAUDE.md              ← instructions Claude Code follows here
+    ├── .claude/commands/      ← /new-slide, /new-unit, /review-unit, etc.
+    ├── beamer/
+    │   ├── packages.tex       ← the packages every unit loads
+    │   ├── palette.tex        ← the palette, shared with the statements
+    │   ├── codefont.tex       ← the code font, JetBrains Mono, shared with the statements too
+    │   ├── style.sty          ← ALL the rest of the slides' styling: fonts, sizes, slide parts and components
+    │   ├── commands.tex       ← the course's name, author and degree, and the inline macros
+    │   ├── cover.tex          ← the cover of every unit
+    │   ├── fonts/             ← JetBrains Mono, for the code (Inter comes with TeX Live)
+    │   └── units/             ← one folder per unit, with its main.tex (and its images, if any)
+    ├── statements/            ← exercise.tex and assignment.tex, with statement.sty, for the statements of ../code/
+    ├── site/site.css          ← the style of the index page
+    ├── scripts/               ← the PDF build, the previews and the index page
+    └── production/            ← generated: class/, print/, exercises/, assignments/, web/ and preview/
 ```
 
 Start Claude Code from this folder, so it loads this `CLAUDE.md` and the commands in `.claude/` from the first message.
@@ -86,7 +74,7 @@ Start Claude Code from this folder, so it loads this `CLAUDE.md` and the command
 
 2. For a new unit:
    ```
-   /new-unit 3 Inheritance
+   /new-unit 6 Event-driven programming
    ```
 
 3. To keep adding slides, feed it your notes exactly as you jotted them down:
@@ -99,15 +87,15 @@ Start Claude Code from this folder, so it loads this `CLAUDE.md` and the command
    ```
    /change-style I want a blue accent instead of orange, and a bit more contrast in the background
    ```
-   This only touches `theme/custom.css`; no content slide gets modified.
+   This only touches `beamer/style.sty`; no unit gets modified.
 
 5. Every so often, to check a unit hasn't drifted, or that its lesson in `code/` still matches it:
    ```
-   /review-unit content/unit_1-introduction_java.md
-   /sync-unit content/unit_1-introduction_java.md
+   /review-unit unit_1-introduction_java
+   /sync-unit unit_1-introduction_java
    ```
 
-6. To export both PDF versions and check them:
+6. To build both PDF versions and check them:
    ```
    /export
    ```

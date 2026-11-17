@@ -40,7 +40,7 @@ public class Antique {
      *         {@link #MAX_YEAR}.
      * @throws InvalidPriceException if {@code price} is negative.
      */
-    protected Antique(String id, int year, double price) throws InvalidPriceException {
+    protected Antique(String id, int year, double price) {
         if (year < MIN_YEAR || year > MAX_YEAR) {
             throw new YearOutOfRangeException(year);
         }

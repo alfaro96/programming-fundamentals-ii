@@ -4,7 +4,7 @@
  *
  * @author Juan Carlos Alfaro Jiménez
  */
-public class Sum {
+class Sum {
 
     /**
      * Computes the sum of the integers from 0 to {@code n} with a {@code for} loop.
@@ -12,7 +12,7 @@ public class Sum {
      * @param n the last integer to add.
      * @return the sum 0 + 1 + &hellip; + <i>n</i>.
      */
-    public static int sum1(int n) {
+    static int sum1(int n) {
         int sum = 0;
         for (int i = 0; i <= n; i++) {
             sum = sum + i;
@@ -27,7 +27,7 @@ public class Sum {
      * @param n the last integer to add.
      * @return the sum 0 + 1 + &hellip; + <i>n</i>.
      */
-    public static int sum2(int n) {
+    static int sum2(int n) {
         return n * (n + 1) / 2;
     }
 

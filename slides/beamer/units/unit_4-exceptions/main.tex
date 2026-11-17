@@ -1,0 +1,1078 @@
+% Unit 4: Exceptions. Build from this folder: latexmk -xelatex main.tex
+% scripts/beamer.sh builds both PDFs: it adds handout to \deckoptions for print
+\providecommand\deckoptions{aspectratio=169}
+\documentclass[\deckoptions]{beamer}
+\makeatletter\def\input@path{{../../}}\makeatother % packages, style, commands and cover, in beamer/
+\input{packages}
+\usepackage{style}
+\input{commands}
+
+\title{Unit 4: Exceptions}
+\subtitle{When something goes wrong while the program runs}
+
+\begin{document}
+
+\input{cover}
+\note{They write hierarchies of classes, with private attributes, overriding, polymorphism, abstract classes and interfaces (unit 3). More than once the course has left aside what happens when something goes wrong: a withdrawal with no money in unit 2, a brightness of 250\% and a wrong cast in unit 3. This unit is about that: the errors that only show while the program runs, how a program survives them, and how a method reports one. The example is still the smart home app of unit 3, with its lamp, thermostat and speaker.}
+
+% % % % % % % % % % Exceptions % % % % % % % % % %
+\section{Exceptions}
+
+% Every line is there from the start; each row's answer fills in, after asking the class
+\begin{frame}{It compiles, and then...}{What stops each line?}
+  \begin{datatable}{l Y l}
+    \tablehead{Line} & \tablehead{When} & \tablehead{Stops with} \\
+    \grouprule
+    \code{levels[3] = 50;} & \code{levels} has 3 elements & \uncover<2->{\code{ArrayIndexOutOfBoundsException}} \\
+    \tablerule
+    \code{name.length()} & \code{name} is \code{null} & \uncover<3->{\code{NullPointerException}} \\
+    \tablerule
+    \code{(Light) device} & \code{device} is a thermostat & \uncover<4->{\code{ClassCastException}} \\
+    \tablerule
+    \code{total / count} & Both \code{int}, and \code{count} is 0 & \uncover<5->{\code{ArithmeticException}} \\
+    \tablerule
+    \code{name.charAt(10)} & \code{name} is \code{"Lamp"} & \uncover<6->{\code{StringIndexOutOfBoundsException}} \\
+    \grouprule
+  \end{datatable}
+  \takeaway<7->{Every line \key{compiles}: the error only shows \key{while the program runs}, and an \key{exception}
+    stops it.}
+  \note{Five lines that compile, each with the situation in which it runs. Ask about each one before filling in its row; they have met the first three already. Step 1, an index past the end of an array, unit 1: Java checks every index, where C would read or write whatever is there. Step 2, a method called on null, unit 2. Step 3, a cast to the wrong class, unit 3. Step 4, dividing two integers by zero: with doubles it gives Infinity, with ints there is no possible result. Step 5, a character past the end of a String, unit 2's charAt. The compiler cannot catch any of them, because whether they fail depends on the values when the program runs. Step 6, the takeaway: each of these names is an exception, the subject of the unit.}
+\end{frame}
+
+% The code plain on entry, to ask what it prints; the line that throws, the trace back to main and the line that
+% never runs, each with its note and its part of the output; the takeaway on plain code
+\begin{frame}[fragile]{What Java prints}{Reading a stack trace}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.56\textwidth}
+\begin{codeblock}[steps={|11|4,11|5|}, dense, marks={11/2/error, 4+11/3, 5/4/warn}]{java}
+public class Main {
+    public static void main(String[] args) {
+        int[] levels = {80, 30, 50};
+        System.out.println(average(levels));
+        System.out.println("Done");
+    }
+
+    public static int average(int[] levels) {
+        int total = 0;
+        for (int i = 0; i <= levels.length; i++) {
+            total += levels[i];
+        }
+        return total / levels.length;
+    }
+}
+\end{codeblock}
+      \blockgap
+      \begin{uncoverenv}<2->
+\begin{consoleerror}[dense, lines={2|4}, steps from=2]
+Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException:
+  Index 3 out of bounds for length 3
+    at Main.average(Main.java:11)
+    at Main.main(Main.java:4)
+\end{consoleerror}
+      \end{uncoverenv}
+    \end{column}
+    \begin{column}{0.4\textwidth}
+      \begin{codenotes}[1]
+        \codenote<2->[error]{The exception}{Its class, with its package, and after the colon its message: what went
+          wrong.}
+        \codenote<3->{The stack trace}{The methods that were running, the last one first, each with its file and
+          line.}
+        \codenote<4->[warn]{The rest does not run}{The program stops there: \code{Done} is never printed.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<5->{An exception \key{stops the program} and prints its \key{class}, its \key{message} and
+    \key{where} it happened.}
+  \note{The first line of the table, inside a real program. On entry, the code: ask what it prints, and let them find the mistake, the <= in the loop. Step 1, note 1, in red, the first line of the output, with the line that throws marked: when i is 3, levels[3] does not exist. Java prints the class of the exception with its package, java.lang, and after the colon the message: index 3, length 3, enough to see the off-by-one. Java prints it on one line; it is broken in two to fit. Step 2, note 2, the stack trace, the calls that were running, read from the top: average, at line 11 of Main.java, called by main, at line 4, both marked. In a real program it can be twenty lines long; the first line that is their own code is usually where to look, and IntelliJ shows each one as a link to it. Step 3, note 3, in orange: the program stops there, so neither the average nor Done is ever printed. Step 4, the takeaway.}
+\end{frame}
+
+% The top of the tree on entry, with its methods; its two subclasses, each with its note; the takeaway after
+\begin{frame}{\code{Throwable}}{Exceptions are classes too}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.6\textwidth}
+      \centering
+      \begin{classdiagram}
+        \classbox{throwable}{0.5}{}{Throwable}{}{getMessage(): String, printStackTrace(): void}
+        \classbox<2->{error}{0}{throwable}{Error}{}{}
+        \classbox<3->{exception}{1}{throwable}{Exception}{}{}
+        \classmark{above}{throwable}{1}
+        \classmark<2->{below}{error}{2}
+        \classmark<3->{below}{exception}{3}
+      \end{classdiagram}
+    \end{column}
+    \begin{column}{0.37\textwidth}
+      \begin{codenotes}[1]
+        \codenote{\code{Throwable}}{The top of every exception: its methods are in all of them.}
+        \codenote<2->{\code{Error}}{The JVM's own problems, such as running out of memory: not to be handled.}
+        \codenote<3->{\code{Exception}}{What a program can expect and handle: the exceptions of this unit.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<4->{Every exception is an object of a subclass of \key{\code{Throwable}}: a \key{hierarchy}.}
+  \note{What Java printed on the previous slide is the description of an object: when something goes wrong, Java creates an exception, an object whose class says what kind of error it is and whose message gives the details, and throws it, stopping the methods that were running. Objects have classes, and the classes form a hierarchy, as in unit 3. On entry, note 1, the top: Throwable, in java.lang, whose methods every exception inherits; getMessage returns the message, and printStackTrace prints what they saw on the previous slide, as the third section shows. Its two subclasses split the tree. Step 1, note 2, Error: something wrong with the JVM itself, such as OutOfMemoryError or StackOverflowError (a method that calls itself forever); there is nothing sensible a program can do about them, so they are not caught. Step 2, note 3, Exception: what a program can expect and recover from. Every exception of the first slide is under it, a few levels down; the fourth section shows the branch they hang from. Step 3, the takeaway.}
+\end{frame}
+
+% A reference table, a class and its subclasses per step, Error's first; then the ones the course leaves aside
+% crossed out; no takeaway: a reference table
+\begin{frame}{Java's exceptions}{The classes that come with Java}
+  \begin{datatable}[dense]{l Y}
+    \tablehead{Class} & \tablehead{Its subclasses} \\
+    \grouprule
+    \codeunused<8->{Error} &
+      \codeunused<8->{LinkageError}, \codeunused<8->{AssertionError}, \codeunused<8->{VirtualMachineError} \\
+    \tablerule
+    \uncover<2->{\codeunused<8->{LinkageError}} &
+      \uncover<2->{\codeunused<8->{BootstrapMethodError}, \codeunused<8->{ClassCircularityError}, \codeunused<8->{ClassFormatError} (\codeunused<8->{UnsupportedClassVersionError}), \codeunused<8->{ExceptionInInitializerError}, \codeunused<8->{IncompatibleClassChangeError} (\codeunused<8->{AbstractMethodError}, \codeunused<8->{IllegalAccessError}, \codeunused<8->{InstantiationError}, \codeunused<8->{NoSuchFieldError}, \codeunused<8->{NoSuchMethodError}), \codeunused<8->{NoClassDefFoundError}, \codeunused<8->{UnsatisfiedLinkError}, \codeunused<8->{VerifyError}} \\
+    \tablerule
+    \uncover<3->{\codeunused<8->{VirtualMachineError}} &
+      \uncover<3->{\codeunused<8->{InternalError}, \codeunused<8->{OutOfMemoryError}, \codeunused<8->{StackOverflowError}, \codeunused<8->{UnknownError}} \\
+    \grouprule
+    \uncover<4->{\code{Exception}} &
+      \uncover<4->{\code{IOException}, \codeunused<8->{ReflectiveOperationException}, \codeunused<8->{CloneNotSupportedException}, \codeunused<8->{InterruptedException}, \code{RuntimeException}} \\
+    \tablerule
+    \uncover<5->{\code{IOException}} &
+      \uncover<5->{\codeunused<8->{FileNotFoundException}, \codeunused<8->{SocketException} (\codeunused<8->{ConnectException}), \codeunused<8->{UnknownHostException}} \\
+    \tablerule
+    \uncover<6->{\codeunused<8->{ReflectiveOperationException}} &
+      \uncover<6->{\codeunused<8->{ClassNotFoundException}, \codeunused<8->{IllegalAccessException}, \codeunused<8->{InstantiationException}, \codeunused<8->{InvocationTargetException}, \codeunused<8->{NoSuchFieldException}, \codeunused<8->{NoSuchMethodException}} \\
+    \grouprule
+    \uncover<7->{\code{RuntimeException}} &
+      \uncover<7->{\code{ArithmeticException}, \codeunused<8->{ArrayStoreException}, \code{ClassCastException}, \code{ConcurrentModificationException}, \codeunused<8->{EnumConstantNotPresentException}, \code{IllegalArgumentException} (\codeunused<8->{IllegalThreadStateException}, \codeunused<8->{NumberFormatException}), \codeunused<8->{IllegalMonitorStateException}, \code{IllegalStateException}, \code{IndexOutOfBoundsException} (\code{ArrayIndexOutOfBoundsException}, \code{StringIndexOutOfBoundsException}), \codeunused<8->{NegativeArraySizeException}, \code{NoSuchElementException} (\code{InputMismatchException}), \code{NullPointerException}, \codeunused<8->{SecurityException}, \codeunused<8->{TypeNotPresentException}, \codeunused<8->{UnsupportedOperationException}} \\
+    \grouprule
+  \end{datatable}
+  \note{The tree under Throwable as Java has it, a class and its subclasses per row, with the subclasses of a subclass in parentheses after it. They do not have to learn it; the point is how many there are, and where the ones of the unit sit. On entry, Error and its three subclasses; step 1, LinkageError's, problems loading the program's classes; step 2, VirtualMachineError's, such as StackOverflowError, from a method that calls itself forever, and OutOfMemoryError. A program does not handle errors, so the whole branch is crossed out at the end. Step 3, Exception and its subclasses; step 4, IOException's, which the fourth section uses; step 5, ReflectiveOperationException's, for code that inspects classes while it runs. Step 6, RuntimeException's: every exception of the first slide is here, and InputMismatchException, from Scanner, in the next section; why it has a branch of its own comes in the fourth section. Step 7, crossed out, the ones the course leaves aside, as with the reserved words of unit 1: what is left is what they will meet, here or in the next unit, such as ConcurrentModificationException and IllegalStateException with collections. It is the main part of what Java itself has, not all of it: every Java library adds classes of its own.}
+\end{frame}
+
+% % % % % % % % % % Catching exceptions % % % % % % % % % %
+\section{Catching exceptions}
+
+% Scanner on entry, with its note; then a run line by line, its output under the code as it grows: the prompt, the
+% number read, with its note, and the line printed; a second run, the prompt and abc, then the error with its note;
+% the output keeps the space of the largest, so the code stays still; print shows the error; the takeaway on plain code
+\begin{frame}[fragile]{Reading from the keyboard}{And a user who types a word}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.56\textwidth}
+\begin{codeblock}[steps={1,5|6|7|8|6|7|7|}, dense, marks={1+5/1, 7/3, 7/7/error}]{java}
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Brightness: ");
+        int brightness = scanner.nextInt();
+        System.out.println("Set to " + brightness + "%");
+    }
+}
+\end{codeblock}
+      \blockgap
+      \begin{overprint}
+        \onslide<2,5| handout:0>
+\begin{console}[dense]
+Brightness:
+\end{console}
+        \onslide<3| handout:0>
+\begin{console}[dense]
+Brightness: 80
+\end{console}
+        \onslide<4| handout:0>
+\begin{console}[dense]
+Brightness: 80
+Set to 80%
+\end{console}
+        \onslide<6| handout:0>
+\begin{console}[dense]
+Brightness: abc
+\end{console}
+        \onslide<7->
+\begin{consoleerror}[dense]
+Brightness: abc
+Exception in thread "main" java.util.InputMismatchException
+    ...
+    at Main.main(Main.java:7)
+\end{consoleerror}
+      \end{overprint}
+    \end{column}
+    \begin{column}{0.4\textwidth}
+      \begin{codenotes}[1]
+        \codenote{\code{Scanner}}{Reads what the user types: \code{System.in} is the keyboard.}
+        \codenote<3->{\code{nextInt}}{Waits for the user and returns the integer typed; \code{nextDouble} and
+          \code{nextLine} read a decimal and a line of text.}
+        \codenote<7->[error]{Not a number}{If the user types a word, \code{nextInt} throws an
+          \code{InputMismatchException}.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<8->{The program \key{cannot choose} what the user types: one wrong word is enough to \key{stop} it.}
+  \note{The console version of the brightness setting, to see where exceptions come from in a real program: the user. On entry, note 1, Scanner, a class of java.util, so it needs an import, as in the packages of unit 3; System.in is the keyboard, as System.out is the screen. Then a run, line by line. Step 1, the prompt, with print, so the cursor stays on its line. Step 2, note 2, nextInt waits until the user types something and presses Enter, and returns it as an int: the user types 80. Step 3, the line that uses it: Set to 80\%. Step 4, a second run of the program, from the prompt again. Step 5, this time the user types abc: ask what happens. Step 6, note 3, in red: nextInt cannot turn abc into an int, so it throws an InputMismatchException, from java.util, and the last line never runs. The trace starts with four lines inside Scanner, Java's own code, left out here; the line that is theirs is the last one, Main.java:7. A trap for the exercises: nextInt reads the number but not the Enter after it, so a nextLine right after returns an empty line; a scanner.nextLine() after each nextInt clears it. Step 7, the takeaway: the code has no bug, and still the program stops.}
+\end{frame}
+
+% A question to the class, on its own, before the idea that answers it
+\begin{frame}
+  \question{How can the program react to a wrong number instead of stopping?}
+  \note{The previous slide turned into a question before try and catch answer it. Let them think: checking the text before reading it is one way, but Scanner has already thrown by then; what is missing is a way to say \enquote{try this, and if it throws, do this instead}. Do not name try and catch yet: the next slide does.}
+\end{frame}
+
+% Code and notes step together; the takeaway on plain code
+\begin{frame}[fragile]{\code{try} and \code{catch}}{Catching an exception}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.56\textwidth}
+\begin{codeblock}[steps={3-5|6-8|9|}, compact, marks={3-5/1, 6-8/2, 9/3}]{java}
+Scanner scanner = new Scanner(System.in);
+System.out.print("Brightness: ");
+try {
+    int brightness = scanner.nextInt();
+    System.out.println("Set to " + brightness + "%");
+} catch (InputMismatchException e) {
+    System.out.println("That is not a number");
+}
+System.out.println("Back to the home screen");
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.4\textwidth}
+      \begin{codenotes}[1]
+        \codenote{\code{try}}{A block with the code that may throw an exception.}
+        \codenote<2->{\code{catch}}{The class it catches and a name for the object: its block runs only if the
+          \code{try} throws one of them.}
+        \codenote<3->{And then}{Caught, or never thrown, the program goes on after the \code{catch}.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<4->{An exception thrown in \key{\code{try}} goes to its \key{\code{catch}}, and the program \key{goes on}
+    instead of stopping.}
+  \note{The same lines, now inside main with an exception handler; InputMismatchException is in java.util too, so the file also has import java.util.InputMismatchException. On entry, note 1, try: the braces hold the code that might fail, here the line that reads and the one that uses what was read. Step 1, note 2, catch, right after it: in parentheses, the class of exception it handles and a variable for the exception object, e by custom, like a parameter; its block only runs if that exception is thrown inside the try. Step 2, note 3, after both, the program goes on as usual, whether the exception happened or not. Step 3, the takeaway; what runs in each case comes next.}
+\end{frame}
+
+% The code and the rows from the start; each row's line highlighted alone, to ask the class, then its answers at
+% once, the row's number in place of a disc; the takeaway on plain code
+\begin{frame}[fragile]{What runs?}{When the user types \code{80}, and when \code{abc}}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.46\textwidth}
+\begin{codeblock}[steps={|4|4|5|5|7|7|9|9|}, dense]{java}
+Scanner scanner = new Scanner(System.in);
+System.out.print("Brightness: ");
+try {
+    int brightness = scanner.nextInt();
+    System.out.println("Set to " + brightness + "%");
+} catch (InputMismatchException e) {
+    System.out.println("That is not a number");
+}
+System.out.println("Back to the home screen");
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{datatable}{l c c Y}
+        \tablehead{Line} & \tablehead{\code{80}} & \tablehead{\code{abc}} & \tablehead{Why} \\
+        \grouprule
+        \tablelabel{4} & \uncover<3->{\markok} & \uncover<3->{\markok} &
+          \uncover<3->{With \code{abc}, it throws the exception} \\
+        \tablerule
+        \tablelabel{5} & \uncover<5->{\markok} & \uncover<5->{\markno} &
+          \uncover<5->{The rest of the \code{try} is skipped} \\
+        \tablerule
+        \tablelabel{7} & \uncover<7->{\markno} & \uncover<7->{\markok} &
+          \uncover<7->{Only when the exception is thrown} \\
+        \tablerule
+        \tablelabel{9} & \uncover<9->{\markok} & \uncover<9->{\markok} & \uncover<9->{After both: always} \\
+        \grouprule
+      \end{datatable}
+    \end{column}
+  \end{columns}
+  \takeaway<10->{An exception \key{skips} the rest of the \code{try} and \key{runs} the \code{catch}; with no
+    exception, the \code{catch} is \key{skipped}.}
+  \note{The code of the previous slide, so they can follow it, and its four lines that read or print, one row each by its line number, in both runs; its number in the row standing for a disc. Each line is highlighted first, alone, to ask whether it runs with 80 and with abc; its row fills in on the next step. Steps 1 and 2, nextInt runs in both; with abc it is the line that throws. Steps 3 and 4, the println right after it only runs with 80: once an exception is thrown, the rest of the try is skipped, there is no going back to it. Steps 5 and 6, the catch is the other way round: only with abc. Steps 7 and 8, the line after them runs in both cases, which is the point: the program survives. A common question: can the program ask again? Yes, with the try inside a loop that repeats until the number is valid, which is what the exercises ask for. Step 9, the takeaway.}
+\end{frame}
+
+% The code plain on entry, to ask how it can fail; then the lines that fail, a catch for each and the general one,
+% each with its note; the takeaway on plain code
+\begin{frame}[fragile]{Several \code{catch} blocks}{One for each kind of error}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.56\textwidth}
+\begin{codeblock}[steps={|2-3|4,6|8|}, compact, marks={2-3/2, 4+6/3, 8/4}]{java}
+try {
+    int index = scanner.nextInt();
+    System.out.println(devices[index]);
+} catch (InputMismatchException e) {
+    System.out.println("That is not a number");
+} catch (ArrayIndexOutOfBoundsException e) {
+    System.out.println("There is no such device");
+} catch (Exception e) {
+    System.out.println("Something else went wrong");
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.4\textwidth}
+      \begin{codenotes}[1]
+        \codenote<2->{Two exceptions}{A word for \code{nextInt}, or a number past the end of the array.}
+        \codenote<3->{One \code{catch} each}{Tried in order: only the first that matches the exception runs.}
+        \codenote<4->[warn]{A superclass}{A class catches its subclasses too: \code{Exception}, last, takes any other.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<5->{A \code{try} can have \key{several \code{catch}} blocks: the \key{first} one that matches the
+    exception runs.}
+  \note{The app asks for the number of a device, to show it; devices is the array of the three devices from unit 3. On entry, the code: ask in how many ways the try can fail. Step 1, note 1, the two lines that can: a word, as before, or a number such as 7, past the end of an array of three, ArrayIndexOutOfBoundsException. Step 2, note 2, one catch for each, one after the other; Java compares the exception with each class in order and runs only the first that matches, then goes on after the last catch. Step 3, note 3, in orange, the third catch: a catch matches the class it names and all its subclasses, as a Device variable holds a Light. Exception is the superclass of both, so it would catch them too, and almost anything else; at the end, it only gets what the two above let through, such as a NullPointerException if devices were null. It is tempting to write it everywhere, and usually a bad idea: it also catches bugs the program should not hide. Checking the index with an if would work here too; it is written this way to show two exceptions in one try. Step 4, the takeaway; the order matters, on the next slide.}
+\end{frame}
+
+% The code plain on entry, for the question; both catch lines marked with the error under the code; the takeaway on
+% plain code
+\begin{frame}[fragile]{In the wrong order}{Does it compile?}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.56\textwidth}
+\begin{codeblock}[steps={|4,6|}, compact, marks={4+6/2/error}]{java}
+try {
+    int index = scanner.nextInt();
+    System.out.println(devices[index]);
+} catch (Exception e) {
+    System.out.println("Something went wrong");
+} catch (InputMismatchException e) {
+    System.out.println("That is not a number");
+}
+\end{codeblock}
+      \blockgap
+      \begin{uncoverenv}<2->
+\begin{consoleerror}[compact]
+Main.java:6: error: exception InputMismatchException
+    has already been caught
+\end{consoleerror}
+      \end{uncoverenv}
+    \end{column}
+    \begin{column}{0.4\textwidth}
+      \begin{codenotes}[1]
+        \codenote<2->[error]{Never reached}{Every \code{InputMismatchException} is an \code{Exception}: the first
+          \code{catch} takes it, and the second could never run.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<3->{The \code{catch} blocks go from the \key{most specific} class to the \key{most general}, or a later
+    one could \key{never run}.}
+  \note{The same try, with a general catch first. On entry, ask whether it compiles, and let them think about what the previous slide said: the first catch that matches runs. Step 1, note 1, in red, the answer: it does not compile. Every InputMismatchException is an Exception, so the first catch takes it, and the second one could never run; Java rejects code that can never run (the compiler's message, broken in two to fit). The fix is to swap them: the subclass first, the general one last, if it is there at all. Step 2, the takeaway.}
+\end{frame}
+
+% A comparison: the version that compiles, new, explained from entry; the other beside it, plain, to ask whether it
+% compiles; then the line that differs marked on both, with the error under it; the takeaway on plain code
+\begin{frame}[fragile]{One \code{catch}, several exceptions}{When they are handled the same way}
+  \begin{columns}[T, onlytextwidth]
+    \begin{column}{0.49\textwidth}
+      \blocktitle{Unrelated classes}
+\begin{codeblock}[steps={4||4|}, diff, packed, marks={4/1}]{java}
+try {
+    int index = scanner.nextInt();
+    System.out.println(devices[index]);
+} catch (InputMismatchException | ArrayIndexOutOfBoundsException e) {
+    System.out.println("Type the number of a device");
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.49\textwidth}
+      \begin{uncoverenv}<2->
+        \blocktitle{A class and its superclass}
+\begin{codeblock}[steps={||4|}, diff, packed, marks={4/3/error/2}]{java}
+try {
+    int index = scanner.nextInt();
+    System.out.println(devices[index]);
+} catch (InputMismatchException | Exception e) {
+    System.out.println("Something went wrong");
+}
+\end{codeblock}
+      \end{uncoverenv}
+      \blockgap
+      \begin{uncoverenv}<3->
+\begin{consoleerror}[packed]
+Main.java:4: error: Alternatives in a multi-catch
+    statement cannot be related by subclassing
+\end{consoleerror}
+      \end{uncoverenv}
+    \end{column}
+  \end{columns}
+  \notesgap
+  \begin{codenotes}[2]
+    \codenote{Joined by \code{|}}{In one \code{catch}: its block runs for any of them.}
+    \codenote<3->[error]{Related classes}{If one is a subclass of another, it does not compile: the superclass alone is
+      enough.}
+  \end{codenotes}
+  \takeaway<4->{\key{\code{|}} joins several classes in \key{one \code{catch}}, when every one of them is handled
+    \key{the same way}.}
+  \note{When two catch blocks would do exactly the same, they can be one. On entry, note 1, the vertical bar, read as \enquote{or}: the block runs if the exception is an InputMismatchException or an ArrayIndexOutOfBoundsException, so the code in it is written once. Step 1, beside it, the same with Exception in place of the second class: ask whether it compiles. Step 2, note 2, in red, the line that differs marked on both, and it does not compile: Exception already covers InputMismatchException, so naming both makes no sense (the compiler's message, broken in two to fit). When each one needs its own message, as in Several catch blocks, separate catch blocks are still the way. Step 3, the takeaway.}
+\end{frame}
+
+% Code and notes step together; the takeaway on plain code
+\begin{frame}[fragile]{\code{finally}}{Code that always runs}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.56\textwidth}
+\begin{codeblock}[steps={7-9|8|}, compact, marks={7-9/1, 8/2}]{java}
+Scanner scanner = new Scanner(System.in);
+try {
+    int brightness = scanner.nextInt();
+    System.out.println("Set to " + brightness + "%");
+} catch (InputMismatchException e) {
+    System.out.println("That is not a number");
+} finally {
+    scanner.close();
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.4\textwidth}
+      \begin{codenotes}[1]
+        \codenote{\code{finally}}{After the \code{catch} blocks: its block runs whatever happens in the \code{try},
+          even with an exception no \code{catch} takes.}
+        \codenote<2->{To clean up}{The place to close what was opened, such as a \code{Scanner}.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<3->{The \key{\code{finally}} block runs in \key{every case}: for what has to happen whatever goes
+    wrong.}
+  \note{A third block a try can have. On entry, note 1, finally, after the catch blocks; a try with a finally and no catch at all is also valid. Its block runs when the try ends, whichever way it ends, even in the cases where the code after the try would not run: an exception that none of its catch blocks takes, which goes on up after the finally, or a return inside the try. Step 1, note 2, what it is for: releasing what the code opened, whatever happened. A Scanner should be closed when the program no longer needs it, and here it is closed even if reading failed; files and network connections are the usual case. A warning for the exercises: closing a Scanner on System.in closes the keyboard too, and nothing can read from it again, so a program that keeps reading, such as a menu, closes it only once, at the very end. Java also has try (Scanner scanner = new Scanner(System.in)) \{ ... \}, try-with-resources, which closes it by itself; they will meet it with files. Step 2, the takeaway; the cases come next.}
+\end{frame}
+
+% Every way to end is there from the start; each row's answers fill in at once, after asking the class; no takeaway:
+% finally's, on the previous slide, says it
+\begin{frame}{When does it run?}{The same \code{try}, four ways to end}
+  \begin{datatable}{l C C C}
+    \tablehead{In the \code{try}} & \tablehead{\code{catch}} & \tablehead{\code{finally}} &
+      \tablehead{After them} \\
+    \grouprule
+    No exception & \uncover<2->{\markno} & \uncover<2->{\markok} & \uncover<2->{\markok} \\
+    \tablerule
+    An exception it catches & \uncover<3->{\markok} & \uncover<3->{\markok} & \uncover<3->{\markok} \\
+    \tablerule
+    An exception it does not catch & \uncover<4->{\markno} & \uncover<4->{\markok} & \uncover<4->{\markno} \\
+    \tablerule
+    A \code{return} & \uncover<5->{\markno} & \uncover<5->{\markok} & \uncover<5->{\markno} \\
+    \grouprule
+  \end{datatable}
+  \note{Four ways the try of the previous slide can end, and what runs in each. Ask about each row before filling it in. Step 1, no exception: the catch is skipped, finally and the code after it run. Step 2, an exception it catches: all three. Step 3, an exception it does not catch, say a NullPointerException: finally runs, and then the exception goes on up to whoever called the method, so the code after it does not run. Step 4, a return inside the try: finally runs just before the method returns. The finally column is all ticks: that is all it promises (only stopping the JVM itself, with System.exit, skips it).}
+\end{frame}
+
+% % % % % % % % % % Throwing exceptions % % % % % % % % % %
+\section{Throwing exceptions}
+
+% The check on entry, with its note, main faded; the call and the println plain, to ask what it prints; then both
+% marked with the check and the output; the takeaway on plain code
+\begin{frame}[fragile]{Brightness: 250\%, again}{Ignored without a word}
+  \begin{columns}[T, onlytextwidth]
+    \begin{column}{0.54\textwidth}
+      \blocktitle{\code{Light.java}}
+\begin{codeblock}[steps={3-5|none|3-5|}, dense, marks={3-5/1, 3-5/3/warn/2}]{java}
+public class Light extends Device implements Adjustable {
+    public void setBrightness(int brightness) {
+        if (brightness >= 0 && brightness <= 100) {
+            this.brightness = brightness;
+        }
+    }
+
+    // the rest of the class, as before
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.42\textwidth}
+      \blocktitle{In \code{main}}
+\begin{codeblock}[steps={none|3-4|3-4|}, dense, marks={3-4/3/warn/2}]{java}
+Light lamp = new Light("Living room lamp");
+lamp.setBrightness(80);
+lamp.setBrightness(250);
+System.out.println(lamp.getBrightness());
+\end{codeblock}
+      \blockgap
+      \begin{uncoverenv}<3->
+\begin{console}[dense]
+80
+\end{console}
+      \end{uncoverenv}
+    \end{column}
+  \end{columns}
+  \notesgap
+  \begin{codenotes}[2]
+    \codenote{The check}{\code{setBrightness} only accepts a brightness from 0 to 100, as in the previous unit.}
+    \codenote<3->[warn]{Ignored without a word}{250 leaves the brightness as it was, and the caller goes on as if it
+      had worked.}
+  \end{codenotes}
+  \takeaway<4->{A method that \key{cannot} do what it is asked should \key{say so}, not stay silent.}
+  \note{Unit 3 left this open. On entry, note 1, setBrightness checks the value, as in unit 3. Step 1, in main, a lamp, which its constructor creates at 100\%, set to 80 and then to 250, and printed: ask what it prints. Step 2, note 2, in orange, 80, with the check marked again: 250 was rejected without a word, and the brightness is still the one before. The code that called it has no way to know; it could show the user 250\% on the screen, or go on with a lamp that never changed. Step 3, the takeaway. Ask them how they would report the error in C: the next slide.}
+\end{frame}
+
+% The function on entry, its returns marked; the call that ignores it, then the header, each with its note; the
+% takeaway on plain code
+\begin{frame}[fragile]{In C, an error code}{A return value the caller can ignore}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.56\textwidth}
+      \blocktitle{The function}
+\begin{codeblock}[steps={3,6|none|1|}, compact, marks={3+6/1, 1/3/warn/3}]{c}
+int set_brightness(struct light *light, int brightness) {
+    if (brightness < 0 || brightness > 100) {
+        return -1;
+    }
+    light->brightness = brightness;
+    return 0;
+}
+\end{codeblock}
+      \blockgap
+      \blocktitle{A call}
+\begin{codeblock}[steps={none|1|none|}, compact, marks={1/2/warn/2}]{c}
+set_brightness(&lamp, 250);
+printf("%d\n", lamp.brightness);
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.4\textwidth}
+      \begin{codenotes}[1]
+        \codenote{A return code}{-1 when it fails and 0 when it works, as many C library functions do.}
+        \codenote<2->[warn]{Easy to ignore}{Nothing forces the caller to check it: this call compiles and runs.}
+        \codenote<3->[warn]{Mixed with the result}{A function that returns a value has to give one up, such as -1
+          or \code{NULL}, to mean an error.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<4->{In C, an error is a \key{return value}: nothing forces the caller to \key{check} it.}
+  \note{How they did it in Programming Fundamentals I. On entry, note 1, the function, with its two returns marked: -1 for an invalid brightness, 0 when it worked, the same convention as scanf's count or fopen's NULL. Step 1, note 2, in orange, a caller that never looks at it: it compiles without a warning, and the program goes on with a lamp that did not change, exactly as in Java on the previous slide. Step 2, note 3, in orange, the header: when a function already returns something, such as a position or a pointer, one of its values has to be given up to mean failure, -1 or NULL, and every caller has to remember which. Step 3, the takeaway.}
+\end{frame}
+
+% A question to the class, on its own, before the idea that answers it
+\begin{frame}
+  \question{How could \code{setBrightness} report an error that the caller cannot miss?}
+  \note{The two previous slides turned into a question before throw answers it. Let them think: a return value can be ignored, so the error has to stop the caller unless it deals with it, which is exactly what the exceptions of the first section did. Some may propose throwing one themselves; good, that is the answer. Do not name throw yet: the next slide does.}
+\end{frame}
+
+% Code and notes step together; the takeaway on plain code
+\begin{frame}[fragile]{\code{throw}}{Reporting an error with an exception}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.56\textwidth}
+\begin{codeblock}[steps={4-5|7|}, dense, marks={4-5/1, 7/2}]{java}
+public class Light extends Device implements Adjustable {
+    public void setBrightness(int brightness) {
+        if (brightness < 0 || brightness > 100) {
+            throw new IllegalArgumentException(
+                    "Brightness out of range: " + brightness);
+        }
+        this.brightness = brightness;
+    }
+
+    // the rest of the class, as before
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.4\textwidth}
+      \begin{codenotes}[1]
+        \codenote{\code{throw}}{Throws an exception, an object created with \code{new} with a message that describes
+          the error: the method stops there, and the exception goes to whoever called it.}
+        \codenote<2->{Only if valid}{The rest of the method runs only with a valid value.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<3->{\key{\code{throw}} stops the method with an \key{exception}: the caller can no longer miss the
+    error.}
+  \note{Java's answer, with the check turned around: if the value is wrong, throw. On entry, note 1, throw: like return, it ends the method on that line, but instead of a value it sends an exception to the code that called it. What is thrown is an object, created with new as in unit 2; its constructor takes the message, here with the wrong value in it, which is what getMessage will return. Java has a class for most situations, so there is no need to invent one: IllegalArgumentException, for an argument the method cannot accept; IllegalStateException, for an object that is not in a state to do it, such as setting the volume of a speaker that is off. Step 1, note 2, the line after the if only runs with a valid value. A constructor can throw in the same way, for instance with a name that is null, and then new never returns an object, so an invalid one can never exist. Step 2, the takeaway: with 250, main now stops with an IllegalArgumentException and its stack trace, instead of going on silently.}
+\end{frame}
+
+% The call in main on entry, Light faded; the call it makes, main's still marked, its note going on; the throw, the method in the middle
+% with no catch, and main's catch, each with its note, the other block faded; the takeaway on plain code
+\begin{frame}[fragile]{Up the calls}{Who receives the exception?}
+  \begin{columns}[T, onlytextwidth]
+    \begin{column}{0.54\textwidth}
+      \blocktitle{\code{Light.java}}
+\begin{codeblock}[steps={none|4|9-10|4|none|}, dense, marks={4/2/info/1, 9-10/3/error, 4/4}]{java}
+public class Light extends Device implements Adjustable {
+    @Override
+    public void setLevel(int level) {
+        this.setBrightness(level);
+    }
+
+    public void setBrightness(int brightness) {
+        if (brightness < 0 || brightness > 100) {
+            throw new IllegalArgumentException(
+                    "Brightness out of range: " + brightness);
+        }
+        this.brightness = brightness;
+    }
+
+    // the rest of the class, as before
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.42\textwidth}
+      \blocktitle{In \code{main}}
+\begin{codeblock}[steps={3|3|none|none|5-7|}, dense, marks={3/1, 5-7/5/info/4}]{java}
+Light lamp = new Light("Living room lamp");
+try {
+    lamp.setLevel(250);
+    System.out.println("Level set");
+} catch (IllegalArgumentException e) {
+    System.out.println("Could not set it");
+}
+System.out.println("Back to the home screen");
+\end{codeblock}
+      \notesgap
+      \begin{codenotes}[2]
+        \codenote{The calls}{\code{main} calls \code{setLevel}\uncover<2->{, which calls \code{setBrightness}.}}
+        \codenote<3->[error]{Thrown}{\code{setBrightness} stops on the \code{throw}.}
+        \codenote<4->{Not caught}{\code{setLevel} stops too, and the exception goes on to \code{main}.}
+        \codenote<5->{Caught}{\code{main} catches it, and goes on after the \code{catch}.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<6->{An exception goes \key{up the calls}, stopping each method, until one \key{catches} it; if none does,
+    the \key{program stops}.}
+  \note{Where the exception goes once thrown. The level slider of unit 3 calls setLevel, which calls setBrightness. On entry, note 1, the call in main: main calls setLevel(250). Step 1, the same note goes on, in Light, with the call in main still marked: setLevel passes the value on to setBrightness. Step 2, note 2, in red, setBrightness throws, and stops on that line. Step 3, note 3, the exception arrives at setLevel, in the middle of its call: setLevel has no catch around it, so it stops too, without finishing what it was doing, and the exception goes on to its caller, main; the program does not stop there. A method in the middle does not have to do anything for the exception to pass through it. Step 4, note 4, main has a catch for it around the call: the rest of the try, Level set, is skipped, the catch runs, and main goes on after it, printing Could not set it and Back to the home screen. Had setLevel caught it, it would have gone on after its own catch, and main would never have known. Had main no catch either, nobody would be left: the program would stop and print the stack trace, whose lines are these very calls, setBrightness, setLevel, main. Step 5, the takeaway.}
+\end{frame}
+
+% The first row whole on entry; the second by parts, its card and code, then its output, to ask before it; the third
+% whole; the takeaway after
+\begin{frame}[fragile]{What an exception carries}{Inside \code{catch (IllegalArgumentException e)}}
+  \begin{boxrow}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.26\textwidth}
+      \begin{card}{\code{getMessage}}
+        The message given to its constructor.
+      \end{card}
+    \end{column}
+    \begin{column}{0.3\textwidth}
+\begin{codeblock}[dense]{java}
+System.out.println(e.getMessage());
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.4\textwidth}
+\begin{console}[dense]
+Brightness out of range: 250
+\end{console}
+    \end{column}
+  \end{columns}
+  \end{boxrow}
+  \boxrowgap
+  \begin{boxrow}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.26\textwidth}
+      \begin{card}<2->{\code{toString}}
+        Its class and its message.
+      \end{card}
+    \end{column}
+    \begin{column}{0.3\textwidth}
+      \begin{uncoverenv}<2->
+\begin{codeblock}[dense]{java}
+System.out.println(e);
+\end{codeblock}
+      \end{uncoverenv}
+    \end{column}
+    \begin{column}{0.4\textwidth}
+      \begin{uncoverenv}<3->
+\begin{console}[dense]
+java.lang.IllegalArgumentException:
+  Brightness out of range: 250
+\end{console}
+      \end{uncoverenv}
+    \end{column}
+  \end{columns}
+  \end{boxrow}
+  \boxrowgap
+  \begin{boxrow}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.26\textwidth}
+      \begin{card}<4->{\code{printStackTrace}}
+        All that and the stack trace, and the program goes on.
+      \end{card}
+    \end{column}
+    \begin{column}{0.3\textwidth}
+      \begin{uncoverenv}<4->
+\begin{codeblock}[dense]{java}
+e.printStackTrace();
+\end{codeblock}
+      \end{uncoverenv}
+    \end{column}
+    \begin{column}{0.4\textwidth}
+      \begin{uncoverenv}<4->
+\begin{console}[dense]
+java.lang.IllegalArgumentException:
+  Brightness out of range: 250
+    at Light.setBrightness(Light.java:9)
+    at Light.setLevel(Light.java:4)
+    at Main.main(Main.java:3)
+\end{console}
+      \end{uncoverenv}
+    \end{column}
+  \end{columns}
+  \end{boxrow}
+  \takeaway<5->{The exception is an \key{object}: its methods, inherited from \code{Throwable}, say \key{what} went
+    wrong and \key{where}.}
+  \note{Inside the catch of the previous slide, e is the exception object that was thrown, and it has the methods of Throwable from the first section. On entry, getMessage, the text passed to the constructor in setBrightness: what to show the user. Step 1, toString, which println calls on any object, as in unit 3: ask what it prints. Step 2, the full class name and the message, which Java prints on one line, broken in two here to fit. Step 3, printStackTrace: what Java prints when nothing catches an exception, but the program does not stop. It writes to System.err, the error output, which IntelliJ shows in red. It is useful while developing; a finished app shows the user a message instead. Step 4, the takeaway.}
+\end{frame}
+
+% % % % % % % % % % Checked and unchecked exceptions % % % % % % % % % %
+\section{Checked and unchecked exceptions}
+
+% The house as usual on entry; the speaker's tile, then the app that has to be ready, each with its note; the
+% takeaway after
+\begin{frame}{The speaker stops answering}{Not a bug in the app}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.36\textwidth}
+      \begin{phones}
+        \homephone{%
+          \hometile[light]{Living room lamp}{On, 100\%}%
+          \hometile[thermostat]{Hallway thermostat}{On, 21.5\,°C}%
+          \hometile[speaker]{Kitchen speaker}{\alt<2->{\marked<2| handout:0>{Not responding}}{Off}}%
+            \tilemark<2->[warn]{1}\tilemark<3->{2}}
+      \end{phones}
+    \end{column}
+    \begin{column}{0.58\textwidth}
+      \begin{codenotes}[1]
+        \codenote<2->[warn]{Out of the programmer's control}{The speaker has lost its Wi-Fi: no line of the app is wrong.}
+        \codenote<3->{Bound to happen}{Any device can stop answering, at any time: the app has to be ready for it.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<4->{Some errors are \key{not bugs}: they are \key{out of the programmer's control}, and the code has to
+    be \key{ready} for them.}
+  \note{The home screen of unit 3, with its three tiles. On entry, the house as usual. Step 1, note 1, in orange, the speaker's tile: it no longer answers the app. Ask them whose fault it is: nobody's in the code. Someone unplugged it, or the Wi-Fi went down. The index past the end, the null and the 250\% were mistakes in the program, which can be fixed so that they never happen again; this cannot be fixed, it will happen again. Step 2, note 2: so turning a device on can fail even in a perfect program, and the app has to be ready for it, here by showing Not responding instead of crashing. Step 3, the takeaway; how that looks in the code comes next.}
+\end{frame}
+
+% Code and notes step together; no takeaway: it only prepares the next slide
+\begin{frame}[fragile]{Online or not}{What the app knows of each device}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.56\textwidth}
+\begin{codeblock}[steps={2|6|9-11}, compact, marks={2/1, 6/2, 9-11/3}]{java}
+public abstract class Device {
+    private boolean online;
+
+    public Device(String name) {
+        this.name = name;
+        this.online = true;
+    }
+
+    public void setOnline(boolean online) {
+        this.online = online;
+    }
+
+    // the rest of the class, as before
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.4\textwidth}
+      \begin{codenotes}[1]
+        \codenote{\code{online}}{Whether the device answers the app: a new private attribute.}
+        \codenote<2->{Online from the start}{The constructor sets it: a new device answers.}
+        \codenote<3->{\code{setOnline}}{The app calls it when a device stops answering, or answers again.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \note{What the app needs to know before it can tell a device that answers from one that does not. On entry, note 1, a new attribute of Device, online, private like the others. Step 1, note 2, the constructor of unit 3 sets it to true: a device that has just been added answers. Step 2, note 3, a setter, the one the app calls when a device stops answering, as the speaker on the previous slide, or answers again; there is no getter, since only Device needs to read it.}
+\end{frame}
+
+% The code plain on entry, for the question; the throw marked with the error under the code; the takeaway on plain
+% code
+\begin{frame}[fragile]{Throwing an \code{IOException}}{Does it compile?}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.6\textwidth}
+\begin{codeblock}[steps={|6|}, dense, marks={6/2/error}]{java}
+import java.io.IOException;
+
+public abstract class Device {
+    public void turnOn() {
+        if (!this.online) {
+            throw new IOException(this.name + " is not responding");
+        }
+        this.on = true;
+    }
+
+    // the rest of the class, as before
+}
+\end{codeblock}
+      \blockgap
+      \begin{uncoverenv}<2->
+\begin{consoleerror}[dense]
+Device.java:6: error: unreported exception IOException;
+    must be caught or declared to be thrown
+\end{consoleerror}
+      \end{uncoverenv}
+    \end{column}
+    \begin{column}{0.36\textwidth}
+      \begin{codenotes}[1]
+        \codenote<2->[error]{Caught or declared}{The same \code{throw} with an \code{IllegalArgumentException}
+          compiled: the difference is the class.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<3->{Some exceptions have to be \key{caught} or \key{declared}, and the \key{compiler} checks it.}
+  \note{turnOn now checks online, from the previous slide, and if the device is offline it throws an exception. Which class? IOException, from java.io: Java's exception for input and output that fails, a file that cannot be read or a connection that drops, which is what happened. On entry, the code: it looks like setBrightness in the previous section, so ask them whether it compiles. Step 1, note 1, in red, the answer: it does not, unreported exception IOException; must be caught or declared to be thrown (broken in two to fit). The same throw with IllegalArgumentException compiled; the difference is the class. Step 2, the takeaway; which exceptions those are comes next, and what declared means after that.}
+\end{frame}
+
+% Exception and its two branches on entry, the unchecked one with its note; then the checked one with its own; the
+% takeaway after
+\begin{frame}{Checked and unchecked}{Which ones the compiler checks}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.6\textwidth}
+      \centering
+      \begin{classdiagram}
+        \classbox{exception}{0.5}{}{Exception}{}{}
+        \classbox{io}{0}{exception}{IOException}{}{}
+        \classbox{runtime}{1}{exception}{RuntimeException}{}{}
+        \inheritmark{runtime}{1}
+        \inheritmark<2->{io}{2}
+      \end{classdiagram}
+    \end{column}
+    \begin{column}{0.37\textwidth}
+      \begin{codenotes}[1]
+        \codenote{Unchecked}{\code{RuntimeException} and its subclasses: usually a mistake in the code, which the
+          compiler does not check.}
+        \codenote<2->{Checked}{The rest of \code{Exception}, such as \code{IOException}: out of the programmer's control,
+          so caught or declared, or it does not compile.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<3->{Under \key{\code{RuntimeException}} the exceptions are \key{unchecked}; the rest of \key{\code{Exception}} is
+    \key{checked}.}
+  \note{Which exceptions the compiler insists on, from the hierarchy of the first section. Why the throw of the previous section compiled and this one did not, if both are exceptions: the branch each one is in. On entry, Exception and its two branches, with note 1, RuntimeException's branch: these usually mean a mistake in the code, an index too big, a null, a wrong argument, which the code should avoid rather than catch. It and everything under it, all the exceptions of the first three sections, are unchecked: any method may throw them without saying so, which is why setBrightness compiled with its throw. Step 1, note 2, IOException's branch: these come from outside, a file, a network, a device, which no correct code can prevent. An Exception that is not under RuntimeException is checked, and every method that may throw it has to catch it or declare it, with the word in the header that comes next. Errors are not checked either, but they are not exceptions a program handles. An unchecked exception can still be caught, as InputMismatchException was; the compiler just does not insist. Step 2, the takeaway.}
+\end{frame}
+
+% A question to the class, on its own, before the idea that answers it
+\begin{frame}
+  \question{How can a method force whoever calls it to be ready for an exception?}
+  \note{The two previous slides turned into a question before throws answers it. The compiler said caught or declared: catching inside turnOn makes no sense, since turnOn cannot fix a device that does not answer, so the method has to say it, in a place every caller sees. Let them think about where: the header, where the parameters and the return type already tell the caller what to expect. Do not name throws yet: the next slide does.}
+\end{frame}
+
+% Code and notes step together; the takeaway on plain code
+\begin{frame}[fragile]{\code{throws}}{What a method may throw}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.6\textwidth}
+\begin{codeblock}[steps={4|6|}, dense, marks={4/1, 6/2}]{java}
+import java.io.IOException;
+
+public abstract class Device {
+    public void turnOn() throws IOException {
+        if (!this.online) {
+            throw new IOException(this.name + " is not responding");
+        }
+        this.on = true;
+    }
+
+    // the rest of the class, as before
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.36\textwidth}
+      \begin{codenotes}[1]
+        \codenote{\code{throws}}{After the parameters, the exceptions the method may throw: whoever calls it knows it
+          may fail.}
+        \codenote<2->{Not a \code{catch}}{The method handles nothing: the exception still goes up to its caller.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<3->{\key{\code{throws}} declares the exceptions a method may throw: dealing with them is the
+    \key{caller's} job.}
+  \note{The fix: throws IOException in the header, after the parameters; note the s, throw throws one exception and throws declares them. On entry, note 1, the header: the method now says it may end with an IOException, and Device compiles. Several classes go separated by commas. The header is part of the contract, as the parameters are, so whoever calls turnOn knows it may fail and, as the next slide shows, cannot just ignore it. Step 1, note 2: throws does not handle anything; the throw is still there, and the exception still goes up the calls as in the third section. A constructor can declare throws too. Step 2, the takeaway.}
+\end{frame}
+
+% The first version on entry, its try marked; the second at step 2 with its header marked, and the trap; the takeaway
+% on plain code
+\begin{frame}[fragile]{Catch it or pass it on}{What the caller can do}
+  \begin{columns}[T, onlytextwidth]
+    \begin{column}{0.47\textwidth}
+      \blocktitle{Catch it}
+\begin{codeblock}[steps={6-10|none|none|}, packed, marks={6-10/1}]{java}
+import java.io.IOException;
+
+public class Main {
+    public static void main(String[] args) {
+        Device speaker = new Speaker("Kitchen speaker");
+        try {
+            speaker.turnOn();
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.51\textwidth}
+      \begin{uncoverenv}<2->
+        \blocktitle{Pass it on}
+\begin{codeblock}[steps={|4|4|}, packed, marks={4/2, 4/3/warn}, marks from=2]{java}
+import java.io.IOException;
+
+public class Main {
+    public static void main(String[] args) throws IOException {
+        Device speaker = new Speaker("Kitchen speaker");
+        speaker.turnOn();
+    }
+}
+\end{codeblock}
+      \end{uncoverenv}
+    \end{column}
+  \end{columns}
+  \notesgap
+  \begin{codenotes}[3]
+    \codenote{Catch it}{Here, when this method knows what to do.}
+    \codenote<2->{Pass it on}{With \code{throws} in its own header.}
+    \codenote<3->[warn]{Nobody catches it}{If \code{main} passes it on too, it compiles, but if it is thrown, the program stops.}
+  \end{codenotes}
+  \takeaway<4->{A \key{checked exception} has to be \key{caught} or \key{declared}, method after method: never
+    ignored by accident.}
+  \note{Without either of these, the call speaker.turnOn() is the next compile error, the same unreported exception, now in Main, which also imports the classes of home.devices, as since the packages of unit 3. On entry, note 1, the first option, with the try marked: catch it where the program knows how to react, here by printing the message; the app would mark the tile as not responding. Step 1, note 2, the second option: declare it again, in the header of the caller, and let its own caller decide. In a bigger program, a method in the middle that cannot do anything useful about it passes it on, and the one that can, usually the one closest to the user, catches it. Step 2, note 3, in orange, the trap: main can pass it on too, and it compiles, but main is called by the JVM, so nobody catches it, and the program stops with the stack trace, Exception in thread \enquote{main} java.io.IOException: Kitchen speaker is not responding. Writing throws everywhere to make the compiler quiet only moves the crash. Step 3, the takeaway: this is what makes an exception checked.}
+\end{frame}
+
+% Each row shows its question first; both answers fill in at once, after asking the class
+\begin{frame}{Checked or unchecked?}{What each one usually means}
+  \begin{datatable}{l Y Y}
+    & \tablehead{Checked} & \tablehead{Unchecked} \\
+    \grouprule
+    \tablelabel{The compiler} & \uncover<2->{Insists: caught or declared} & \uncover<2->{Does not check it} \\
+    \tablerule
+    \uncover<3->{\tablelabel{The cause}} & \uncover<4->{Out of the programmer's control: a device, a file, the network} &
+      \uncover<4->{A mistake in the code} \\
+    \tablerule
+    \uncover<5->{\tablelabel{Can it be avoided?}} & \uncover<6->{No: it can happen to correct code} &
+      \uncover<6->{Yes: by checking first} \\
+    \tablerule
+    \uncover<7->{\tablelabel{What to do}} & \uncover<8->{Catch it and recover: retry, or tell the user} &
+      \uncover<8->{Fix the code that caused it} \\
+    \grouprule
+  \end{datatable}
+  \takeaway<9->{The program has to be \key{ready} for a \key{checked} exception, and \key{avoid} an \key{unchecked}
+    one.}
+  \note{The two kinds side by side; each row shows its question first: ask for both answers before filling them in. The compiler: checked ones must be caught or declared, unchecked ones are up to the programmer. The cause: a checked exception usually comes from what is out of the programmer's control, the speaker offline, a missing file, a dropped connection; an unchecked one, from a mistake in the code, an index too big, a null, a brightness of 250. Can it be avoided: no amount of care keeps the Wi-Fi up, while an if before the call avoids every unchecked exception of this unit. What to do: a checked one is caught and the program recovers; an unchecked one is a bug to fix, not to catch. Java itself is not always consistent: InputMismatchException is unchecked although it comes from the user. Step 8, the takeaway.}
+\end{frame}
+
+% % % % % % % % % % Custom exceptions % % % % % % % % % %
+\section{Custom exceptions}
+
+% A question to the class, on its own, before the idea that answers it
+\begin{frame}
+  \question{How can a \code{catch} single out a device that stops answering?}
+  \note{A catch for IOException catches any input or output problem: a device offline, but also a file that cannot be read, or anything else the libraries throw, and the only way to tell them apart is the text of the message. Let them think: a catch picks exceptions by their class, so what is missing is a class that means exactly this. Exceptions are classes, as the first section showed, and they know how to write classes. Do not show it yet: the next slide does.}
+\end{frame}
+
+% Code and notes step together; the takeaway on plain code
+\begin{frame}[fragile]{An exception of our own}{\code{DeviceOfflineException}}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.56\textwidth}
+\begin{codeblock}[steps={1|2-4|1|}, compact, marks={1/1, 2-4/2, 1/3}]{java}
+public class DeviceOfflineException extends Exception {
+    public DeviceOfflineException(String deviceName) {
+        super(deviceName + " is not responding");
+    }
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.4\textwidth}
+      \begin{codenotes}[1]
+        \codenote{A class like any other}{It extends \code{Exception}, so it is checked; extending
+          \code{RuntimeException}, it would be unchecked.}
+        \codenote<2->{Its constructor}{Takes what it needs and passes the message to \code{super(...)}:
+          \code{getMessage} returns it.}
+        \codenote<3->{Its name}{Says what went wrong, and ends in \code{Exception}: a \code{catch} can single it
+          out.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<4->{A \key{custom exception} is a subclass of \key{\code{Exception}} or \key{\code{RuntimeException}}
+    named after \key{what went wrong}.}
+  \note{The answer to the question. On entry, note 1, the header: an exception is a class like those of unit 3, so it extends one; the superclass decides whether it is checked, and a device offline is the checked kind, from the previous section. Step 1, note 2, the constructor, inheritance as in unit 3: super(...) calls Exception's constructor with the message, and getMessage, inherited, returns it; the caller only gives the name of the device. Step 2, note 3, the name: by convention it ends in Exception, and it says the problem, so a catch (DeviceOfflineException e) catches exactly that and nothing else. It is a class, so it can also have attributes and getters, such as the device itself, for the code that catches it. Step 3, the takeaway.}
+\end{frame}
+
+% Device's two lines first, main faded; then main's try and its catch with the output, Device faded; no takeaway: it
+% applies the previous slide
+\begin{frame}[fragile]{Throwing and catching it}{Every device that answers is turned on}
+  \begin{columns}[T, onlytextwidth]
+    \begin{column}{0.46\textwidth}
+      \blocktitle{\code{Device.java}}
+\begin{codeblock}[steps={2|4|none|none}, packed, marks={2/1, 4/2}]{java}
+public abstract class Device {
+    public void turnOn() throws DeviceOfflineException {
+        if (!this.online) {
+            throw new DeviceOfflineException(this.name);
+        }
+        this.on = true;
+    }
+
+    // the rest of the class, as before
+}
+\end{codeblock}
+      \notesgap
+      \begin{codenotes}[2]
+        \codenote{Declared}{In place of \code{IOException}.}
+        \codenote<2->{Thrown}{With the device's name.}
+        \codenote<3->{A \code{try} per device}{One fails, the rest go on.}
+        \codenote<4->{Caught by its name}{Then on to the next device.}
+      \end{codenotes}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \blocktitle{In \code{main}}
+\begin{codeblock}[steps={none|none|9-11|12-14}, packed, marks={9-11/3, 12-14/4}, marks from=3]{java}
+Device[] devices = {
+        new Light("Living room lamp"),
+        new Thermostat("Hallway thermostat", 21.5),
+        new Speaker("Kitchen speaker")
+};
+devices[2].setOnline(false);
+
+for (Device device : devices) {
+    try {
+        device.turnOn();
+        System.out.println(device);
+    } catch (DeviceOfflineException e) {
+        System.out.println(e.getMessage());
+    }
+}
+\end{codeblock}
+      \blockgap
+      \begin{uncoverenv}<4->
+\begin{console}[packed]
+Living room lamp: On, 100%
+Hallway thermostat: On, 21.5 °C
+Kitchen speaker is not responding
+\end{console}
+      \end{uncoverenv}
+    \end{column}
+  \end{columns}
+  \note{The new class in use. Device needs no import, as the exception is in its package, home.devices; Main, in home.app, imports it like the other classes. On entry, note 1, the header of turnOn: it now declares DeviceOfflineException, and no longer IOException. Step 1, note 2, the throw: a new object of the class, with the device's name, which Device can read because it is its own private attribute. Step 2, note 3, the app's All on button, in main: the array of the three devices of unit 3, with the speaker offline, and a loop that turns each one on and prints it, with the try inside the loop. Ask what it prints. Step 3, note 4, the catch for that one class, and the output: a device that does not answer prints its message and the loop goes on with the next. The lamp and the thermostat are on, and the speaker is reported, with no crash and the other devices untouched. With the try outside the loop, the first device offline would stop the whole loop.}
+\end{frame}
+
+% Every error is there from the start; each row's answers fill in at once, after asking the class
+\begin{frame}{\code{Exception} or \code{RuntimeException}?}{Which one to extend}
+  \begin{datatable}{l l l Y}
+    \tablehead{The error} & \tablehead{Extends} & \tablehead{Kind} & \tablehead{Because} \\
+    \grouprule
+    A device stops answering & \uncover<2->{\code{Exception}} & \uncover<2->{Checked} &
+      \uncover<2->{Out of the programmer's control: no code can prevent it} \\
+    \tablerule
+    The app's settings file is missing & \uncover<3->{\code{Exception}} & \uncover<3->{Checked} &
+      \uncover<3->{Out of the programmer's control: someone deleted it} \\
+    \tablerule
+    \code{setBrightness(250)} in the app's code & \uncover<4->{\code{RuntimeException}} & \uncover<4->{Unchecked} &
+      \uncover<4->{A mistake in the code: check the value before calling} \\
+    \tablerule
+    Setting the volume of a speaker that is off & \uncover<5->{\code{RuntimeException}} & \uncover<5->{Unchecked} &
+      \uncover<5->{A mistake in the code: check that it is on before calling} \\
+    \grouprule
+  \end{datatable}
+  \takeaway<6->{\key{Checked} for what is \key{out of the programmer's control}; \key{unchecked} for \key{mistakes in
+    the code}.}
+  \note{The question every custom exception raises: which class to extend. The test is not where the value comes from but whose fault the error is. Ask about each row before filling it in, using the table of the previous section. Step 1, a device that stops answering: it can happen to perfect code, so the compiler should make every caller deal with it, checked. Step 2, a file the app needs that someone deleted: again nothing in the code can prevent it, checked; this is why Java's IOException is checked. Step 3, the app's own code calling setBrightness with 250: a correct program checks the value before calling, so when it happens it is a bug, unchecked, which is why Java's IllegalArgumentException is a RuntimeException. Step 4, the app's code setting the volume of a speaker that is off: the code can ask isOn first, so it is a bug to fix, not to catch, unchecked, which is why Java's IllegalStateException, from the note of throw, is a RuntimeException. If they ask about a value the user types, such as a brightness of 250 or a time of 25:00: the program should check it before using it, as the exercises do with the keyboard menu, so what reaches setBrightness unchecked is again the programmer's mistake. When in doubt, ask whether a correct program could still get it: if so, checked. Step 5, the takeaway.}
+\end{frame}
+
+\begin{frame}{Exercises}{What you can solve now}
+  \begin{datatable}{l Y}
+    \tablehead{Exercise} & \tablehead{What it practices} \\
+    \grouprule
+    \href{https://github.com/alfaro96/programming-fundamentals-ii/tree/main/code/Exceptions/Exercise\%201}{Exercise 1} &
+      Housing: unchecked exceptions of its own for a negative price or size, thrown by the constructors \\
+    \tablerule
+    \href{https://github.com/alfaro96/programming-fundamentals-ii/tree/main/code/Exceptions/Exercise\%202}{Exercise 2} &
+      Antiques: checked and unchecked exceptions, and a keyboard menu that keeps running after any error \\
+    \grouprule
+  \end{datatable}
+  \note{The exercises of the unit, which need all of it: throwing, catching, checked and unchecked exceptions of their own. Both build on exercises of unit 3, the housing agency and the antiques collection. They are in the JetBrains Academy course, in the Exceptions lesson; each title opens it on GitHub.}
+\end{frame}
+
+\begin{frame}{Unit summary}{What to take away from this unit}
+  \begin{recap}
+    \recapitem<2>{Exceptions}{An \key{object} that describes an error while the program runs: if nothing handles it,
+      it stops the program, and the \key{stack trace} says what went wrong and where.}
+    \recapitem<3>{Catching exceptions}{\key{\code{try}} and \key{\code{catch}}, from the most specific class to the
+      most general, and \key{\code{finally}}, which always runs.}
+    \recapitem<4>{Throwing exceptions}{\key{\code{throw}} reports an error; the exception goes \key{up the calls}
+      until one catches it.}
+    \recapitem<5>{Checked and unchecked exceptions}{A \key{checked} one is caught or declared with
+      \key{\code{throws}}; an \key{unchecked} one, under \key{\code{RuntimeException}}, need not be.}
+    \recapitem<6>{Custom exceptions}{A subclass of \key{\code{Exception}} or \key{\code{RuntimeException}} named
+      after what went wrong.}
+  \end{recap}
+  \note{The unit's contents once more, now with what each section left: all of them dimmed on entry, then one per step, in the order they were seen; ask the class to recall an example of each before showing its sentence: the table of exceptions and the stack trace of average; the word typed for nextInt; setBrightness with 250 and the calls it goes up; the speaker that stops answering and the compiler's unreported exception; DeviceOfflineException and the All on loop. The next unit is about collections: lists and maps that grow as needed, instead of arrays of a fixed size, some of whose methods throw the exceptions of this unit.}
+\end{frame}
+
+\end{document}

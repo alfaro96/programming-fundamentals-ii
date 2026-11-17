@@ -1,0 +1,103 @@
+The goal of this exercise is to write a \texttt{Book} class in Java that represents a book with its data and the text of its pages. Unlike the previous exercises, you have to decide the parameters and the return type of each method from what it has to do.
+
+\subsection{Implementation}
+
+Write a \texttt{Book} class with the following requirements:
+
+\begin{itemize}
+
+    \item \textbf{Attributes}:
+
+        \begin{itemize}
+
+            \item \texttt{String title}: the title of the book.
+
+            \item \texttt{String author}: the author of the book.
+
+            \item \texttt{int numPages}: the number of pages, which must always match the length of \texttt{pages}.
+
+            \item \texttt{int publicationYear}: the year the book was published.
+
+            \item \texttt{final String isbn}: the \textit{International Standard Book Number}, which identifies the book. It is given its value in the constructor and never changes, so it is declared \texttt{final}.
+
+            \item \texttt{String[] pages}: the text of each page, one page per position, the first one at position 0.
+
+            \item \texttt{int currentPage}: the position of the page the book is open at, 0 when the book is created.
+
+        \end{itemize}
+
+    \item \textbf{Methods}:
+
+        \begin{itemize}
+
+            \item \textbf{Constructor}: receives the title, the author, the publication year, the ISBN and the array of pages. \texttt{numPages} comes from the length of the array, and \texttt{currentPage} starts at 0, so neither of them is a parameter.
+
+            \item \texttt{addPage()}: adds a page with a given text at a given position, and that page and the following ones move forward one position. The position can go from 0, before the first page, to \texttt{numPages}, after the last one; for any other position the book does not change. An array cannot change its size, so you have to create a new array, one position longer, and copy the pages into it.
+
+            \item \texttt{replacePage()}: replaces the text of the page at a given position. If there is no page at that position, the book does not change.
+
+            \item \texttt{readPage()}: returns the text of the page the book is open at and moves on to the next page. Past the last page, it returns \texttt{null}.
+
+            \item \texttt{goToFirstPage()}: opens the book at its first page again.
+
+            \item \texttt{removePage()}: removes the page at a given position, and the following pages move back one position. If there is no page at that position, the book does not change. This also requires creating a new array.
+
+            \item \texttt{concatenateWith()}: given another \texttt{Book} by the same author, returns a \textbf{new} book with the pages of both, first those of this book and then those of the other. Choose sensible values for the title, publication year and ISBN of the new book. If the authors differ, it returns \texttt{null}.
+
+            \item \texttt{describe()}: returns a \texttt{String} with the data of the book, without the text of its pages.
+
+            \item \texttt{isEqualTo()}: given another \texttt{Book}, checks whether both are the same book, which happens when they have the same ISBN, whatever their other data.
+
+        \end{itemize}
+
+\end{itemize}
+
+Remember that two \texttt{String} values are compared with \texttt{equals}, not with \texttt{==}.
+
+\subsection{Recommendations}
+
+\begin{itemize}
+
+    \item \textbf{Incremental implementation}: write and test each method on its own before moving on to the next one, making sure each part works before building the rest of the class.
+
+\end{itemize}
+
+\subsection{Evaluation and testing}
+
+To complete the exercise, write a \texttt{Main} class with a \texttt{main} method that performs the following tests:
+
+\begin{enumerate}
+
+    \item \textbf{Class functionality}:
+
+        \begin{itemize}
+
+            \item Write the \texttt{Book} class with all the attributes and methods described.
+
+        \end{itemize}
+
+    \item \textbf{Testing in the} \texttt{main} \textbf{method}:
+
+        \begin{itemize}
+
+            \item Create a \texttt{Book} object and add several pages with \texttt{addPage()}, at the beginning, in the middle and at the end.
+
+            \item Check \texttt{replacePage()} by changing the text of an existing page.
+
+            \item Use \texttt{readPage()} to go through some pages.
+
+            \item Test \texttt{removePage()} and check that the remaining pages keep their order.
+
+            \item Create other books to test \texttt{concatenateWith()} and \texttt{isEqualTo()}.
+
+        \end{itemize}
+
+    \item \textbf{Clean code and documentation}:
+
+        \begin{itemize}
+
+            \item Make sure the code is clean and legible, with explanatory comments where necessary.
+
+        \end{itemize}
+
+\end{enumerate}

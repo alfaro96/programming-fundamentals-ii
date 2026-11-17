@@ -1,0 +1,17 @@
+% Unit cover: the course, the unit's title and subtitle (\title and \subtitle in the unit),
+% the author and the degree (commands.tex), right-aligned and centered vertically: beamer leaves
+% 1 part above and 1.5 below a centered frame, so a filll either side makes the two equal
+\begin{frame}[plain, noframenumbering]
+  \vskip 0pt plus 1filll
+  \raggedleft
+  {\coverlinecourse\coursename\par}
+  \vspace{\covercoursegap}
+  {\coverlinetitle\inserttitle\par}
+  \vspace{\covertitlegap}
+  {\coverlinesubtitle\insertsubtitle\par}
+  \vspace{\covermetagap}
+  {\coverlineauthor\insertauthor\par}
+  \vspace{\coverauthorgap}
+  {\coverlinedegree\insertinstitute\par}
+  \vskip 0pt plus 1filll
+\end{frame}

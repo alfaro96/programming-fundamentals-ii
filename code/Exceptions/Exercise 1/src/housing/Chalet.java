@@ -28,8 +28,7 @@ public class Chalet extends SingleFamily {
      * @throws InvalidSquareMetersException if {@code basementSize} or {@code gardenSize} is
      *         negative.
      */
-    public Chalet(double price, int numberOfFloors, double basementSize, double gardenSize)
-            throws InvalidPriceException, InvalidSquareMetersException {
+    public Chalet(double price, int numberOfFloors, double basementSize, double gardenSize) {
         super(price, numberOfFloors, basementSize);
         if (gardenSize < 0) {
             throw new InvalidSquareMetersException("gardenSize", gardenSize);

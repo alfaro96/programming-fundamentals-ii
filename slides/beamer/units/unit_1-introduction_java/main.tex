@@ -1,0 +1,692 @@
+% Unit 1: Introduction to Java. Build from this folder: latexmk -xelatex main.tex
+% scripts/beamer.sh builds both PDFs: it adds handout to \deckoptions for print
+\providecommand\deckoptions{aspectratio=169}
+\documentclass[\deckoptions]{beamer}
+\makeatletter\def\input@path{{../../}}\makeatother % packages, style, commands and cover, in beamer/
+\input{packages}
+\usepackage{style}
+\input{commands}
+
+\title{Unit 1: Introduction to Java}
+\subtitle{The main elements of the Java language}
+
+\begin{document}
+
+\input{cover}
+\note{First real unit. They come from Programming Fundamentals I in C, so every new idea here is framed against what they already know from C.}
+
+% % % % % % % % % % How Java runs % % % % % % % % % %
+\section{How Java runs}
+
+% The IDE's Run button over the row, then what it does underneath, in the same place
+\begin{frame}[fragile]{Platform dependency}{The limits of compiling to machine code}
+\begin{lrbox}{\flowsnippetbox}
+\begin{codeblock}[snippet]{c}
+#include <stdio.h>
+
+int main(void) {
+    printf("Hello, world!\n");
+    return 0;
+}
+\end{codeblock}
+\end{lrbox}
+  \begin{flow}
+    \flowbox{s}{1}{0}{source}{Source code}{\texttt{hello.c}}
+    \flowsnippet{s}
+    \flowbox<2->{r}{5}{0}{ok}{Successful}{}
+    \flowconsole<2->{r}{Hello, world!}
+    \flowbox<3->{m}{3}{0}{output}{Machine code}{\texttt{hello}}
+    \flowconsole<3->{m}{7f45 4c46 0201 0100\\0000 0000 0000 0000\\0300 3e00 0100 0000}
+    \flowbox<6->{e}{5}{1}{error}{Error}{}
+    \flowconsole<6->[error]{e}{bash: ./hello: cannot execute\\binary file: Exec format error}
+    \flowover<2->[dim on=<3->]{s}{r}{\runicon}
+    \flowarrow<3->{s}{m}{Compile}{gcc hello.c -o hello}
+    \flowarrow<4->{m}{r}{Run}{./hello}
+    \flowbranch<5->{mconsole}{e}{Run on a different architecture}{./hello}
+  \end{flow}
+  \takeaway<7->{The primary drawback of a language \key{compiled to machine code} is that a \key{binary file} only works on
+    \key{one particular architecture}.}
+  \note{Start from what they already do: hello.c. Step 1, in their IDE they press the green Run button and \enquote{Hello, world!} appears, as if running the source file directly. Step 2, under the hood that button does two things, and they fill in the row under it; first it compiles: gcc translates the C file straight into machine code for the processor it runs on, here an ordinary x86-64 laptop, and leaves an executable file; under its box, its first bytes as a hex dump: 7f 45 4c 46 marks it as an ELF file, the format of executables on Linux, and 3e as code for x86-64. Step 3, then it runs that file, and on the same kind of machine it works. Step 4, take that very same executable to a machine with a different processor (an ARM board, a Mac with Apple Silicon) and ask them what they think will happen. Step 5, it does not even start: the instructions inside are not ones that processor understands. Step 6, the takeaway: to run on another architecture you have to recompile for it, once per platform; how to avoid it is the question of the next slide.}
+\end{frame}
+
+% A question to the class, on its own: the way out, before the next slide shows it
+\begin{frame}
+  \question{How could one program run on every architecture, without compiling it again for each one?}
+  \note{The problem they have just seen, turned into a question before giving the answer. Ask it and let them think for a moment; take a few answers. If they get stuck, a hint: something in the middle that every machine has, and that understands one common format. Some may say an interpreter, or mention Python; good. Do not name the virtual machine yet: the next slide does.}
+\end{frame}
+
+\begin{frame}{Platform independence}{Compiling once for a virtual machine}
+  \begin{flow}
+    \flowbox{s}{1}{0}{source}{Source code}{Written once}
+    \flowbox<2->{b}{3}{0}{output}{Bytecode}{For a virtual machine}
+    \flowconsole<2->{b}{cafe babe 0000 0045\\001d 0a00 0200 0307\\0004 0c00 0500 0601}
+    \flowbox<3->{r}{5}{0}{ok}{Successful}{}
+    \flowconsole<3->{r}{Hello, world!}
+    \flowbox<5->{o}{5}{1}{ok}{Successful}{}
+    \flowconsole<5->{o}{Hello, world!}
+    \flowarrow<2->{s}{b}{Compile}{}
+    \flowarrow<3->{b}{r}{Run}{}
+    \flowbranch<4->{bconsole}{o}{Run on a different architecture}{}
+  \end{flow}
+  \takeaway<6->{\key{Bytecode} runs on every platform with its \key{virtual machine}: \key{write once, run anywhere}
+    (WORA).}
+  \note{Same diagram as for C, on purpose, and valid for any language that works this way. Step 1, the compiler does not produce machine code but bytecode: instructions for a machine that does not physically exist, a virtual machine; under its box, the first bytes of a Java class file: cafe babe marks it as one, and 0045 is the class file version (69, Java 25), with nothing about the processor. Step 2, running it starts the virtual machine installed on that computer, which translates the bytecode for the real processor. Step 3, the same file goes to a machine with a different processor: ask them what they expect after the C case. Step 4, this time it works, because that machine has its own virtual machine; what is platform-specific now is the virtual machine, not our program. Step 5, the takeaway: write once, run anywhere (WORA), the slogan Sun Microsystems launched Java with in 1995; what makes it possible is the bytecode and its virtual machine.}
+\end{frame}
+
+% The two steps first; last, the IDE's Run button over them, as the first slide began
+\begin{frame}{Java's execution model}{Source code, bytecode and the JVM}
+  \begin{flow}
+    \flowbox{s}{1}{0}{source}{Source code}{\texttt{Hello.java}}
+    \flowbox<2->[dim on=<4->]{b}{3}{0}{output}{Bytecode}{\texttt{Hello.class}}
+    \flowbox<3->{r}{5}{0}{ok}{Output}{}
+    \flowarrow<2->[dim on=<4->]{s}{b}{Compile}{javac Hello.java}
+    \flowarrow<3->[dim on=<4->]{b}{r}{Run}{java Hello}
+    \flowover<4->{s}{r}{\runicon}
+    \flowcaption{s}{Plain text file that we write. The class we run must have a \code{main}, as in C.}
+    \flowcaption<2->[dim on=<4->]{b}{Platform-independent instructions, generated by \code{javac}.}
+    \flowcaption<3->{r}{The result the user sees.}
+  \end{flow}
+  \takeaway<5->{\key{\code{javac}} compiles the source into \key{bytecode}, and \key{\code{java}} runs it on the JVM:
+    the IDE's Run button does both.}
+  \note{The model of the previous slide, with Java's names: the three files and the two commands they will use in the lab. Start with the source: a plain text file they can write in any editor, and like a C program it starts in main. Step 1, javac compiles it into Hello.class, the bytecode. Step 2, java Hello starts the JVM, Java's virtual machine, and runs it: note it is java Hello, without .class. Step 3, now the other way round from the first slide, what they see on the surface: the Run button of the IDE goes straight from Hello.java to the output, but it does the two steps underneath for them, so the bytecode is generated even if they never look at it (IntelliJ IDEA leaves Hello.class in the project's output folder). Step 4, the takeaway. What goes inside Hello.java comes in the third section.}
+\end{frame}
+
+% % % % % % % % % % Development tools % % % % % % % % % %
+\section{Development tools}
+
+\begin{frame}{The Java Development Kit}{The tools for developing Java programs}
+  \begin{toolbox}{Java Development Kit}{JDK}[Everything needed to \key{write, build and run} Java programs,
+      in one install.]
+    \begin{toolgroups}
+      \toolgroup<2->{Build and run}{%
+        \tool{javac}{Compiles \code{.java} source into \code{.class} bytecode}%
+        \tool{java}{Starts the JVM and runs the program}}
+      \toolgroup<3->{Share}{%
+        \tool{jar}{Bundles the program into one file (\code{.jar})}%
+        \tool{javadoc}{Turns comments into documentation web pages}}
+      \toolgroup<4->{Explore and fix}{%
+        \tool{jshell}{Tries out Java code line by line, instantly}%
+        \tool{jdb}{Debugs a running program step by step}}
+    \end{toolgroups}
+  \end{toolbox}
+  \note{The JDK is what they install to write Java, not only to run it. Step 1, the two they already met: javac and java. Step 2, the tools to hand the program to someone else: jar bundles everything into one file, javadoc turns the /** */ comments into a web page like the official API docs. Step 3, jshell to test a line without writing a whole program, jdb to stop and inspect a program (in practice they will debug from the IDE, which uses the same machinery).}
+\end{frame}
+
+\begin{frame}{The JDK and the JRE}{What you need to develop and what you need to run}
+  \begin{toolbox}{Java Development Kit}{JDK}
+    \begin{runtime}<2->{Java Runtime Environment}{JRE}{Everything needed to \key{run} Java programs, but not
+        to build them.}
+      \toolpart<3->{JVM}{The virtual machine: runs the bytecode on the real processor}
+      \toolpart<4->{Standard library}{Ready-made code to reuse, like \code{printf} or \code{sqrt} in C}
+    \end{runtime}
+  \end{toolbox}
+  \takeaway<5->{To \key{run} a Java program you only need the \key{JRE}; to \key{develop} one you need the
+    \key{JDK}, which already contains it.}
+  \note{Start from the JDK they just saw; its tools are the previous slide. Step 1, inside it there is a smaller block, the JRE: the part needed only to run programs. Step 2, the JVM from the first section, which executes the bytecode. Step 3, the standard library, ready-made code their programs use without them having to write it. Anchor it in C: they never wrote printf (stdio.h) or sqrt (math.h), they came with the language. Java has the same idea, only much bigger. Step 4, the takeaway. Since Java 11 Oracle no longer ships a separate JRE; some distributions (Eclipse Temurin, for instance) still offer one, but for this course they only need to install the JDK, and the JRE comes inside.}
+\end{frame}
+
+% % % % % % % % % % A first Java program % % % % % % % % % %
+\section{A first Java program}
+
+% C alone on entry, then Java whole; from the third step both blocks and the cards go together
+\begin{frame}[fragile]{Our first program: \code{Hello.java}}{The same program in C and in Java}
+  \begin{columns}[T, onlytextwidth]
+    \begin{column}{0.48\textwidth}
+      \blocktitle{C: \code{hello.c}}
+\begin{codeblock}[steps={|none|3,5-6|1,4|}, steps from=2, compact]{c}
+#include <stdio.h>
+
+int main(void) {
+    printf("Hello, world!\n");
+    return 0;
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{uncoverenv}<2->
+        \blocktitle{Java: \code{Hello.java}}
+\begin{codeblock}[steps={|1,5|2,4|3|}, steps from=2, compact, marks={1/3, 2/4, 3/5}]{java}
+class Hello {
+    public static void main(String[] args) {
+        System.out.printf("Hello, world!\n");
+    }
+}
+\end{codeblock}
+      \end{uncoverenv}
+    \end{column}
+  \end{columns}
+  \notesgap
+  \begin{codenotes}
+    \codenote<3->{The class}{New in Java: the program sits in a \key{class} named as its \key{file},
+      capitals included (\code{Hello.java}, not \code{hello.java}). What a class is, next unit.}
+    \codenote<4->{\code{main}}{The \key{entry point}, as in C, but with \key{no \code{return 0}}. Always
+      written the same.}
+    \codenote<5->{\code{printf}}{\key{Almost the same as in C}, through \code{System.out} and with no
+      \code{\#include}.}
+  \end{codenotes}
+  \takeaway<6->{A Java program sits in a \key{class} named as its file, and starts in \key{\code{main}}, as in C.}
+  \note{The program they wrote on their first day of C, next to its Java version: the same output, and the differences are what they have to learn. Each step lights up the lines that go together in both programs. On entry, only the C program they know: let them read it and say what each line does. Step 1, its Java version appears whole: this is the Java code, now let's go step by step. Step 2, the class: Java wraps everything in a class, C has nothing like it, so the whole C side is dimmed. For now the only thing they need is the naming rule, Hello in the code and Hello.java on disk, with the same capital letter: Java is case-sensitive, so Hello and hello are different names; the convention is to name the file after the class, and once a class is public, which comes later in the course, Java requires it. What a class is, the whole next unit. Step 3, main: where the program starts in both, but Java's returns nothing (void), so there is no return 0; the words around it (public, static, String[] args) come later too, for now its first line is copied as it is. Step 4, printing: the very same printf, format and \textbackslash n included, only called through System.out; in C it needs the \#include of stdio.h, in Java System.out is always available. Almost the same: \%d is every integer type and \%f every decimal one, with no l, so a C habit such as \%ld or \%lf throws an exception when it runs. The next slide shows that Java has two more ways to print, and which one is used most. Step 5, the takeaway.}
+\end{frame}
+
+% One example per row: its card, its code and, on the next step, what it prints
+\begin{frame}[fragile]{Printing to the screen}{Three ways to write with \code{System.out}}
+  \begin{boxrow}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.26\textwidth}
+      \begin{card}{\code{print}}
+        Prints the text and \key{stays on the same line}.
+      \end{card}
+    \end{column}
+    \begin{column}{0.50\textwidth}
+\begin{codeblock}{java}
+System.out.print("Hello, ");
+System.out.print("world!");
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.20\textwidth}
+      \begin{uncoverenv}<2->
+\begin{console}
+Hello, world!
+\end{console}
+      \end{uncoverenv}
+    \end{column}
+  \end{columns}
+  \end{boxrow}
+  \boxrowgap
+  \begin{boxrow}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.26\textwidth}
+      \begin{card}<3->{\code{println}}
+        Prints the text and \key{ends the line}.
+      \end{card}
+    \end{column}
+    \begin{column}{0.50\textwidth}
+      \begin{uncoverenv}<3->
+\begin{codeblock}{java}
+System.out.println("Hello,");
+System.out.println("world!");
+\end{codeblock}
+      \end{uncoverenv}
+    \end{column}
+    \begin{column}{0.20\textwidth}
+      \begin{uncoverenv}<4->
+\begin{console}
+Hello,
+world!
+\end{console}
+      \end{uncoverenv}
+    \end{column}
+  \end{columns}
+  \end{boxrow}
+  \boxrowgap
+  \begin{boxrow}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.26\textwidth}
+      \begin{card}<5->{\code{printf}}
+        Prints with a \key{format}, as in C.
+      \end{card}
+    \end{column}
+    \begin{column}{0.50\textwidth}
+      \begin{uncoverenv}<5->
+\begin{codeblock}[compact]{java}
+System.out.printf("%d + %d = %d\n", 2, 3, 2 + 3);
+\end{codeblock}
+      \end{uncoverenv}
+    \end{column}
+    \begin{column}{0.20\textwidth}
+      \begin{uncoverenv}<6->
+\begin{console}
+2 + 3 = 5
+\end{console}
+      \end{uncoverenv}
+    \end{column}
+  \end{columns}
+  \end{boxrow}
+  \takeaway<7->{Three ways, but the one used most is \key{\code{println}}: it \key{ends the line} with no
+    \code{\textbackslash n}.}
+  \note{The three ways they will use to write to the console; the lines go inside main, like the printf of Hello.java. Each method comes with its code first: ask them what it prints before showing the output. On entry, print: it writes the text and the cursor stays right after it. Step 1, its output: the space inside \enquote{Hello, } is the only thing between the two words, because print adds nothing. Step 2, println, the one they will use most: the same, plus a line break at the end, so they never write \textbackslash n by hand. Step 3, the same two texts on two lines. Step 4, printf, C's printf with the same placeholders, filled in order with the values after the text; the line break is \textbackslash n, as in C (Java also has \%n, which writes the right one for each operating system). Step 5, 2 + 3 is worked out before printing. Step 6, the takeaway: printf is the one they know from C, but the everyday choice in Java is println, since most of the time they just want a line of text.}
+\end{frame}
+
+% C alone on entry, Java plain at step 2, to ask what changes; then both blocks and the cards step together;
+% C has nothing to mark in the last step
+\begin{frame}[fragile]{Comments}{The two from C, plus one for documentation}
+  \begin{columns}[T, onlytextwidth]
+    \begin{column}{0.48\textwidth}
+      \blocktitle{C: \code{comments.c}}
+\begin{codeblock}[steps={|4|6-7|none|}, steps from=2, compact, marks={4/3, 6-7/4}]{c}
+#include <stdio.h>
+
+int main(void) {
+    // Up to the end of the line
+    printf("Hello, ");
+    /* Everything between
+       the two marks */
+    printf("world!\n");
+    return 0;
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{uncoverenv}<2->
+        \blocktitle{Java: \code{Comments.java}}
+\begin{codeblock}[steps={|4|6-7|1|}, steps from=2, compact, marks={4/3, 6-7/4, 1/5}]{java}
+/** Prints a greeting. */
+class Comments {
+    public static void main(String[] args) {
+        // Up to the end of the line
+        System.out.print("Hello, ");
+        /* Everything between
+           the two marks */
+        System.out.println("world!");
+    }
+}
+\end{codeblock}
+      \end{uncoverenv}
+    \end{column}
+  \end{columns}
+  \notesgap
+  \begin{codenotes}
+    \codenote<3->{Single-line \code{//}}{From \key{\code{//}} to the end of the line, \key{as in C}.}
+    \codenote<4->{Multi-line \code{/* */}}{Everything between \key{\code{/*}} and \key{\code{*/}}, \key{as in C}.}
+    \codenote<5->{Documentation \code{/** */}}{New in Java: \code{javadoc} turns it into \key{web documentation}.}
+  \end{codenotes}
+  \takeaway<6->{Java keeps the \key{two comments} of C and adds \key{\code{/** */}}, for documentation.}
+  \note{Comments are something the compiler ignores, like spaces and indentation: they are notes for whoever reads the code. The same program in C and in Java. On entry, the C version alone, with the two kinds of comment they know. Step 1, the Java version, plain: ask them what is the same and what is new. Step 2, the single-line comment in both: from // to the end of the line, exactly as in C. Step 3, the multi-line one, also the same in both: everything between /* and */. Step 4, the new one, only in Java, so the C side dims: /** */ above the class. It is still a comment for the compiler, but javadoc, the JDK tool they saw, reads it to generate web documentation like the official Java API pages. Step 5, the takeaway.}
+\end{frame}
+
+% % % % % % % % % % Variables and primitive types % % % % % % % % % %
+\section{Variables and primitive types}
+
+% A reference table: each group of rows shows at once, the notes of some rows a step later
+\begin{frame}{The eight primitive types}{The basic values Java works with}
+  \begin{datatable}{l l l Y Y}
+    \tablehead{Category} & \tablehead{Type} & \tablehead{Storage} & \tablehead{Range} & \tablehead{Note} \\
+    \grouprule
+    Logical & \code{boolean} & Up to the JVM & \code{true} or \code{false} &
+      \uncover<2->{Not a number: \code{0} and \code{1} are not booleans, unlike C} \\
+    \grouprule
+    \uncover<3->{\multirow{4}{*}{Integer}} & \uncover<3->{\code{byte}} & \uncover<3->{8 bits} &
+      \uncover<3->{−2\textsuperscript{7} to 2\textsuperscript{7} − 1 (−128 to 127)} &
+      \uncover<4->{Saves memory in large arrays} \\
+    \partrule{2-5}
+    & \uncover<3->{\code{short}} & \uncover<3->{16 bits} &
+      \uncover<3->{−2\textsuperscript{15} to 2\textsuperscript{15} − 1 (−32,768 to 32,767)} &
+      \uncover<4->{Saves memory in large arrays} \\
+    \partrule{2-5}
+    & \uncover<3->{\code{int}} & \uncover<3->{32 bits} &
+      \uncover<3->{−2\textsuperscript{31} to 2\textsuperscript{31} − 1 (about ±2.1 billion)} &
+      \uncover<3->{The default for whole numbers} \\
+    \partrule{2-5}
+    & \uncover<3->{\code{long}} & \uncover<3->{64 bits} &
+      \uncover<3->{−2\textsuperscript{63} to 2\textsuperscript{63} − 1 (about ±9.2 × 10\textsuperscript{18})} &
+      \uncover<3->{Values end in \code{L}} \\
+    \grouprule
+    \uncover<5->{\multirow{2}{*}{Decimal}} & \uncover<5->{\code{float}} & \uncover<5->{32 bits} &
+      \uncover<5->{About ±3.4 × 10\textsuperscript{38}, 7 significant digits} &
+      \uncover<5->{Values end in \code{f}} \\
+    \partrule{2-5}
+    & \uncover<5->{\code{double}} & \uncover<5->{64 bits} &
+      \uncover<5->{About ±1.8 × 10\textsuperscript{308}, 15 significant digits} &
+      \uncover<5->{The default for decimals} \\
+    \grouprule
+    \uncover<6->{Character} & \uncover<6->{\code{char}} & \uncover<6->{16 bits} &
+      \uncover<6->{One Unicode character, from 0 to 65,535} &
+      \uncover<6->{A number underneath: its \href{https://symbl.cc/en/unicode-table/}{Unicode code}} \\
+    \grouprule
+  \end{datatable}
+  \takeaway<7->{Unlike C, every size is \key{fixed}: the same on \key{every platform}, which is part of
+    \key{write once, run anywhere}.}
+  \note{Eight types, the same family as in C. On entry, boolean and its two values: a real type of its own, not an int in disguise; its size in memory is up to the JVM. Step 1, why it matters: in C, 0 and 1 work as false and true, in Java they do not, so if (1) will not compile. Step 2, the four integers, from smallest to largest; int is the one they will use by default, long when the number does not fit. Ask them why byte and short exist if int is the default. Step 3, the answer: memory, when there are many values, as in a large array. Step 4, the two decimals; double is the default, float only when memory matters. Step 5, char: 16 bits, not 8 as in C, because it stores Unicode, so accents and ñ fit, and underneath it is just a number, its code in the Unicode table: open the link and show that 'A' is 65, 'a' is 97 and 'ñ' is 241 (the same codes as ASCII for the first 128). That is why a char converts to an int, as Type conversion shows. Step 6, the link with the first section: in C an int can be 16 or 32 bits depending on the machine; in Java it never changes.}
+\end{frame}
+
+% One line per group of the table; no takeaway: declaring is as in C
+\begin{frame}[fragile]{Declaring variables}{Type, name and value, as in C}
+\begin{codeblock}[steps={1|2-4|5-6|7}]{java}
+boolean passed = true;
+int age = 20;
+long population = 8100000000L;
+byte level = 3;
+double price = 19.99;
+float ratio = 0.5f;
+char grade = 'A';
+\end{codeblock}
+  \note{Nothing new if they remember C: the type, the name, and optionally = and a value, ending in a semicolon. Step by step, one line per group of the table. The names already follow Java's conventions, which the next slide explains. Step 1, integers: the L at the end of population, because that number does not fit in an int. Step 2, decimals: the f of float, because a decimal without it is a double. Step 3, char: single quotes, one character. byte level = 3 needs no cast, although 3 is an int: a constant that fits in the type is accepted as it is.}
+\end{frame}
+
+\begin{frame}{Naming variables}{Rules and conventions}
+  \begin{datatable}{l l Y l}
+    \tablehead{Kind} & \tablehead{Name} & \tablehead{What it means} & \tablehead{If broken} \\
+    \grouprule
+    \multirow{4}{*}{Rules} & Characters & Letters, digits, \key{\code{\_}} and \key{\code{\$}}, never spaces &
+      \uncover<5->{\multirow{4}{*}{It does not compile}} \\
+    \partrule{2-3}
+    & \uncover<2->{First character} & \uncover<2->{Never a digit} & \\
+    \partrule{2-3}
+    & \uncover<3->{Reserved words} & \uncover<3->{Java keeps some words for itself: they cannot be used as names} & \\
+    \partrule{2-3}
+    & \uncover<4->{Case-sensitive} & \uncover<4->{Uppercase and lowercase letters are different} & \\
+    \grouprule
+    \uncover<6->{\multirow{3}{*}{Conventions}} & \uncover<6->{Variables} &
+      \uncover<6->{\key{\code{camelCase}}: first word lowercase, the rest capitalized} &
+      \uncover<9->{\multirow{3}{*}{It compiles, but professionals follow them}} \\
+    \partrule{2-3}
+    & \uncover<7->{Constants} & \uncover<7->{\key{\code{UPPER\_SNAKE\_CASE}}: all capitals, words joined by \code{\_}} & \\
+    \partrule{2-3}
+    & \uncover<8->{Meaningful names} & \uncover<8->{The name says what the variable stores} & \\
+    \grouprule
+  \end{datatable}
+  \note{They have just declared variables; now the rules and conventions behind their names, as they did in C. On entry, the first rule: letters, digits, \_ and \$ (the \$ is new from C), never spaces. Steps 1 to 3, the other rules, one at a time: never starting with a digit, no reserved words (they get their own slide next), and capitals matter. Step 4, before showing it, ask them what happens if a name breaks one of them: it does not compile, the compiler checks them, the same as in C. Steps 5 to 7, the conventions, one at a time: camelCase for variables, UPPER\_SNAKE\_CASE for constants, and names that say what they store. Step 8, ask again what happens if a name breaks one: it compiles, the compiler does not care, but every Java programmer follows them, so code written by anyone reads the same. The same rules apply to every name in a program, which they will see as the course goes on. Constants are only named here: declaring one, with final, comes in the next unit.}
+\end{frame}
+
+\begin{frame}{Reserved words}{Words that Java keeps for itself}
+  \keywordgrid<2->{abstract, *assert, boolean, break, byte, case, catch, char, class, *const, continue,
+    default, do, double, else, enum, extends, final, finally, float, for, *goto, if, implements, import,
+    instanceof, int, interface, long, *native, new, package, private, protected, public, return, short,
+    static, *strictfp, super, switch, *synchronized, this, throw, throws, *transient, try, void,
+    *volatile, while}
+  \takeaway<2->{The crossed-out words are \key{reserved} too, but we will \key{not use} them in this course.}
+  \note{No need to memorize the table: the IDE colors these words, and the compiler complains if one is used as a name. Most of them will appear during the course. Step 1: the ones crossed out are for concurrency, native code or other advanced uses we will not cover, plus goto and const, which are reserved but Java never gives them a meaning: writing them does not compile. Constants are declared with final instead. Not in the table but also off limits: true, false and null, which are literal values, and \_ (a single underscore) since Java 9.}
+\end{frame}
+
+% Every name from the start; each row's answers fill in at once
+\begin{frame}{Valid or not?}{Does it compile? Would a professional write it?}
+  \begin{datatable}{l M M Y}
+    \tablehead{Name} & \tablehead{Compiles?} & \tablehead{Convention?} & \tablehead{Why} \\
+    \grouprule
+    \code{totalPrice} & \uncover<2->{\markok} & \uncover<2->{\markok} & \uncover<2->{The convention for variables} \\
+    \tablerule
+    \code{2ndPlace} & \uncover<3->{\markerror} & \uncover<3->{\marknone} & \uncover<3->{Starts with a digit} \\
+    \tablerule
+    \code{class} & \uncover<4->{\markerror} & \uncover<4->{\marknone} & \uncover<4->{A reserved word} \\
+    \tablerule
+    \code{first name} & \uncover<5->{\markerror} & \uncover<5->{\marknone} & \uncover<5->{Contains a space} \\
+    \tablerule
+    \code{player2} & \uncover<6->{\markok} & \uncover<6->{\markok} &
+      \uncover<6->{Digits are fine after the first character} \\
+    \tablerule
+    \code{total\_price} & \uncover<7->{\markok} & \uncover<7->{\markcaution} &
+      \uncover<7->{The convention is \code{totalPrice}} \\
+    \tablerule
+    \code{MAX\_SPEED} & \uncover<8->{\markok} & \uncover<8->{\markok} & \uncover<8->{The convention for constants} \\
+    \tablerule
+    \code{a} & \uncover<9->{\markok} & \uncover<9->{\markcaution} & \uncover<9->{Says nothing about what it stores} \\
+    \grouprule
+  \end{datatable}
+  \takeaway<10->{In this course, names that break the \key{conventions} are \key{penalized}, even if they compile.}
+  \note{All the names are on screen from the start; ask the class about each one before filling in its row: does it compile? and if it does, does it follow the convention? A cross under Compiles means it breaks a rule and the compiler rejects it, so the convention does not even apply. A cross under Convention, in orange, means it compiles but a professional would not write it that way. Those two rows are the important nuance: the compiler accepting a name does not make it a good one. Step 9, the course rule: in assignments and exams, names that break the conventions lose marks.}
+\end{frame}
+
+\begin{frame}{Type conversion}{From one primitive type to another}
+  \widening<2-><3->{byte, short, int, long, float, double}
+    {Widening: automatic}{The value is always in range, so Java converts it for us.}
+    {Narrowing: a cast}{The value may not fit, so we write the target type in parentheses. Data may be lost.}
+  \takeaway<4->{As in C, but \key{stricter}: C narrows silently, Java refuses to \key{compile} without the cast.}
+  \note{The chain goes from the type that holds the least to the one that holds the most. Step 1, widening, the arrows to the right: always safe, so it happens on its own. Step 2, narrowing, the arrows to the left: the value may not fit, so Java makes us say it on purpose with a cast, the type in parentheses, the same syntax as in C. char is off the chain but follows the same rule, since a char is a number underneath: char to int widens on its own ('A' becomes 65), int to char needs a cast ((char) 65 becomes 'A'). Step 3, the difference: in C int x = 3.9; compiles and quietly drops the decimals; in Java it is a compile error. boolean is outside the chain: it never converts to or from a number.}
+\end{frame}
+
+\begin{frame}{Safe or not?}{Does it compile? Does it keep the value?}
+  \begin{datatable}{l M M Y}
+    \tablehead{Statement} & \tablehead{Compiles?} & \tablehead{Keeps the value?} & \tablehead{Why} \\
+    \grouprule
+    \code{int age = 20;} & \uncover<2->{\markok} & \uncover<2->{\markok} &
+      \uncover<2->{Declaration and value, as in C} \\
+    \tablerule
+    \code{double height = age;} & \uncover<3->{\markok} & \uncover<3->{\markok} &
+      \uncover<3->{Widening: \code{age} becomes \code{20.0}} \\
+    \tablerule
+    \code{long total = age;} & \uncover<4->{\markok} & \uncover<4->{\markok} &
+      \uncover<4->{Widening: a larger integer} \\
+    \tablerule
+    \code{int price = 19.99;} & \uncover<5->{\markerror} & \uncover<5->{\marknone} &
+      \uncover<5->{Narrowing without a cast} \\
+    \tablerule
+    \code{int price = (int) 19.99;} & \uncover<6->{\markok} & \uncover<6->{\markcaution} &
+      \uncover<6->{The decimals are cut off: \code{19}} \\
+    \tablerule
+    \code{byte small = (byte) 200;} & \uncover<7->{\markok} & \uncover<7->{\markcaution} &
+      \uncover<7->{Past 127 it wraps around: \code{-56}} \\
+    \tablerule
+    \code{boolean done = 1;} & \uncover<8->{\markerror} & \uncover<8->{\marknone} &
+      \uncover<8->{A \code{boolean} is not a number} \\
+    \tablerule
+    \code{int code = 'A';} & \uncover<9->{\markok} & \uncover<9->{\markok} &
+      \uncover<9->{A \code{char} is a number underneath: \code{65}} \\
+    \grouprule
+  \end{datatable}
+  \note{Same game as with the names: all the statements are on screen, ask before filling in each row. age is declared in the first one and reused in the next two; each line is judged on its own. A cross under Compiles, in red, does not compile, so whether it keeps the value does not even apply. A cross under Keeps the value, in orange, compiles thanks to the cast but changes the value. The byte case is the surprising one: a byte keeps only 8 bits, and 200 in binary is 11001000; read as a signed byte those bits mean 200 - 2\textasciicircum 8 = -56, since 8 bits hold 2\textasciicircum 8 = 256 values. Past the maximum, the value starts again from the minimum, like a car odometer.}
+\end{frame}
+
+% % % % % % % % % % Arrays % % % % % % % % % %
+\section{Arrays}
+
+% Each row in three steps: the feature, then C, then Java
+\begin{frame}{Arrays in C and Java}{The same idea, with safer rules}
+  \begin{datatable}{l Y Y}
+    \tablehead{Feature} & \tablehead{C} & \tablehead{Java} \\
+    \grouprule
+    \tablelabel{Declaration} & \uncover<2->{\code{int numbers[5];}} & \uncover<3->{\code{int[] numbers = new int[5];}} \\
+    \tablerule
+    \uncover<4->{\tablelabel{With values}} & \uncover<5->{\code{int numbers[] = \{1, 2, 3\};}} &
+      \uncover<6->{\code{int[] numbers = \{1, 2, 3\};}} \\
+    \tablerule
+    \uncover<7->{\tablelabel{Size}} & \uncover<8->{When compiling, or at runtime with \code{malloc}} &
+      \uncover<9->{When running: \code{new int[n]}, then fixed} \\
+    \tablerule
+    \uncover<10->{\tablelabel{Length}} & \uncover<11->{With \code{sizeof}, only where it is declared} &
+      \uncover<12->{Always available: \code{numbers.length}} \\
+    \tablerule
+    \uncover<13->{\tablelabel{Initial values}} & \uncover<14->{Local arrays hold garbage} &
+      \uncover<15->{Default values: \code{0}, \code{0.0}, \code{false}, etc.} \\
+    \tablerule
+    \uncover<16->{\tablelabel{Index out of range}} &
+      \uncover<17->{Undefined behavior: other memory is read or overwritten} &
+      \uncover<18->{The program stops with an error} \\
+    \tablerule
+    \uncover<19->{\tablelabel{Freeing memory}} & \uncover<20->{By hand: \code{free} after \code{malloc}} &
+      \uncover<21->{Automatic: the garbage collector} \\
+    \grouprule
+  \end{datatable}
+  \takeaway<22->{A Java array \key{always knows its length} and \key{never lets us step outside it}.}
+  \note{The concept is the one they know from C: several values of the same type, one after another, reached by an index from 0. What changes is how much Java does for them. Each row comes in three steps: the feature, how it is in C, and then Java; ask them how they did it in C before showing it, and what they expect from Java. Row by row: the brackets go after the type, and new creates the array (int numbers[] also compiles, but int[] is the Java convention). Initializing with braces is the same. The size can come from a variable, but once created it never changes. In C, the sizeof trick only works where the array is declared: passed to a function it becomes a pointer, sizeof gives the pointer's size, and the length has to travel in another parameter. In Java, length is always there. Values start at their defaults (0 for integers, 0.0 for decimals, false for booleans, and so on for the other types) instead of garbage. An index out of range stops the program with ArrayIndexOutOfBoundsException instead of silently corrupting memory. And there is no free: the garbage collector releases the array once nothing uses it.}
+\end{frame}
+
+% % % % % % % % % % Control structures % % % % % % % % % %
+\section{Control structures}
+
+% C alone on entry, Java next to it, then the lines that differ marked in both
+\begin{frame}[fragile]{The \code{if} statement}{Choosing between two paths}
+  \begin{columns}[T, onlytextwidth]
+    \begin{column}{0.48\textwidth}
+      \blocktitle{C}
+\begin{codeblock}[steps={||1||}, diff, marks={1/3}]{c}
+int passed = 1;
+
+if (passed) {
+    printf("Well done\n");
+} else {
+    printf("Try again\n");
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{uncoverenv}<2->
+        \blocktitle{Java}
+\begin{codeblock}[steps={||1|3|}, diff, marks={1/3, 3/4}]{java}
+boolean passed = true;
+
+if (passed) {
+    System.out.println("Well done");
+} else {
+    System.out.println("Try again");
+}
+\end{codeblock}
+      \end{uncoverenv}
+    \end{column}
+  \end{columns}
+  \notesgap
+  \begin{codenotes}[2]
+    \codenote<3->{A \code{boolean} condition}{Unlike C, the condition must be a \key{\code{boolean}}, not a number.}
+    \codenote<4->{No comparison}{Comparing a \code{boolean} with \code{true} or \code{false} adds nothing and is
+      \key{penalized}: \code{if (passed)}, not \code{if (passed == true)}.}
+  \end{codenotes}
+  \takeaway<5->{The condition must be a \key{\code{boolean}}: no numbers, and no comparing it with \code{true}.}
+  \note{On entry, the C version they know; ask them how it would look in Java. Step 1, the Java version: the shape is identical, parentheses, braces and else. Step 2, the only real change, marked in both: the type of passed, a boolean with true instead of an int with 1, and note 1: in C any number works as a condition; in Java it has to be a boolean. Step 3, note 2, the habit to avoid: passed is already true or false, so comparing it with true adds nothing; write if (passed), and if (!passed) for the opposite. In this course, if (passed == true) and the like lose marks. Step 4, the takeaway.}
+\end{frame}
+
+\begin{frame}[fragile]{The \code{switch} statement}{Choosing among several values}
+  \begin{columns}[T, onlytextwidth]
+    \begin{column}{0.48\textwidth}
+      \blocktitle{C}
+\begin{codeblock}{c}
+int day = 6;
+
+switch (day) {
+    case 6:
+    case 7:
+        printf("Weekend\n");
+        break;
+    default:
+        printf("Weekday\n");
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{uncoverenv}<2->
+        \blocktitle{Java}
+\begin{codeblock}{java}
+int day = 6;
+
+switch (day) {
+    case 6:
+    case 7:
+        System.out.println("Weekend");
+        break;
+    default:
+        System.out.println("Weekday");
+}
+\end{codeblock}
+      \end{uncoverenv}
+    \end{column}
+  \end{columns}
+  \takeaway<3->{\key{Identical} to C.}
+  \note{On entry, the C switch they know. Step 1, the Java version: nothing new, the same switch, so nothing is marked; only the output line is written differently. Cases, falling through from 6 to 7, break to stop, default for the rest. Step 2, the takeaway: it works exactly as in C, falling through included. Unlike C, a Java switch also works on a String, comparing its text. Recent Java versions also have a shorter form with arrows and no break; it is worth knowing it exists.}
+\end{frame}
+
+\begin{frame}[fragile]{The \code{while} loop}{Repeating while a condition holds}
+  \begin{columns}[T, onlytextwidth]
+    \begin{column}{0.48\textwidth}
+      \blocktitle{C}
+\begin{codeblock}{c}
+int count = 3;
+
+while (count > 0) {
+    printf("%d\n", count);
+    count--;
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{uncoverenv}<2->
+        \blocktitle{Java}
+\begin{codeblock}{java}
+int count = 3;
+
+while (count > 0) {
+    System.out.println(count);
+    count--;
+}
+\end{codeblock}
+      \end{uncoverenv}
+    \end{column}
+  \end{columns}
+  \takeaway<3->{\key{Identical} to C, and so is the \code{do-while} loop.}
+  \note{On entry, the C loop they know. Step 1, the Java version: nothing new, both print 3, 2, 1, and the loop itself is the same, so nothing is marked. Only the output line is written differently. Step 2: do-while works exactly as in C too. println prints any value, numbers included, and adds the line break.}
+\end{frame}
+
+\begin{frame}[fragile]{The \code{for} loop}{Repeating a known number of times}
+  \begin{columns}[T, onlytextwidth]
+    \begin{column}{0.48\textwidth}
+      \blocktitle{C}
+\begin{codeblock}[steps={||3|}, diff, compact, marks={3/3}]{c}
+int numbers[] = {4, 8, 15};
+
+for (int i = 0; i < 3; i++) {
+    printf("%d\n", numbers[i]);
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{uncoverenv}<2->
+        \blocktitle{Java}
+\begin{codeblock}[steps={||3|}, diff, compact, marks={3/3}]{java}
+int[] numbers = {4, 8, 15};
+
+for (int i = 0; i < numbers.length; i++) {
+    System.out.println(numbers[i]);
+}
+\end{codeblock}
+      \end{uncoverenv}
+    \end{column}
+  \end{columns}
+  \notesgap
+  \begin{codenotes}[1]
+    \codenote<3->{The limit}{As in C, but \code{numbers.length} gives the \key{size of the array}: no need to keep
+      track of it by hand.}
+  \end{codenotes}
+  \takeaway<4->{The same loop as in C, with the array's \key{\code{length}} as its limit.}
+  \note{On entry, the C loop they know; ask them how they would write it in Java. Step 1, the Java version. Step 2, start, condition, update: the same three parts as in C, and the variable declared inside the for, as in modern C. The highlight and note 1 mark the change that matters, the limit, where the array section pays off: the loop asks the array for its length instead of repeating a 3 that could fall out of date: numbers.length, which they saw in the arrays table. On the next slide, a loop Java has and C does not. Step 3, the takeaway.}
+\end{frame}
+
+\begin{frame}[fragile]{The for-each loop}{Every element, without an index}
+  \begin{columns}[T, onlytextwidth]
+    \begin{column}{0.48\textwidth}
+      \blocktitle{Classic \code{for}: through the index}
+\begin{codeblock}[steps={||1|2|}, diff, compact, marks={1/3, 2/4}]{java}
+for (int i = 0; i < numbers.length; i++) {
+    System.out.println(numbers[i]);
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{uncoverenv}<2->
+        \blocktitle{For-each: element by element}
+\begin{codeblock}[steps={||1|2|}, diff, compact, marks={1/3, 2/4}]{java}
+for (int number : numbers) {
+    System.out.println(number);
+}
+\end{codeblock}
+      \end{uncoverenv}
+    \end{column}
+  \end{columns}
+  \notesgap
+  \begin{codenotes}[2]
+    \codenote<3->{The header}{Read the \key{\code{:}} as \enquote{\key{in}}: for each \code{number} in
+      \code{numbers}. No index, condition or update.}
+    \codenote<4->{The element}{\code{number} is the \key{element itself}, not \code{numbers[i]}. Use it when the
+      \key{index} is not needed.}
+  \end{codenotes}
+  \takeaway<5->{The \key{for-each} goes through every element of an array \key{without an index}.}
+  \note{C has no equivalent. On entry, the classic for they just saw. Step 1, the for-each: same array, same output, 4, 8, 15. Step 2, note 1, the header: there is no i, no condition and no update, and it reads for each number in numbers. Step 3, note 2, the body: on each pass, number takes the next value of the array, so it is the element itself; and when to use it: whenever they only need the values. When they need the position, or to change the array, the classic for is still the tool. Step 4, the takeaway.}
+\end{frame}
+
+% % % % % % % % % % Summary % % % % % % % % % %
+\begin{frame}{Unit summary}{What to take away from this unit}
+  \begin{recap}
+    \recapitem<2>{How Java runs}{\code{javac} turns the source code into \key{bytecode}, and the JVM runs it on any
+      platform.}
+    \recapitem<3>{Development tools}{The \key{JDK} has the tools to develop programs; the \key{JRE} inside it runs
+      them.}
+    \recapitem<4>{A first Java program}{It sits in a \key{class} named as its file, starts in \key{\code{main}}, and
+      prints with \code{System.out}.}
+    \recapitem<5>{Variables and primitive types}{Eight types of \key{fixed size}, names that follow the \key{conventions},
+      and a \key{cast} to narrow.}
+    \recapitem<6>{Arrays}{An array \key{knows its length} and never lets us step outside it.}
+    \recapitem<7>{Control structures}{As in C, but conditions are \key{\code{boolean}}, and there is a for-each
+      loop.}
+  \end{recap}
+  \takeaway<8->{Penalized in this course: names that break the \key{conventions}, and comparing a
+    \key{\code{boolean}} with \code{true} or \code{false}.}
+  \note{The unit's contents once more, now with what each section left: all of them dimmed on entry, then one per step, in the order they were seen; ask the class to recall an example of each before showing its sentence. The thread through the whole unit: Java keeps what they know from C and adds safety, fixed sizes and portability. Last step, the two course rules seen along the way, gathered: both compile, both lose marks. Next unit: what a class is, the piece they have been writing around Hello without explaining it.}
+\end{frame}
+
+\end{document}

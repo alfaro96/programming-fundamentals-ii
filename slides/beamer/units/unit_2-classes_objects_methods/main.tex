@@ -1,0 +1,1337 @@
+% Unit 2: Classes, objects, and methods. Build from this folder: latexmk -xelatex main.tex
+% scripts/beamer.sh builds both PDFs: it adds handout to \deckoptions for print
+\providecommand\deckoptions{aspectratio=169}
+\documentclass[\deckoptions]{beamer}
+\makeatletter\def\input@path{{../../}}\makeatother % packages, style, commands and cover, in beamer/
+\input{packages}
+\usepackage{style}
+\input{commands}
+
+\title{Unit 2: Classes, objects, and methods}
+\subtitle{The building blocks of object-oriented programming}
+
+\begin{document}
+
+\input{cover}
+\note{First step into object-oriented programming. They already write Java with primitive types, arrays and control structures (unit 1), and from C they know how to group data in a struct and work on it with separate functions: a class brings that data and the functions that act on it together.}
+
+% % % % % % % % % % Classes and objects % % % % % % % % % %
+\section{Classes and objects}
+
+% The three phones, to ask what they share; no takeaway: the next slide answers it
+\begin{frame}{Three bank accounts}{What do they have in common?}
+  \begin{phones}[large]
+    \phone[initials=AG, holder=Ana García López, iban=ES00 4321 0001 1234 5678 9012, balance={€1,250.00}]
+    \phone[initials=LP, holder=Luis Pérez Martín, iban=ES00 4321 0001 5590 2173 4468, balance={€80.50}]
+    \phone[initials=MR, holder=Marta Ruiz Sánchez, iban=ES00 4321 0001 8812 0457 3391, balance={€0.00}]
+  \end{phones}
+  \note{Don't say \enquote{class} or \enquote{object} yet. Let the class answer first: the three screens are laid out the same, every account has a holder, an account number and a balance, only the values change. Then point at the buttons: deposit and withdraw are there on all three, so the same operations work on any account. The answer comes on the next slide.}
+\end{frame}
+
+% The phone alone on entry; its data, then its operations, each marked on the phone with its note
+\begin{frame}{The template they share}{Remove the values and the three accounts look the same}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.36\textwidth}
+      \begin{phones}
+        \phone[template, data mark=1, data mark on=2-, operations mark=2, operations mark on=3-]
+      \end{phones}
+    \end{column}
+    \begin{column}{0.58\textwidth}
+      \begin{codenotes}[1]
+        \codenote<2->[state]{Data}{Holder, IBAN and balance: every account has them, each with its own values.}
+        \codenote<3->[behavior]{Operations}{Deposit and withdraw: every account can do them.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<4->{Same \textbf{\state{data}} and same \textbf{\behavior{operations}}, different \key{values}.}
+  \note{This is the answer to the previous slide. Take the values away and one screen is left, the same for the three accounts. Step 1, the data, marked 1 on the phone: every account has a holder, an IBAN and a balance, but Ana's balance is not Luis's. Step 2, the operations, marked 2: any account can take a deposit or a withdrawal. The fields are empty because each account fills them in its own way; the buttons are not, because depositing works the same for everyone. Step 3, the takeaway. Then ask them, out loud: how would they write it in C, with what they already know? Give them a few minutes, on paper or in pairs; the solution is on the next slide: the struct, the functions, and what ties them together. Still no \enquote{class} or \enquote{object}: the names come after the C version.}
+\end{frame}
+
+% Each piece is named first, so the class can say how they would write it; its code comes on the next step
+\begin{frame}[fragile]{The C version}{The data and its operations live apart}
+  \begin{columns}[T, onlytextwidth]
+    \begin{column}{0.40\textwidth}
+      \blocktitle{The \state{data}\uncover<2->{: a struct}}
+      \begin{uncoverenv}<2->
+\begin{codeblock}[steps={||||none|none|}, compact]{c}
+struct Account {
+    char holder[50];
+    char iban[35];
+    double balance;
+};
+\end{codeblock}
+      \end{uncoverenv}
+    \end{column}
+    \begin{column}{0.56\textwidth}
+      \begin{uncoverenv}<3->
+        \blocktitle{The \behavior{operations}\uncover<4->{: loose functions}}
+      \end{uncoverenv}
+      \begin{uncoverenv}<4->
+\begin{codeblock}[steps={1,5|2,6-7|}, steps from=5, compact, marks={1+5/5, 2+6-7/6}]{c}
+void deposit(struct Account *account, double amount) {
+    account->balance += amount;
+}
+
+void withdraw(struct Account *account, double amount) {
+    if (account->balance >= amount) {
+        account->balance -= amount;
+    }
+}
+\end{codeblock}
+      \end{uncoverenv}
+    \end{column}
+  \end{columns}
+  \notesgap
+  \begin{codenotes}[2]
+    \codenote<5->{The parameter}{Every function has to be \key{handed} the account it works on, and by pointer,
+      so it can change it.}
+    \codenote<6->{The pointer}{Every field is reached through it: \code{account->balance}.}
+  \end{codenotes}
+  \takeaway<7->{Nothing ties them together: every \textbf{\behavior{operation}} has to be \key{handed} the
+    \textbf{\state{data}}, and by pointer.}
+  \note{Their answer, in two pieces, each one named before its code so they can say how they would write it. On entry, only the data: ask them how they would keep it in C. Step 1, the struct, what they did in Programming Fundamentals I: it groups the data of one account under one type; text is a char array with room for the final '\textbackslash 0', 35 because the longest IBAN has 34 characters, written without spaces. Step 2, the operations: ask them again. Step 3, functions outside the struct, on their own; ask them how each function gets to the account it has to change. Step 4, note 1, the only link is that parameter: each function has to receive the account, and by pointer, because passed by value it would get a copy and the real balance would not move. Step 5, note 2: every field is reached through that pointer, account->. Withdraw checks the balance first; if there is not enough money it does nothing (reporting it comes with exceptions, in unit 4). Both come back in Java, where they disappear. Step 6, the takeaway, the reason for what comes next: nothing ties the data to its operations, every call has to remember the \& and the right account, and nothing in the struct says what can be done with it. Classes put the operations inside, next to the data. (The balance can still be changed by hand, ana.balance = -500.00, in C and, for now, in Java too; forbidding it comes later in the course.) How to bring the data and its operations together is the question of the next slide.}
+\end{frame}
+
+% A question to the class, on its own, before the idea that answers it
+\begin{frame}
+  \question{How could the data and its operations go together, in one place?}
+  \note{The problem of the C version, turned into a question. Ask it and take a few answers. If they need a push: if the operations lived with the data, a deposit would not need the account passed by pointer, it would already have it. The next slide gives that idea its name.}
+\end{frame}
+
+% The class on entry; the objects made from it at step 2
+\begin{frame}{Classes and objects}{Another way: the data and its operations together}
+  \begin{phones}[small]
+    \phonegroup{Class}{The template: what every account \textbf{\state{has}} and \textbf{\behavior{does}}}
+      {\phone[template]}
+    \phonearrow<2->
+    \phonegroup<2->{Objects}{Made from the template: each one with its own values}
+      {\phone[tones, initials=AG, holder=Ana García López, iban=ES00 4321 0001 1234 5678 9012, balance={€1,250.00}]%
+       \phone[tones, initials=LP, holder=Luis Pérez Martín, iban=ES00 4321 0001 5590 2173 4468, balance={€80.50}]%
+       \phone[tones, initials=MR, holder=Marta Ruiz Sánchez, iban=ES00 4321 0001 8812 0457 3391, balance={€0.00}]}
+  \end{phones}
+  \takeaway<3->{A \key{class} describes what its objects \textbf{\state{have}} and \textbf{\behavior{do}}; each
+    \key{object} has its own \key{values}.}
+  \note{The answer to the problems of the C version: instead of a struct here and functions there, one template that holds both. Now the names. The empty screen is the class: it says what every account has (holder, IBAN, balance) and what it can do (deposit, withdraw), but it holds no money, and nobody can deposit into a template. Step 1, each filled screen is an object: a real account made from the class, with its own values, in the same colors as the class: its data in the color of data, its operations in that of operations, so each value can be traced back to its slot. One class, and as many objects as we need: three here, millions in a real bank. Step 2, the takeaway.}
+\end{frame}
+
+% C alone on entry, Java at step 2; then both blocks mark what changes, with its note
+\begin{frame}[fragile]{In Java: the data}{The struct becomes a class}
+  \begin{columns}[T, onlytextwidth]
+    \begin{column}{0.48\textwidth}
+      \blocktitle{C: \code{bank.c}}
+\begin{codeblock}[steps={|1,5|2-3|}, steps from=2, diff, marks={1+5/3, 2-3/4}]{c}
+struct Account {
+    char holder[50];
+    char iban[35];
+    double balance;
+};
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{uncoverenv}<2->
+        \blocktitle{Java: \code{Account.java}}
+\begin{codeblock}[steps={|1,5|2-3|}, steps from=2, diff, marks={1+5/3, 2-3/4}]{java}
+class Account {
+    String holder;
+    String iban;
+    double balance;
+}
+\end{codeblock}
+      \end{uncoverenv}
+    \end{column}
+  \end{columns}
+  \notesgap
+  \begin{codenotes}[2]
+    \codenote<3->{The keyword}{\code{class} takes the place of \code{struct}, with no need for a \code{;} after the closing brace.}
+    \codenote<4->{The text}{\code{String} takes the place of the \code{char} arrays: Java's type for text, with no size
+      to choose. More about it at the end of the unit.}
+  \end{codenotes}
+  \takeaway<5->{The \key{data} of a class is written as a struct: \key{\code{class}} in place of \code{struct}, and
+    \key{\code{String}} for text.}
+  \note{First piece: the data. On entry, the struct they just wrote; ask them how they think it looks in Java. Step 1, the Java version: almost the same. Step 2, note 1, the keyword: class instead of struct, and no semicolon after the brace. As with Hello.java, the class goes in a file with its name, Account.java. Step 3, note 2, the text: no char arrays and no sizes, just String, Java's type for text; for now that is all they need, it gets its own section at the end of the unit. The balance stays a double. Step 4, the takeaway: so far a class is a struct with another keyword; the difference comes with the operations, on the next slide.}
+\end{frame}
+
+% C alone on entry, Java at step 2; then what changes, the parameter and the pointer, marked in both
+\begin{frame}[fragile]{In Java: the operations}{The functions move inside the class}
+  \begin{columns}[T, onlytextwidth]
+    \begin{column}{0.49\textwidth}
+      \blocktitle{C: \code{bank.c}}
+\begin{codeblock}[steps={|3,7|4,8-9|}, steps from=2, diff, dense, marks={3+7/3, 4+8-9/4}]{c}
+/* struct, as before */
+
+void deposit(struct Account *account, double amount) {
+    account->balance += amount;
+}
+
+void withdraw(struct Account *account, double amount) {
+    if (account->balance >= amount) {
+        account->balance -= amount;
+    }
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.49\textwidth}
+      \begin{uncoverenv}<2->
+        \blocktitle{Java: \code{Account.java}}
+\begin{codeblock}[steps={|2,6|3,7-8|}, steps from=2, diff, dense, marks={2+6/3, 3+7-8/4}]{java}
+class Account {
+    void deposit(double amount) {
+        balance += amount;
+    }
+
+    void withdraw(double amount) {
+        if (balance >= amount) {
+            balance -= amount;
+        }
+    }
+
+    // holder, iban and balance, as before
+}
+\end{codeblock}
+      \end{uncoverenv}
+    \end{column}
+  \end{columns}
+  \notesgap
+  \begin{codenotes}[2]
+    \codenote<3->{The parameter}{No \code{struct Account *account}: an \textbf{\behavior{operation}} inside a class
+      needs no parameter to reach the \textbf{\state{data}}.}
+    \codenote<4->{The pointer}{No \code{account->}: \code{balance} alone is the balance of \key{its own object}.}
+  \end{codenotes}
+  \takeaway<5->{An \textbf{\behavior{operation}} inside a class works on \key{its own object}: no pointer to hand
+    it, no \code{account->}.}
+  \note{The piece where C and Java really part ways. On entry, the two C functions; ask them where they would put them in Java. Step 1, the Java version: the same two functions, but written inside the class, with the data from the previous slide (the comment at the end stands for those three lines, so the snippet alone would not compile; in Java the order of what is inside a class does not matter. The same goes for the struct at the top of bank.c, which in C has to come before the functions that use it). Step 2, note 1: the struct Account pointer is gone from both. Step 3, note 2: and so is account->; balance on its own means the balance of the account the operation is working on. Step 4, the takeaway: in C the function had to be told which account; in Java the operation belongs to the account, so it already knows. How to say which account then? That comes with Creating objects.}
+\end{frame}
+
+% Code and notes step together: attributes on entry, methods at step 2, then the names of the class, the
+% attributes and the methods one step each under note 3, none with the takeaway
+\begin{frame}[fragile]{Attributes and methods}{The names for what a class has and does}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.46\textwidth}
+\begin{codeblock}[steps={2-4|6-14|1|2-4|6,10|}, compact, marks={2-4/1/state, 6-14/2/behavior, 1+2-4+6+10/3+4+5}]{java}
+class Account {
+    String holder;
+    String iban;
+    double balance;
+
+    void deposit(double amount) {
+        balance += amount;
+    }
+
+    void withdraw(double amount) {
+        if (balance >= amount) {
+            balance -= amount;
+        }
+    }
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.50\textwidth}
+      \begin{codenotes}[1]
+        \codenote[state]{Attributes}{The data every object of the class holds, each object with its own values:
+          \code{holder}, \code{iban}, \code{balance}.}
+        \codenote<2->[behavior]{Methods}{The operations every object can do, on its own attributes: \code{deposit},
+          \code{withdraw}.}
+        \codenote<3->{Naming conventions}{\key{Class}: a noun, in \code{PascalCase}.\\
+          \uncover<4->{\textbf{\state{Attributes}}: \code{camelCase}, as variables.}\\
+          \uncover<5->{\textbf{\behavior{Methods}}: \code{camelCase} too, and verbs.}}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<6->{A \key{class} groups \textbf{\state{attributes}}, what its objects have, and
+    \textbf{\behavior{methods}}, what they do.}
+  \note{Now the formal names for what they have been calling data and operations, on the whole class at last. On entry, the attributes: the variables declared in the class, outside any method; every object gets its own copy, which is why Ana's balance is not Luis's. They are also called fields, and that is the word many books and IntelliJ use. Step 1, the methods: the functions declared in the class; they work on the attributes of the object they are called on. Steps 2 to 4, how to name them, conventions like the ones for variables in the first unit: it compiles either way, but every Java programmer follows them; note 3 marks each part as it comes. Step 2, the class: a thing, so a noun, in PascalCase, every word capitalized, the first one too, as Account; that capital is also how Account and account can be told apart at a glance. Step 3, the attributes: camelCase, like any variable. Step 4, the methods: camelCase too, and they do something, so they are verbs: deposit, withdraw. Step 5, the takeaway: a class is attributes plus methods, in the same colors as the phones.}
+\end{frame}
+
+% % % % % % % % % % Creating objects % % % % % % % % % %
+\section{Creating objects}
+
+% C alone on entry, Java at step 2; then new, the attributes and the methods, marked in both with their notes
+\begin{frame}[fragile]{Creating objects}{\code{new} builds one, and the dot reaches what it has and does}
+  \begin{columns}[T, onlytextwidth]
+    \begin{column}{0.49\textwidth}
+      \blocktitle{C: \code{bank.c}}
+\begin{codeblock}[steps={|4|5-7|10|}, steps from=2, diff, dense, marks={4/3, 5-7/4/state, 10/5/behavior}]{c}
+/* struct and its functions, as before */
+
+int main(void) {
+    struct Account ana = {
+        .holder = "Ana García López",
+        .iban = "ES00 4321 0001 1234 5678 9012",
+        .balance = 1250.00
+    };
+
+    deposit(&ana, 100.00);
+    return 0;
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.49\textwidth}
+      \begin{uncoverenv}<2->
+        \blocktitle{Java: \code{Account.java}}
+\begin{codeblock}[steps={|3|4-6|8|}, steps from=2, diff, dense, marks={3/3, 4-6/4/state, 8/5/behavior}]{java}
+class Account {
+    public static void main(String[] args) {
+        Account ana = new Account();
+        ana.holder = "Ana García López";
+        ana.iban = "ES00 4321 0001 1234 5678 9012";
+        ana.balance = 1250.00;
+
+        ana.deposit(100.00);
+    }
+
+    // the rest of the class, as before
+}
+\end{codeblock}
+      \end{uncoverenv}
+    \end{column}
+  \end{columns}
+  \notesgap
+  \begin{codenotes}
+    \codenote<3->{\code{new}}{Creates the object, as it created arrays. Its attributes start at \code{null} and
+      \code{0.0}, not garbage.}
+    \codenote<4->[state]{Attributes}{The dot reaches them by name, as in a struct, to give them a value or read it.}
+    \codenote<5->[behavior]{Methods}{The dot also calls them, on that object, with no \code{\&}.}
+  \end{codenotes}
+  \takeaway<6->{\key{\code{new}} creates an \key{object}, and the \key{dot} reaches its \textbf{\state{attributes}}
+    and \textbf{\behavior{methods}}.}
+  \note{One account, created and used in both languages. Both comments stand for what came before: in C the struct and the functions, in Java the attributes and methods; for now main goes inside the class Account itself. On entry, the C version: ask them how they think it looks in Java. Step 1, the Java version. Step 2, note 1, creating it: in C the variable is the struct itself, filled in its initializer (a field left out of it is set to 0, but a struct declared with no initializer holds garbage); in Java the type is just Account, with no struct in front, and new builds the object, the same new that built arrays; text starts as null, which means no text yet, and numbers at 0.0. Step 3, note 2, the attributes: C names each field in the initializer (.holder = ...), and Java gives each one its value afterwards with the same dot as a struct; the same dot reads them too. Unlike a char array, a String can take = at any time, not only when it is declared. Step 4, note 3, the methods: the dot also calls them, and this answers the question left open before: ana.deposit(100.00) deposits into ana's account, with no \& and no pointer, because the object goes before the dot. Step 5, the takeaway. What this way of creating objects costs comes back after the two memory diagrams.}
+\end{frame}
+
+% Code and diagram step together: each line, then its variable (and the object for new)
+\begin{frame}[fragile]{What \code{new} does in memory}{Variables in the stack, objects in the heap}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.36\textwidth}
+\begin{codeblock}[steps={1|2|3|}, compact, marks={1/1, 2/2, 3/3}]{java}
+int count = 3;
+Account luis = null;
+Account ana = new Account();
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.60\textwidth}
+      \begin{memory}[3]
+        \memobject<3->{ana}{1}{Account}{holder/\memnullvalue, iban/\memnullvalue, balance/0.0}
+        \memvar{1}{count}{3}
+        \memnull<2->{2}{luis}
+        \memref<3->{3}{ana}{0x7ad4}{ana}
+      \end{memory}
+    \end{column}
+  \end{columns}
+  \notesgap
+  \begin{codenotes}[3]
+    \codenote{A primitive}{The variable holds the value itself.}
+    \codenote<2->{\code{null}}{An object variable that refers to no object.}
+    \codenote<3->{\code{new}}{Builds the object in the heap; the variable keeps its reference.}
+  \end{codenotes}
+  \takeaway<4->{A \key{primitive} variable holds its \key{value}; an object variable holds a \key{reference} to its
+    object, or \key{\code{null}}.}
+  \note{What happens in memory when a program creates objects. The stack keeps the variables of the method that is running, main here; the heap keeps the objects created with new. Each variable that refers to an object points to it with an arrow. On entry, a primitive: count holds the value itself, 3, right in the stack. Step 1, luis, given null instead of new: a variable of a class type does not hold an object, it holds a reference to one, and null is a reference to none, drawn as an arrow that leads nowhere; nothing exists in the heap for it. An attribute of a class type left with no value starts as null too; a local variable with no value at all cannot even be used, the compiler stops it. Step 2, ana with new: new builds the object in the heap, with its attributes at their starting values, null for the texts and 0.0 for the balance, and gives back where it is; ana keeps that address, drawn as 0x7ad4 and as the arrow that leads to the object itself, which Java never shows us. The dot follows that arrow: ana.balance goes to the object and reads its balance. With luis there is no arrow to follow: if the program runs the dot on a variable that is null, it stops with a NullPointerException. Step 3, the takeaway.}
+\end{frame}
+
+% Code and diagram step together; the takeaway on plain code
+\begin{frame}[fragile]{Two variables, one object}{Assigning a reference does not copy the object}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.36\textwidth}
+\begin{codeblock}[steps={1|2|4|5|5|}, compact, marks={1/1, 2/2, 4/3, 5/5}]{java}
+Account ana = new Account();
+Account other = ana;
+
+other.deposit(100.00);
+System.out.println(ana.balance);
+\end{codeblock}
+      \blockgap
+      \begin{uncoverenv}<5->
+\begin{console}[compact]
+100.0
+\end{console}
+      \end{uncoverenv}
+    \end{column}
+    \begin{column}{0.60\textwidth}
+      \begin{memory}[2]
+        \memobject{ana}{1}{Account}{holder/\memnullvalue, iban/\memnullvalue,
+          balance/\alt<3->{\marked<3| handout:0>{100.0}}{0.0}}
+        \memref{1}{ana}{0x7ad4}{ana}
+        \memref<2->{2}{other}{0x7ad4}{ana}
+      \end{memory}
+    \end{column}
+  \end{columns}
+  \notesgap
+  \begin{codenotes}[4]
+    \codenote{One object}{\code{ana} refers to a new account.}
+    \codenote<2->{The reference, copied}{\code{other} gets the same address: no new object.}
+    \codenote<3->{Through \code{other}}{The deposit changes that one object.}
+    \codenote<5->{Through \code{ana}}{The same object, so the same 100.0.}
+  \end{codenotes}
+  \takeaway<6->{Assigning one object variable to another copies the \key{reference}, not the object: both reach
+    \key{the same object}.}
+  \note{A difference with C that causes real bugs. On entry, one account, as on the previous slide. Step 1, other = ana: ask them what they expect, thinking of C, where assigning a struct copies all its fields. In Java the variable only holds a reference, so the assignment copies the address, 0x7ad4: two arrows, one object. Step 2, a deposit through other: the balance of that one object becomes 100.0, highlighted. Step 3, printing ana.balance: ask them what it prints. Step 4, the output: 100.0, because ana and other are two names for the same account. The same happens when an object is passed to a method: the method gets the reference and can change the object, with no \& and no pointers in sight. Step 5, the takeaway.}
+\end{frame}
+
+% The last step repeats the println: the output under the code shows with it
+\begin{frame}[fragile]{Two accounts, by hand}{What does it print?}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.56\textwidth}
+\begin{codeblock}[steps={1-4|6-8|10|10|}, compact, marks={1-4/1, 6-8/2, 10/4}]{java}
+Account ana = new Account();
+ana.holder = "Ana García López";
+ana.iban = "ES00 4321 0001 1234 5678 9012";
+ana.balance = 1250.00;
+
+Account luis = new Account();
+luis.holder = "Luis Pérez Martín";
+luis.balance = 80.50;
+
+System.out.println(luis.iban);
+\end{codeblock}
+      \blockgap
+      \begin{uncoverenv}<4->
+\begin{console}[compact]
+null
+\end{console}
+      \end{uncoverenv}
+    \end{column}
+    \begin{column}{0.4\textwidth}
+      \begin{codenotes}[1]
+        \codenote{Ana}{One line per attribute.}
+        \codenote<2->{Luis}{The same, for his holder and his balance.}
+        \codenote<4->[warn]{\code{null}}{His IBAN was never given a value, and nothing warned.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<5->{Giving each attribute its value by hand takes \key{one line per attribute}, and \key{nothing warns}
+    when one is forgotten.}
+  \note{Accounts created the way they know, as in Creating objects, now two of them; the lines go inside main, as there. On entry, Ana's account: new, then one line per attribute. Step 1, Luis's account: ask them to check it before going on; it is easy to miss that it has no IBAN. Step 2, printing luis.iban: ask what it prints. Step 3, null: it compiles and runs without a word, the account simply exists half-made, and the mistake shows up later and somewhere else, as a null where an IBAN was expected or a NullPointerException as soon as a method is called on it. Then ask them what the problem is with creating objects this way: one line per attribute for every object (with three accounts, twelve lines), nothing that forces every attribute to get a value, and an object that is incomplete until its last assignment. A hint for later: new Account(), with nothing in the parentheses, calls a constructor that Java adds on its own and that gives the attributes nothing; they will see it in Creating with the constructor. Step 4, the takeaway; how to fix it is the question of the next slide.}
+\end{frame}
+
+% A question to the class, on its own, before the idea that answers it
+\begin{frame}
+  \question{How can we make sure every attribute gets a value the moment an object is created?}
+  \note{The problem of the previous slide, turned into a question. Ask it and take a few answers: some may suggest a method that sets them all, which is close, but a method can be forgotten too; what they need is something that runs every time an object is created, and that asks for every value. The next slide shows it.}
+\end{frame}
+
+% Code and notes step together: the constructor on entry, this at step 2, deposit and withdraw at step 3,
+% then the takeaway on plain code
+\begin{frame}[fragile]{Constructors}{Create an object and give it its values at once}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.52\textwidth}
+\begin{codeblock}[steps={6|7-9|13,17-18|}, dense, marks={6/1, 7-9/2, 13+17-18/3}]{java}
+class Account {
+    String holder;
+    String iban;
+    double balance;
+
+    Account(String holder, String iban, double balance) {
+        this.holder = holder;
+        this.iban = iban;
+        this.balance = balance;
+    }
+
+    void deposit(double amount) {
+        this.balance += amount;
+    }
+
+    void withdraw(double amount) {
+        if (this.balance >= amount) {
+            this.balance -= amount;
+        }
+    }
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.44\textwidth}
+      \begin{codenotes}[1]
+        \codenote{The constructor}{Named as the class and with \key{no return type}. It runs every time \code{new}
+          creates an object.}
+        \codenote<2->{\code{this}}{Tells the object's attribute from a variable with \key{the same name}:
+          \code{this.holder} is the attribute, \code{holder} the parameter.}
+        \codenote<3->{Always, for clarity}{Even with no clash, \code{this.balance} says at a glance that it is the
+          object's own. From now on, we always write it.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<4->{A \key{constructor} gives each object its values \key{the moment it is created}.}
+  \note{The fix for the problem on the previous slide: a way to give an object all its values the moment it is created. On entry, the constructor: it looks like a method, but it is named exactly as the class and has no return type, not even void. It runs on its own every time new creates an object. Step 1, this: it stands for the object itself, and its use is telling apart two things with the same name. The parameters are named as the attributes, which is the usual style, so inside the constructor holder alone means the parameter, the closest one; this.holder is the attribute. Without this, holder = holder would assign the parameter to itself and the attribute would stay null. Step 2, deposit and withdraw: there is no clash there, so balance alone, as they wrote it until now, already means the attribute, and it compiles. Still, this.balance says at a glance that it belongs to the object and is not a parameter or a local variable, so from here on the course always writes it, for attributes and for calls to the object's own methods (this.deposit(amount)); their code should do the same. Step 3, the takeaway; how new uses it comes on the next slide.}
+\end{frame}
+
+% Before alone on entry; after appears plain at step 2, to ask what changed, and both mark how the account is
+% created at step 3; then the default
+% constructor on the left, and what removes it on the right, with the call it breaks crossed out; the takeaway
+% on plain code
+\begin{frame}[fragile]{Creating with the constructor}{The same account, before and after}
+  \begin{columns}[T, onlytextwidth]
+    \begin{column}{0.49\textwidth}
+      \blocktitle{Without a constructor}
+\begin{codeblock}[steps={||3-6|3,9|none|}, diff, dense, marks={3-6/3, 3+9/4}]{java}
+class Account {
+    public static void main(String[] args) {
+        Account ana = new Account();
+        ana.holder = "Ana García López";
+        ana.iban = "ES00 4321 0001 1234 5678 9012";
+        ana.balance = 1250.00;
+    }
+
+    // attributes and methods, as before
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.49\textwidth}
+      \begin{uncoverenv}<2->
+        \blocktitle{With the constructor}
+\begin{codeblock}[steps={||3-6|none|7,10|}, diff, dense, marks={3-6/3, 7+10/5/error/3}, add={7/5}, strike={7/5}]{java}
+class Account {
+    public static void main(String[] args) {
+        Account ana = new Account(
+                "Ana García López",
+                "ES00 4321 0001 1234 5678 9012",
+                1250.00);
+        Account luis = new Account();
+    }
+
+    // attributes, constructor and methods, as before
+}
+\end{codeblock}
+      \end{uncoverenv}
+    \end{column}
+  \end{columns}
+  \notesgap
+  \begin{codenotes}[3]
+    \codenote<3->{Values to the constructor}{Instead of setting each attribute by hand after \code{new}, they go
+      to the constructor as \key{arguments}.}
+    \codenote<4->{The default constructor}{With no constructor written, Java adds an empty one: it is what
+      \code{new Account()} calls.}
+    \codenote<5->[error]{Gone once you write one}{Writing a constructor removes the default one:
+      \code{new Account()} no longer compiles.}
+  \end{codenotes}
+  \takeaway<6->{\key{One} \code{new} per object instead of one line per attribute, and \key{no attribute can be
+    forgotten}.}
+  \note{Ana's account from Creating objects, created both ways, with main inside the class as before. On entry, how it was done until now: new, and then each attribute by hand with the dot. Step 1, the version with the constructor, plain: ask them what changed. Step 2, note 1, what changes, marked in both: the same three values, in the order of the constructor's parameters, go straight to new, as they went between the braces of the C initializer; one value per line only because the call is long. Step 3, note 2, with new Account() marked and the comment that stands for the rest of the class, with no constructor in it, explains the left-hand side: they never wrote a constructor before, yet new Account() worked, because a class with no constructor gets an empty one from Java, the default constructor. Step 4, note 3, the catch, in red, with cause and effect marked: a new Account() with no values, crossed out, and the line at the end that stands for the constructor of the class, which breaks the left-hand version: as soon as the class has a constructor of its own, Java no longer adds the default one, so the left-hand version stops compiling with this class; new Account() with no values does not exist any more. Step 5, the takeaway, the gain: with three accounts, three lines instead of twelve, and since the constructor asks for every value, none can be left out by mistake.}
+\end{frame}
+
+\begin{frame}{Exercises}{What you can solve so far}
+  \begin{datatable}{l Y}
+    \tablehead{Exercise} & \tablehead{What it practices} \\
+    \grouprule
+    \href{https://github.com/alfaro96/programming-fundamentals-ii/tree/main/code/Classes\%2C\%20objects\%2C\%20and\%20methods/Exercise\%201}{Exercise 1} &
+      Monomials: a class with its attributes, a constructor and methods that evaluate it \\
+    \grouprule
+  \end{datatable}
+  \note{The first exercise of this unit that can be solved with what has been seen up to here: a class, its objects and a constructor. It is in the JetBrains Academy course, in the Classes, objects, and methods lesson; its title opens it on GitHub.}
+\end{frame}
+
+% % % % % % % % % % static and final % % % % % % % % % %
+\section{\texttt{static} and \texttt{final}}
+
+% Ana deposits, and only her balance changes; then the rate, the same on the three, and raised on the three at
+% once; the deposit stops being marked when the rate comes in, though print, with every step, shows both; no
+% takeaway: static attributes, next, answer it
+\begin{frame}{One rate for every account}{What changes in one account, and what in all of them?}
+  \begin{phones}[large]
+    \phone[initials=AG, holder=Ana García López, iban=ES00 4321 0001 1234 5678 9012,
+      balance={\alt<3->{\marked<3>{€1,350.00}}{€1,250.00}}, tap on=2-3,
+      rate={\alt<6->{\highlight{2.50\%}}{\uncover<5->{\highlight{2.00\%}}}}, rate on=4-]
+    \phone[initials=LP, holder=Luis Pérez Martín, iban=ES00 4321 0001 5590 2173 4468, balance={€80.50},
+      rate={\alt<6->{\highlight{2.50\%}}{\uncover<5->{\highlight{2.00\%}}}}, rate on=4-]
+    \phone[initials=MR, holder=Marta Ruiz Sánchez, iban=ES00 4321 0001 8812 0457 3391, balance={€0.00},
+      rate={\alt<6->{\highlight{2.50\%}}{\uncover<5->{\highlight{2.00\%}}}}, rate on=4-]
+  \end{phones}
+  \note{The three accounts again. Step 1, Ana taps Deposit to put in 100 euros. Ask them where those 100 go: in which account, and on which of the three phones something should change. Step 2, the answer: only her balance, now 1,350, in orange; the other two stay as they were, because each object has its own balance. Step 3, Deposit and the balance go back to normal, as the deposit is done, and a new line appears on the three phones, the interest rate: what the bank pays each account for the money kept in it. Its value is not shown yet. Ask them: will it be different for each account, like the balance, or the same for all? Step 4, the value: 2.00\% on the three phones at once, the same for everyone. Ask them where that 2.00\% is kept: if every account had its own copy, changing the rate would mean changing them one by one, and they could end up different. It is one value for the whole bank, kept once, and every account reads it. Step 5, the bank raises its rate to 2.50\%: it changes, in orange, on the three phones at once, which only works because there is a single value. How to keep it that way in code is the question of the next slide.}
+\end{frame}
+
+% A question to the class, on its own, before the idea that answers it
+\begin{frame}
+  \question{How can every account share one interest rate, kept in a single place?}
+  \note{The previous slide turned into a question before static answers it. Let them think: so far every attribute is one per object, written in the class and copied into each object new creates, so an interestRate attribute would give each account its own copy, the very thing they just saw must not happen. Some may suggest a global variable, as in C; good: it is the right idea, one value kept once, and Java ties it to the class instead. Do not name static yet: the next slide does.}
+\end{frame}
+
+% Code and notes step together
+\begin{frame}[fragile]{Static attributes}{One value for the whole class}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.5\textwidth}
+\begin{codeblock}[steps={2|4-6|9|}, compact, marks={2/1, 4-6/2, 9/3}]{java}
+class Account {
+    static double interestRate = 2.00;
+
+    String holder;
+    String iban;
+    double balance;
+
+    public static void main(String[] args) {
+        Account.interestRate = 2.50;
+    }
+
+    // the rest of the class, as before
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \begin{codenotes}[1]
+        \codenote{\code{static}: one per class}{Kept once in the class and shared by all its objects: if it changes,
+          all of them see the new value.}
+        \codenote<2->{Without \code{static}: one per object}{Every object gets its own copy, with its own value.}
+        \codenote<3->{Through the class}{No object is needed to reach it, only the class name and the dot.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<4->{A \key{\code{static}} attribute belongs to the \key{class}: one value, \key{shared by all its objects}.}
+  \note{The rate from the phones, in code. On entry, the line with static: interestRate is declared once in the class and kept once, not inside every account, so when it changes, every account sees the new value. Step 1, the attributes they already know, without static: each object gets its own copy, which is why Ana's deposit only changed her balance. Step 2, how to reach it, in a main: since it belongs to the class, it is used through the class name and the dot, Account.interestRate, and no account is needed, not even one created; this is the line the bank runs to raise the rate, the 2.50 from the phones. Account.interestRate is how any code reaches it; inside Account the name alone also works, without this, unlike the attributes of each object. If anyone brings up static from C: there it means something else, a local variable that keeps its value between calls or a global visible only in its file; in Java it only means that something belongs to the class. Step 3, the takeaway.}
+\end{frame}
+
+% Code and notes step together
+\begin{frame}[fragile]{Static methods}{Called through the class, with no object}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.5\textwidth}
+\begin{codeblock}[steps={5|11|3,7|10|}, compact, marks={5/1, 11/2, 3+7/3/error, 10/4}, add={7/3}, strike={7/3}]{java}
+class Account {
+    static double interestRate = 2.00;
+    double balance;
+
+    static void setInterestRate(double rate) {
+        interestRate = rate;
+        balance += balance * rate / 100;
+    }
+
+    public static void main(String[] args) {
+        Account.setInterestRate(2.50);
+    }
+
+    // the rest of the class, as before
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \begin{codenotes}[1]
+        \codenote{A \code{static} method}{Belongs to the class too, like a \code{static} attribute.}
+        \codenote<2->{Through the class}{Called with the class name and the dot, with no object.}
+        \codenote<3->[error]{No object, no attributes}{It runs for no object in particular, so it has no
+          \code{this}, and an attribute or method without \code{static} does not compile inside it: whose would it
+          be?}
+        \codenote<4->{\code{main} is one}{That is why \code{main} is \code{static}: Java runs it before any object
+          exists.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<5->{A \key{\code{static}} method has \key{no object of its own}: it cannot use the attributes or methods
+    without \code{static} directly.}
+  \note{After the attributes, the same idea for methods: they can be static too. On entry, setInterestRate: static, so it belongs to the class, like interestRate, and it changes the rate for every account. Step 1, how it is called, in a main: through the class name and the dot, Account.setInterestRate(2.50), with no account at all, not even one created; the same 2.50 as on the phones, now through a method. Step 2, the catch, in red, with the line that tries it crossed out and the attribute it reaches for marked: a static method does not run on any account, so it has no balance to use; adding the interest to balance inside it is an error, non-static variable balance cannot be referenced from a static context, because there is no object to take it from; for the same reason there is no this, which is why interestRate is written without it. It can use interestRate, which is static, and its parameters. Step 3, the main that calls it, something they have been writing since the first day: public static void main. It is static because Java calls it when the program starts, before any object has been created. Step 4, the takeaway.}
+\end{frame}
+
+% The three phones, to ask, then the padlocks on the IBAN; no takeaway: final attributes, next, answer it
+\begin{frame}{What never changes}{Which of these could never change?}
+  \begin{phones}[large]
+    \phone[initials=AG, holder=Ana García López, iban=ES00 4321 0001 1234 5678 9012, balance={€1,250.00}, lock on=2-]
+    \phone[initials=LP, holder=Luis Pérez Martín, iban=ES00 4321 0001 5590 2173 4468, balance={€80.50}, lock on=2-]
+    \phone[initials=MR, holder=Marta Ruiz Sánchez, iban=ES00 4321 0001 8812 0457 3391, balance={€0.00}, lock on=2-]
+  \end{phones}
+  \note{Back to the three accounts. Ask them which values could change during the life of an account: the balance, all the time; the holder, if it is corrected or the account changes hands. Step 1, the padlocks: the IBAN identifies the account from the day it is opened, and changing it would make it a different account. That is a value set once and never touched again; how to make sure of it is the question of the next slide.}
+\end{frame}
+
+% A question to the class, on its own, before the idea that answers it
+\begin{frame}
+  \question{How can we make sure an attribute, once given its value, never changes?}
+  \note{The previous slide turned into a question before final answers it. Let them think: so far any attribute can be assigned again, with the dot from outside or from any method, so nothing stops a line that changes Ana's IBAN by mistake. Being careful is not enough; the compiler should refuse it. Some may remember const from C; good: it is the same idea. Do not name final yet: the next slide does.}
+\end{frame}
+
+% Code and notes step together
+\begin{frame}[fragile]{Final attributes}{Given a value once, and never again}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.52\textwidth}
+\begin{codeblock}[steps={3|8|3,17|}, dense, marks={3/1, 8/2, 3+17/3/error}, add={17/3}, strike={17/3}]{java}
+class Account {
+    String holder;
+    final String iban;
+    double balance;
+
+    Account(String holder, String iban, double balance) {
+        this.holder = holder;
+        this.iban = iban;
+        this.balance = balance;
+    }
+
+    public static void main(String[] args) {
+        Account ana = new Account(
+                "Ana García López",
+                "ES00 4321 0001 1234 5678 9012",
+                1250.00);
+        ana.iban = "ES00 9999 0001 0000 0000 0000";
+    }
+
+    // the rest of the class, as before
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.44\textwidth}
+      \begin{codenotes}[1]
+        \codenote{\code{final}: set once}{The attribute gets its value once and keeps it for the life of the object.}
+        \codenote<2->{In the constructor}{That one time is usually the constructor: each object gets its own value
+          there.}
+        \codenote<3->[error]{Never again}{Any later change does not compile, wherever it is written.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<4->{A \key{\code{final}} attribute is set \key{once}, usually in the constructor, and \key{never changes}.}
+  \note{The padlock, in code. On entry, final before the type: iban will get a value once and keep it. Step 1, where that happens: in the constructor, so every account gets its own IBAN when it is created; a final attribute is still one per object, Ana's IBAN is not Luis's. If no constructor gave it a value, the class would not compile. Step 2, in red, with final and the line that breaks it marked, that line crossed out in a main: after that, any assignment is an error, cannot assign a value to final variable iban, wherever it is written. final also works on local variables, with the same meaning. Step 3, the takeaway.}
+\end{frame}
+
+% Code and notes step together
+\begin{frame}[fragile]{Constants: \code{static final}}{Shared by the whole class, and fixed}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.48\textwidth}
+\begin{codeblock}[steps={2|3|}, compact, marks={2/1, 3/2}]{java}
+class Account {
+    static final String BANK_CODE = "4321";
+    static double interestRate = 2.00;
+
+    // the rest of the class, as before
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{codenotes}[1]
+        \codenote{\code{static final}: a constant}{One for the class, and it never changes. Named in
+          \key{\code{UPPER\_SNAKE\_CASE}}.}
+        \codenote<2->{Only \code{static}}{Shared too, but it can change.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<3->{A \key{constant} is \key{\code{static final}}: one for the class, and it \key{never changes}.}
+  \note{The two words together. On entry, BANK\_CODE: static, so there is one for the whole class, and final, so it never changes; that is a constant, the 4321 every IBAN of this bank carries. Constants are named in UPPER\_SNAKE\_CASE, the convention they saw for constants in the first unit, so they stand out in the code; it is used as Account.BANK\_CODE. Step 1, the difference with interestRate: static as well, one for the class, but not final, because the bank changes it from time to time.}
+\end{frame}
+
+% The attributes stay; each row's answers fill in at once, after asking the class
+\begin{frame}{Four kinds of attribute}{What each keyword changes}
+  \begin{datatable}{l l l Y}
+    \tablehead{Attribute} & \tablehead{Keywords} & \tablehead{Copies} & \tablehead{Can it change?} \\
+    \grouprule
+    \code{balance} & \uncover<2->{none} & \uncover<2->{One per object} & \uncover<2->{Yes} \\
+    \tablerule
+    \code{iban} & \uncover<3->{\code{final}} & \uncover<3->{One per object} & \uncover<3->{No} \\
+    \tablerule
+    \code{interestRate} & \uncover<4->{\code{static}} & \uncover<4->{One for the class} & \uncover<4->{Yes} \\
+    \tablerule
+    \code{BANK\_CODE} & \uncover<5->{\code{static final}} & \uncover<5->{One for the class} & \uncover<5->{No} \\
+    \grouprule
+  \end{datatable}
+  \takeaway<6->{\key{\code{static}} decides whether there is \key{one per object} or \key{one for the class};
+    \key{\code{final}}, whether it can \key{change}.}
+  \note{The section in one table, with the account's own attributes. The four attributes are there from the start; for each, ask the class which keywords it has, how many copies there are and whether it can change, and only then fill in its row. Step 1, balance: an ordinary attribute, one per object, and it changes. Step 2, iban: final keeps one per object but fixes it. Step 3, interestRate: static makes it one for the class, and it can still change. Step 4, BANK\_CODE: both together make a constant. Step 5, the takeaway sums it up: the two words answer two different questions, so they combine freely.}
+\end{frame}
+
+% % % % % % % % % % Overloading % % % % % % % % % %
+\section{Overloading}
+
+% C written line by line, so the class can be asked for the next one; then Java whole, and the takeaway
+\begin{frame}[fragile]{One name, several versions}{In C, one function per type; in Java, one name}
+  \begin{columns}[T, onlytextwidth]
+    \begin{column}{0.48\textwidth}
+      \blocktitle{C}
+\begin{codeblock}[lines={1|2}]{c}
+int a = abs(-3);
+long b = labs(-3L);
+double c = fabs(-2.5);
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{uncoverenv}<4->
+        \blocktitle{Java}
+\begin{codeblock}{java}
+int a = Math.abs(-3);
+long b = Math.abs(-3L);
+double c = Math.abs(-2.5);
+\end{codeblock}
+      \end{uncoverenv}
+    \end{column}
+  \end{columns}
+  \takeaway<5->{\key{Overloading}: several methods with the \key{same name} and \key{different parameters}.}
+  \note{The absolute value in C, written line by line. On entry, an int: abs. Ask them how they would do it for a long; step 1, labs, another function. Ask again for a double; step 2, fabs, a third one. In C two functions cannot share a name, so each type needs its own. Step 3, Java: one name, Math.abs, for the three types; there are really three methods called abs inside Math, one with an int parameter, one with a long and one with a double. Step 4, the takeaway, the name for it: overloading. How Java chooses comes on the next slide: it looks at the arguments of each call, their number and their types, and runs the version that matches.}
+\end{frame}
+
+% One row per version of println, each with its card, its code and what it prints; the takeaway after the last
+\begin{frame}[fragile]{You have used it already}{\code{println} is overloaded too}
+  \begin{boxrow}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.26\textwidth}
+      \begin{card}{A \code{String}}
+        The version that takes text.
+      \end{card}
+    \end{column}
+    \begin{column}{0.50\textwidth}
+\begin{codeblock}{java}
+System.out.println("Hello");
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.20\textwidth}
+\begin{console}
+Hello
+\end{console}
+    \end{column}
+  \end{columns}
+  \end{boxrow}
+  \boxrowgap
+  \begin{boxrow}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.26\textwidth}
+      \begin{card}<2->{An \code{int}}
+        Another method with the same name, for integers.
+      \end{card}
+    \end{column}
+    \begin{column}{0.50\textwidth}
+      \begin{uncoverenv}<2->
+\begin{codeblock}{java}
+System.out.println(42);
+\end{codeblock}
+      \end{uncoverenv}
+    \end{column}
+    \begin{column}{0.20\textwidth}
+      \begin{uncoverenv}<2->
+\begin{console}
+42
+\end{console}
+      \end{uncoverenv}
+    \end{column}
+  \end{columns}
+  \end{boxrow}
+  \boxrowgap
+  \begin{boxrow}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.26\textwidth}
+      \begin{card}<3->{A \code{double}}
+        And another one, for decimals.
+      \end{card}
+    \end{column}
+    \begin{column}{0.50\textwidth}
+      \begin{uncoverenv}<3->
+\begin{codeblock}{java}
+System.out.println(3.5);
+\end{codeblock}
+      \end{uncoverenv}
+    \end{column}
+    \begin{column}{0.20\textwidth}
+      \begin{uncoverenv}<3->
+\begin{console}
+3.5
+\end{console}
+      \end{uncoverenv}
+    \end{column}
+  \end{columns}
+  \end{boxrow}
+  \takeaway<4->{Each call runs the version whose \key{parameters match} its arguments.}
+  \note{Something they have done since the first program without knowing it. println is not one method but several, all named println, one per type of argument: String, int, double, boolean, char and more. On entry, the String version. Step 1, the int one. Step 2, the double one. They never chose: Java did, from the type of what they passed. Step 3, the takeaway.}
+\end{frame}
+
+% Lucía's phone on entry, Pedro's at step 2; then the two balances marked; no takeaway: the next slide answers it
+\begin{frame}{Two ways to open an account}{With a first deposit, or empty}
+  \begin{phones}[large]
+    \phone[initials=LG, holder=Lucía Gómez Ruiz, iban=ES00 4321 0001 2468 1357 0864, balance={\marked<3->{€200.00}}]
+    \uncover<2->{\phone[initials=PS, holder=Pedro Sanz Gil, iban=ES00 4321 0001 9753 8642 1100,
+      balance={\marked<3->{€0.00}}]}
+  \end{phones}
+  \note{Two new customers. On entry, Lucía opens her account with a first deposit of 200 euros. Step 1, Pedro opens his empty. Step 2, the difference, marked: one starts with the amount of the first deposit, the other at 0. Ask them: with the constructor we have, the one that asks for the balance, how would we create Pedro's account? Passing 0.00 works, but every empty account would have to say it. It would be clearer to have two ways of creating an account; how is the question of the next slide.}
+\end{frame}
+
+% A question to the class, on its own, before the idea that answers it
+\begin{frame}
+  \question{How could one class let us create its objects in more than one way?}
+  \note{The previous slide turned into a question before overloading answers it. Let them think: a constructor fixes what has to be given to new, and the one we have asks for the balance. Some may propose a constructor with another name, or a method that creates empty accounts; ask what a constructor must be called: like the class, so a second one would have the same name. They already know the answer for methods, overloading, from the first slides of this section: let them see that it works for constructors too, which the next slide shows.}
+\end{frame}
+
+% Code and notes step together
+\begin{frame}[fragile]{Overloaded constructors}{One per way of creating the object}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.52\textwidth}
+\begin{codeblock}[steps={6|12|13|}, compact, marks={6/1, 12/2, 13/3}]{java}
+class Account {
+    String holder;
+    final String iban;
+    double balance;
+
+    Account(String holder, String iban, double balance) {
+        this.holder = holder;
+        this.iban = iban;
+        this.balance = balance;
+    }
+
+    Account(String holder, String iban) {
+        this(holder, iban, 0.00);
+    }
+
+    // the rest of the class, as before
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.44\textwidth}
+      \begin{codenotes}[1]
+        \codenote{All the parameters}{One constructor takes a value for every attribute.}
+        \codenote<2->{Only some of them}{Another, with the same name, takes fewer and gives the rest a default value.}
+        \codenote<3->{\code{this(...)}}{The simpler one calls the fuller one, so the assignments are written once.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<4->{The \key{simpler} constructor calls the \key{fuller} one, which does the work, and gives it the
+    values left out.}
+  \note{The two ways of opening an account, in code. On entry, the constructor they know, with a value for every attribute: Lucía's account, new Account(\enquote{Lucía Gómez Ruiz}, \enquote{ES00 ...}, 200.00). Step 1, a second one: same name, as every constructor, but only holder and IBAN; new picks it when it gets two arguments, as for Pedro's account. Step 2, its body: this(...) with parentheses calls the other constructor of the same class with the balance at 0.00, so the three assignments are written once; it goes first in the constructor, before anything else uses the object. It is another use of this: before, this.holder was an attribute of the object; now this(...) is a constructor of the class. Step 3, the takeaway: here the simpler version calls the fuller one, the one that does all the work; the next slide does it the other way round.}
+\end{frame}
+
+% Code and notes step together
+\begin{frame}[fragile]{Overloaded methods}{A deposit, with or without a concept}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.52\textwidth}
+\begin{codeblock}[steps={2|6|7|}, compact, marks={2/1, 6/2, 7/3}]{java}
+class Account {
+    void deposit(double amount) {
+        this.balance += amount;
+    }
+
+    void deposit(double amount, String concept) {
+        this.deposit(amount);
+        System.out.printf("%s: +%.2f\n", concept, amount);
+    }
+
+    // the rest of the class, as before
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.44\textwidth}
+      \begin{codenotes}[1]
+        \codenote{The basic version}{Does the operation with the least it needs.}
+        \codenote<2->{A fuller version}{Same name, with more parameters for more details.}
+        \codenote<3->{One calls the other}{The fuller version reuses the basic one, so the shared work is written once.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<4->{The other way round from constructors: the \key{fuller} method calls the \key{simpler} one, which
+    does the work, and adds to it.}
+  \note{The same with a method. On entry, deposit as they know it, ana.deposit(100.00). Step 1, a second deposit with a concept, ana.deposit(350.00, \enquote{Rent}), like the message of a transfer that the banking app shows next to the amount; here it is just printed. Step 2, its first line calls the other deposit, so the rule for updating the balance is written once; if it ever changes, it changes in one place. Step 3, the takeaway, against the previous slide: with constructors the simpler one called the fuller one, because the full constructor is the one that assigns everything; here the basic deposit is the one that does the work, updating the balance, so the fuller one calls it and only adds the concept. Either way, the shared work lives in one version and the other calls it, so it is written once.}
+\end{frame}
+
+% Every pair is there from the start; each row's answer fills in at once, after asking the class
+\begin{frame}{What tells them apart}{The signature: the name and the parameters}
+  \begin{cards}
+    \begin{card}{The signature}
+      The name of a method and the \key{number}, \key{type} and \key{order} of its parameters. Two versions fit
+      in one class only if their \key{signatures differ}.
+    \end{card}
+  \end{cards}
+  \blockgap
+  \begin{datatable}{l l M Y}
+    \tablehead{One version} & \tablehead{Another} & \tablehead{Compiles?} & \tablehead{Why} \\
+    \grouprule
+    \code{void deposit(double amount)} & \code{void deposit(double amount, String concept)} & \uncover<2->{\markok} &
+      \uncover<2->{Two signatures: \code{deposit(double)} and \code{deposit(double, String)}} \\
+    \tablerule
+    \code{void deposit(double amount)} & \code{boolean deposit(double amount)} & \uncover<3->{\markerror} &
+      \uncover<3->{One signature, \code{deposit(double)}: the return type is not part of it} \\
+    \tablerule
+    \code{void deposit(double amount)} & \code{void deposit(double money)} & \uncover<4->{\markerror} &
+      \uncover<4->{One signature, \code{deposit(double)}: the names are not part of it either} \\
+    \grouprule
+  \end{datatable}
+  \takeaway<5->{Only the \key{parameters} tell the versions apart: neither the \key{return type} nor the
+    \key{parameter names} count.}
+  \note{The rule behind it, and its name. On entry, the signature: what identifies a method in a class, its name plus how many parameters, of which types, in which order; constructors have one too, with the class name. The three pairs are there from the start: ask the class whether each pair compiles, both versions written in the same class, before filling in its row; the row then writes the signature of each, so they see whether there are two or only one. Step 1, deposit(double) and deposit(double, String): same name, different signatures, so they live together. Step 2, in red, what is not part of the signature: void deposit(double) and boolean deposit(double) do not compile together, method deposit(double) is already defined; looking at ana.deposit(100.00), nobody could tell which one is meant. Step 3, the same with names: deposit(double amount) and deposit(double money) have the same signature. Step 4, the takeaway: Java only sees the call, and a call only shows the name and the arguments.}
+\end{frame}
+
+% Two tables side by side, the versions and the calls; each call's answer fills in at once, after asking the class
+\begin{frame}{Which one runs?}{With both constructors and both deposits}
+  \begin{columns}[T, onlytextwidth]
+    \begin{column}{0.34\textwidth}
+      \begin{datatable}{l}
+        \tablehead{The versions in \code{Account}} \\
+        \grouprule
+        \code{Account(String, String, double)} \\
+        \tablerule
+        \code{Account(String, String)} \\
+        \tablerule
+        \code{deposit(double)} \\
+        \tablerule
+        \code{deposit(double, String)} \\
+        \grouprule
+      \end{datatable}
+    \end{column}
+    \begin{column}{0.62\textwidth}
+      \begin{datatable}{l M Y}
+        \tablehead{The call in \code{main}} & \tablehead{Compiles?} & \tablehead{Runs} \\
+        \grouprule
+        \celllines{\code{new Account("Pedro Sanz Gil",} \\ \code{"ES00 4321 0001 9753 8642 1100")}} & \uncover<2->{\markok} &
+          \uncover<2->{Two-parameter constructor} \\
+        \tablerule
+        \code{new Account()} & \uncover<3->{\markerror} & \uncover<3->{None without parameters} \\
+        \tablerule
+        \code{ana.deposit(350.00, "Rent")} & \uncover<4->{\markok} & \uncover<4->{Deposit with a concept} \\
+        \tablerule
+        \code{ana.deposit(100)} & \uncover<5->{\markok} & \uncover<5->{Basic deposit, \code{int} widens} \\
+        \tablerule
+        \code{ana.deposit("Rent")} & \uncover<6->{\markerror} & \uncover<6->{None takes a \code{String} alone} \\
+        \tablerule
+        \code{ana.deposit("Rent", 350.00)} & \uncover<7->{\markerror} & \uncover<7->{None takes a \code{String}, then a \code{double}} \\
+        \grouprule
+      \end{datatable}
+    \end{column}
+  \end{columns}
+  \takeaway<8->{Java runs the version whose parameters match the arguments in \key{number}, \key{type} and
+    \key{order}; if \key{none} does, it does not compile.}
+  \note{On the left, the four versions of the class as Java sees them, by their signatures, the types of their parameters and not their names, as the previous slide showed; their code is that of the last two slides. On the right, the calls a main could make, every one visible from the start, three of them wrong on purpose: ask the class whether each compiles and which version runs before filling in its row. Step 1, new Account with two Strings, Pedro's empty account: the two-parameter constructor. Step 2, new Account() with nothing: the class has constructors, so the default one is gone, as they saw in Creating with the constructor. Step 3, a double and a String: the deposit with a concept. Step 4, deposit(100) with an int: there is no deposit(int), but an int widens to double automatically, as they saw in the first unit, so it runs deposit(double). Step 5, a String alone: no version matches. Step 6, the same two values in the wrong order do not match either: Java matches each call by the number, type and order of its arguments.}
+\end{frame}
+
+\begin{frame}{Exercises}{What you can solve now}
+  \begin{datatable}{l Y}
+    \tablehead{Exercise} & \tablehead{What it practices} \\
+    \grouprule
+    \href{https://github.com/alfaro96/programming-fundamentals-ii/tree/main/code/Classes\%2C\%20objects\%2C\%20and\%20methods/Exercise\%204}{Exercise 4} &
+      Points and vectors: two classes that work together, with a constant and overloaded constructors \\
+    \tablerule
+    \href{https://github.com/alfaro96/programming-fundamentals-ii/tree/main/code/Classes\%2C\%20objects\%2C\%20and\%20methods/Exercise\%207}{Exercise 7} &
+      Matrices: an array of arrays as an attribute, several constructors and the usual operations \\
+    \grouprule
+  \end{datatable}
+  \note{The exercises that need overloaded constructors, from the section just seen, and the static final constants of the one before. They are in the JetBrains Academy course, in the Classes, objects, and methods lesson; each title opens it on GitHub.}
+\end{frame}
+
+% % % % % % % % % % Strings % % % % % % % % % %
+\section{Strings}
+
+% Each row in four steps: the task, then C, Java and the result; only what needs no method, which comes next
+\begin{frame}{Text in C and in Java}{A \code{char} array there, a \code{String} here}
+  \begin{datatable}{l Y Y Y}
+    \tablehead{Task} & \tablehead{C} & \tablehead{Java} & \tablehead{Result} \\
+    \grouprule
+    \tablelabel{Declare} & \uncover<2->{\code{char name[50] = "Ana";}} & \uncover<3->{\code{String name = "Ana";}} &
+      \uncover<4->{\code{"Ana"}} \\
+    \tablerule
+    \uncover<5->{\tablelabel{Join}} & \uncover<6->{\code{strcat(name, " López");}} &
+      \uncover<7->{\code{name + " López"}} & \uncover<8->{\code{"Ana López"}} \\
+    \tablerule
+    \uncover<9->{\tablelabel{Change it}} & \uncover<10->{\code{strcpy(name, "Luis");}} &
+      \uncover<11->{\code{name = "Luis";}} & \uncover<12->{\code{"Luis"}} \\
+    \grouprule
+  \end{datatable}
+  \takeaway<13->{A \key{\code{String}} has \key{no size to choose} and no \code{'\textbackslash 0'}: Java keeps track
+    of its length.}
+  \note{What they did with text in C, task by task, for the tasks Java does with plain syntax; each row comes in four steps: the task, how they did it in C, then Java, and the result, the same in both, with name holding \enquote{Ana}. Ask them for the C version before showing it. Declaring: in C a char array with a size chosen in advance and room for the final '\textbackslash 0'; in Java a String, with no size at all. Joining: strcat changes name itself, and writes past the end if the array is too small; + leaves name as it was and builds a new text of the right size; it is an expression, not a statement, so it has no semicolon, and what happens to that new text comes in a later slide. Changing it: strcpy against a plain =. Step 12, the takeaway: no size and no '\textbackslash 0', Java keeps track of the length; what a String is in memory comes on the next slides, and how to ask it for that length, and everything else C did with the functions of string.h, right after: a String is an object, and those are its methods.}
+\end{frame}
+
+% Each line first, on its own, to ask what it does; then its effect in the diagram
+\begin{frame}[fragile]{Two ways to create a \code{String}}{A literal, or \code{new}}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.36\textwidth}
+\begin{codeblock}[steps={1|1|2|2|3|3|}, compact, marks={1/2, 2/4, 3/6}]{java}
+String a = "Ana";
+String b = "Ana";
+String c = new String("Ana");
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.60\textwidth}
+      \begin{uncoverenv}<2->
+      \begin{memory}[3]
+        \memstring{pool}{1}{2}{"Ana"}
+        \memstring<6->{new}{3}{3}{"Ana"}
+        \memref{1}{a}{0x51c2}{pool}
+        \memref<4->{2}{b}{0x51c2}{pool}
+        \memref<6->{3}{c}{0x7e09}{new}
+      \end{memory}
+      \end{uncoverenv}
+    \end{column}
+  \end{columns}
+  \notesgap
+  \begin{codenotes}[3]
+    \codenote<2->{A literal}{Java creates the object, and \code{a} refers to it.}
+    \codenote<4->{The same literal}{No new object: \code{b} gets the same reference.}
+    \codenote<6->{\code{new}}{Always a new object, even with the same text.}
+  \end{codenotes}
+  \takeaway<7->{Equal \key{literals} share one object; \key{\code{new String}} always creates \key{a new one}.}
+  \note{Two ways of getting a String, drawn as with new. Each line comes first on its own: ask what it does in memory before showing it. On entry, a with a literal, text written between quotes. Step 1, the diagram: Java creates the String object and a keeps its address. Step 2, b with the same literal: does Java create a second object? Step 3, no, it reuses the one it already has for \enquote{Ana}: each different literal is kept once, in a part of the heap called the string pool, so b gets the same address, 0x51c2; it can do this safely because strings never change. Step 4, c with new String, the same text. Step 5, new always builds a new object, even with the same text, at another address. In practice strings are written as literals; new String is shown here only to see the difference, which matters when strings are compared, in Comparing strings. Step 6, the takeaway.}
+\end{frame}
+
+% The assignment first, to ask what it does; then the diagram, where the shared object gives way to the two a
+% and b refer to; the print and its output together, as the diagram already answers it
+\begin{frame}[fragile]{Changing one of them}{Assigning a variable changes where it points, not the object}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.36\textwidth}
+\begin{codeblock}[steps={1-2|4|4|5|}, compact, marks={1-2/1, 4/3, 5/4}]{java}
+String a = "Ana";
+String b = "Ana";
+
+a = "Luis";
+System.out.println(b);
+\end{codeblock}
+      \blockgap
+      \begin{uncoverenv}<4->
+\begin{console}[compact]
+Ana
+\end{console}
+      \end{uncoverenv}
+    \end{column}
+    \begin{column}{0.60\textwidth}
+      \begin{memory}[2]
+        \memstring<1-2| handout:0>{shared}{1}{2}{"Ana"}
+        \memstring<3->{luis}{1}{1}{"Luis"}
+        \memstring<3->{ana}{2}{2}{"Ana"}
+        \memref<1-2| handout:0>{1}{a}{0x51c2}{shared}
+        \memref<3->{1}{a}{\marked<3| handout:0>{0x3f80}}{luis}
+        \memref<1-2| handout:0>{2}{b}{0x51c2}{shared}
+        \memref<3->{2}{b}{0x51c2}{ana}
+      \end{memory}
+    \end{column}
+  \end{columns}
+  \notesgap
+  \begin{codenotes}[3]
+    \codenote{One object}{Both literals refer to the same \enquote{Ana}, as on the previous slide.}
+    \codenote<3->{Another reference}{\code{a} now refers to \enquote{Luis}; \enquote{Ana} is untouched.}
+    \codenote<4->{\code{b}, as it was}{Still \enquote{Ana}.}
+  \end{codenotes}
+  \takeaway<5->{Assigning a variable makes it refer to \key{another object}: the object stays as it was, and so do
+    the \key{other variables}.}
+  \note{The question the previous slide leaves open: if a and b share one object, does changing a change b? As on the previous slide, every \enquote{Ana} literal is the same pool object, and every \enquote{Luis} another one. On entry, a and b sharing the pool's \enquote{Ana}. Step 1, a = \enquote{Luis}, with the diagram as it was: ask what they think will happen, to a, to b and to the \enquote{Ana} object. Step 2, the diagram: the \enquote{Ana} object is not touched; a gets the address of the \enquote{Luis} object, 0x3f80, and that is all an assignment ever does to a variable of a class type, change where it points. The drawing moves \enquote{Ana} next to b only to keep the arrows straight: it is the same object, at the same address, and b still refers to it. Step 3, printing b, with its output, Ana, at once: the diagram has just shown that b still refers to \enquote{Ana}. Sharing is safe because a String never changes: no method can alter the pool's \enquote{Ana} behind b's back. With an Account it was different: other.deposit changed the object both variables shared, because an Account can change. Step 4, the takeaway, which holds for any object.}
+\end{frame}
+
+% The text every call below works on, on screen throughout; the methods by what they do, each group's
+% calls first, then what they give
+\begin{frame}[fragile]{A \code{String} is an object}{Its methods are called with the dot}
+\begin{codeblock}[compact]{java}
+String holder = "Ana García López";
+\end{codeblock}
+  \notesgap
+  \begin{datatable}{l Y l l}
+    \tablehead{Kind} & \tablehead{What it does} & \tablehead{The call} & \tablehead{Gives} \\
+    \grouprule
+    \multirow{3}{*}{\tablelabel{Read}} & How many characters it has & \code{holder.length()} &
+      \uncover<2->{\code{16}} \\
+    \partrule{2-4}
+     & The character at a position, counting from 0 & \code{holder.charAt(0)} &
+      \uncover<2->{\code{'A'}} \\
+    \partrule{2-4}
+     & The text from one position up to another, not included & \code{holder.substring(4, 10)} &
+      \uncover<2->{\code{"García"}} \\
+    \grouprule
+    \uncover<3->{\tablelabel{Compare}} & \uncover<3->{Whether both texts are equal} & \uncover<3->{\code{holder.equals("Ana")}} &
+      \uncover<4->{\code{false}} \\
+    \grouprule
+    \uncover<5->{\tablelabel{Search}} & \uncover<5->{Where a text starts, or -1 if it is not there} & \uncover<5->{\code{holder.indexOf("García")}} &
+      \uncover<6->{\code{4}} \\
+    \grouprule
+    \uncover<7->{\multirow{2}{*}{\tablelabel{Transform}}} & \uncover<7->{The same text in capitals} & \uncover<7->{\code{holder.toUpperCase()}} &
+      \uncover<8->{\code{"ANA GARCÍA LÓPEZ"}} \\
+    \partrule{2-4}
+     & \uncover<7->{Each match of a text changed for another} & \uncover<7->{\code{holder.replace("Ana", "Eva")}} &
+      \uncover<8->{\code{"Eva García López"}} \\
+    \grouprule
+  \end{datatable}
+  \takeaway<9->{\key{\code{String}} is a class that comes with Java: its objects hold text, and its \key{methods} work
+    on it.}
+  \note{What C did with the functions of string.h, Java does with the methods of the String itself, called with the dot. All on the String at the top, holder = \enquote{Ana García López}, Ana's holder from the accounts; it stays on screen so every result can be checked against it. The methods come by what they do, a group at a time, with the calls first: ask what they give before showing it. Reading: length, 16 characters, spaces and accented letters included; in C, strlen(holder), which counts up to the final '\textbackslash 0'; here a method of the object, with parentheses, unlike the length of an array. charAt(0), the first character, a char, positions from 0 as in arrays; the last one is at length() - 1, and past it the program stops with an exception, as an array index out of range. substring(4, 10), from position 4 up to 10, which is left out, so 10 - 4 = 6 characters. Comparing: equals gives false, the whole text has to match; in C, strcmp(a, b) == 0, an int, 0 when equal, negative or positive when the first goes before or after; equals gives a boolean. It gets its own slide, the next one. Searching: indexOf gives where it starts, 4, the same position substring started at, or -1 if it is not there. Transforming: each gives a new text, in capitals, or with every \enquote{Ana} changed for \enquote{Eva}; what happens to holder itself comes in a later slide. These are the ones used most; there are many more (contains, toLowerCase, trim, split...), and the Java documentation lists them all. Step 8, the takeaway.}
+\end{frame}
+
+% The three strings from Two ways to create a String; each comparison first, then what it gives
+\begin{frame}[fragile]{Comparing strings}{\code{==} or \code{equals}?}
+\begin{codeblock}[compact]{java}
+String a = "Ana";
+String b = "Ana";
+String c = new String("Ana");
+\end{codeblock}
+  \blockgap
+  \begin{boxrow}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.30\textwidth}
+      \begin{card}<2->[warn]{\code{==} with two literals}
+        The same object, so it happens to work.
+      \end{card}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+\begin{codeblock}{java}
+System.out.println(a == b);
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.20\textwidth}
+      \begin{uncoverenv}<2->
+\begin{console}
+true
+\end{console}
+      \end{uncoverenv}
+    \end{column}
+  \end{columns}
+  \end{boxrow}
+  \boxrowgap
+  \begin{boxrow}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.30\textwidth}
+      \begin{card}<4->[error]{\code{==} with \code{new}}
+        Compares the references: two objects.
+      \end{card}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \begin{uncoverenv}<3->
+\begin{codeblock}{java}
+System.out.println(a == c);
+\end{codeblock}
+      \end{uncoverenv}
+    \end{column}
+    \begin{column}{0.20\textwidth}
+      \begin{uncoverenv}<4->
+\begin{console}
+false
+\end{console}
+      \end{uncoverenv}
+    \end{column}
+  \end{columns}
+  \end{boxrow}
+  \boxrowgap
+  \begin{boxrow}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.30\textwidth}
+      \begin{card}<6->{\code{equals}}
+        Compares the text: the same characters.
+      \end{card}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \begin{uncoverenv}<5->
+\begin{codeblock}{java}
+System.out.println(a.equals(c));
+\end{codeblock}
+      \end{uncoverenv}
+    \end{column}
+    \begin{column}{0.20\textwidth}
+      \begin{uncoverenv}<6->
+\begin{console}
+true
+\end{console}
+      \end{uncoverenv}
+    \end{column}
+  \end{columns}
+  \end{boxrow}
+  \takeaway<7->{To compare two texts, always \key{\code{equals}}: \key{\code{==}} only says whether they are the same
+    object.}
+  \note{The trap, with the three strings from Two ways to create a String. Each row, the comparison first: ask what it gives before showing it. On entry, a == b; step 1, true, but only because both literals share one object: == compares references, and here they happen to be the same. Step 2, a == c; step 3, false, the same text in two different objects. Step 4, a.equals(c); step 5, true: equals compares the characters, as strcmp did in C. The first row is why the bug goes unnoticed: with literals == seems to work, and it stops working when the text comes from new, from the keyboard or from another method. Step 6, the takeaway.}
+\end{frame}
+
+% Each version first, then what it prints
+\begin{frame}[fragile]{Strings never change}{Every method gives back a new one}
+  \begin{boxrow}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.30\textwidth}
+      \begin{card}<2->[error]{Calling it is not enough}
+        The method makes a new text, and nobody keeps it.
+      \end{card}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+\begin{codeblock}{java}
+String name = "ana";
+name.toUpperCase();
+System.out.println(name);
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.20\textwidth}
+      \begin{uncoverenv}<2->
+\begin{console}
+ana
+\end{console}
+      \end{uncoverenv}
+    \end{column}
+  \end{columns}
+  \end{boxrow}
+  \boxrowgap
+  \begin{boxrow}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.30\textwidth}
+      \begin{card}<4->{Keep the result}
+        The variable now refers to the new text.
+      \end{card}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \begin{uncoverenv}<3->
+\begin{codeblock}{java}
+String name = "ana";
+name = name.toUpperCase();
+System.out.println(name);
+\end{codeblock}
+      \end{uncoverenv}
+    \end{column}
+    \begin{column}{0.20\textwidth}
+      \begin{uncoverenv}<4->
+\begin{console}
+ANA
+\end{console}
+      \end{uncoverenv}
+    \end{column}
+  \end{columns}
+  \end{boxrow}
+  \takeaway<5->{A \key{\code{String}} is \key{immutable}: its methods never change it, they return a \key{new} one.}
+  \note{Another common mistake. On entry, toUpperCase called on its own: ask what it prints. Step 1, still ana: the method did not touch name, it made a new String in capitals and returned it, and nobody kept it. It compiles, which is why it goes unnoticed. Step 2, the fix: assign the result back. Step 3, ANA: name now refers to the new object; the literal \enquote{ana} stays in the pool, unchanged. Step 4, the takeaway: no String method ever changes the String it is called on; the same goes for +, which builds a new one each time; what that costs when a text is built piece by piece is the question of the next slide.}
+\end{frame}
+
+% A question to the class, on its own, before the idea that answers it
+\begin{frame}
+  \question{If every change makes a new \code{String}, how can we build a long text piece by piece?}
+  \note{The previous slide turned into a question before StringBuilder answers it. Let them think: joining with + in a loop of a thousand passes builds a thousand Strings, each one a copy of the last plus a little more, and throws all but one away. Some may remember building text in C with a char array and strcat, writing into the same array: good, that is the idea, an object whose content can change. Do not name StringBuilder yet: the next slide does.}
+\end{frame}
+
+% Code and notes step together; the last step repeats the println, so the output under the code shows with it
+\begin{frame}[fragile]{Building text: \code{StringBuilder}}{One object that does change}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.5\textwidth}
+\begin{codeblock}[steps={1|4|7|7|}, compact, marks={1/1, 4/2, 7/3}]{java}
+StringBuilder text = new StringBuilder();
+
+for (int i = 1; i <= 3; i++) {
+    text.append(i).append(" ");
+}
+
+System.out.println(text.toString());
+\end{codeblock}
+      \blockgap
+      \begin{uncoverenv}<4->
+\begin{console}[compact]
+1 2 3
+\end{console}
+      \end{uncoverenv}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \begin{codenotes}[1]
+        \codenote{An empty text}{Created with \code{new}, like any object, with no characters yet: a text that can
+          \key{change}.}
+        \codenote<2->{\code{append}}{Adds to the end of the \key{same object}, and returns it, so the calls can be
+          chained.}
+        \codenote<3->{\code{toString}}{Gives a \code{String} with what it holds, once the text is finished.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<5->{To build text step by step, a \key{\code{StringBuilder}}: it \key{grows} instead of being copied each
+    time.}
+  \note{The answer to the question of the previous slide, the other side of immutability: for a few pieces + does not matter, for thousands it does. On entry, note 1, a StringBuilder, created with new like any object: a text that can change, empty for now. Step 1, note 2, append adds to the end of the same object, and returns it, so calls can be chained. Step 2, note 3, toString turns it into a String when it is finished; ask what it prints. Step 3, 1 2 3, with a space at the end. Step 4, the takeaway.}
+\end{frame}
+
+\begin{frame}{Exercises}{The rest of the unit}
+  \begin{datatable}{l Y}
+    \tablehead{Exercise} & \tablehead{What it practices} \\
+    \grouprule
+    \href{https://github.com/alfaro96/programming-fundamentals-ii/tree/main/code/Classes\%2C\%20objects\%2C\%20and\%20methods/Exercise\%202}{Exercise 2} &
+      People: an array of objects as an attribute, two constructors and some error cases \\
+    \tablerule
+    \href{https://github.com/alfaro96/programming-fundamentals-ii/tree/main/code/Classes\%2C\%20objects\%2C\%20and\%20methods/Exercise\%203}{Exercise 3} &
+      Books: their data and their pages, deciding the parameters and the return type of each method \\
+    \tablerule
+    \href{https://github.com/alfaro96/programming-fundamentals-ii/tree/main/code/Classes\%2C\%20objects\%2C\%20and\%20methods/Exercise\%205}{Exercise 5} &
+      Polynomials: a class built on the monomials of Exercise 1 \\
+    \tablerule
+    \href{https://github.com/alfaro96/programming-fundamentals-ii/tree/main/code/Classes\%2C\%20objects\%2C\%20and\%20methods/Exercise\%206}{Exercise 6} &
+      A library: a class that holds several books, those of Exercise 3 \\
+    \grouprule
+  \end{datatable}
+  \note{The exercises that also work with text: comparing strings with equals, or building them with StringBuilder; Exercise 6 builds on the books of Exercise 3. They are in the JetBrains Academy course, in the Classes, objects, and methods lesson; each title opens it on GitHub.}
+\end{frame}
+
+% % % % % % % % % % Summary % % % % % % % % % %
+\begin{frame}{Unit summary}{What to take away from this unit}
+  \begin{recap}
+    \recapitem<2>{Classes and objects}{A \key{class} describes what its objects have, \textbf{\state{attributes}},
+      and do, \textbf{\behavior{methods}}; each \key{object} has its own values.}
+    \recapitem<3>{Creating objects}{\key{\code{new}} builds an object, the variable keeps a \key{reference} to it,
+      and a \key{constructor} gives it its values.}
+    \recapitem<4>{\texttt{static} and \texttt{final}}{\key{\code{static}}: one for the class. \key{\code{final}}:
+      set once. Both: a \key{constant}.}
+    \recapitem<5>{Overloading}{The \key{same name} with a different \key{signature}: Java picks the version from the
+      call.}
+    \recapitem<6>{Strings}{A \key{\code{String}} is an immutable object: compare it with \key{\code{equals}}, never
+      with \code{==}, and build it piece by piece with a \key{\code{StringBuilder}}.}
+  \end{recap}
+  \note{The unit's contents once more, now with what each section left: all of them dimmed on entry, then one per step, in the order they were seen; ask the class to recall an example of each before showing its sentence: the three phones and the template; new, the memory diagram, Luis's forgotten IBAN and the constructor; the interest rate and the IBAN's padlock; the two deposits; the two \enquote{Ana}, new String and the numbers built with a StringBuilder. The next unit builds on this one: classes that reuse other classes, inheritance.}
+\end{frame}
+
+\end{document}

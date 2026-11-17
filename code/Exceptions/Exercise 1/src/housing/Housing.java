@@ -22,7 +22,7 @@ public abstract class Housing {
      * @param price the base price of the housing property, in euros.
      * @throws InvalidPriceException if {@code price} is negative.
      */
-    public Housing(double price) throws InvalidPriceException {
+    public Housing(double price) {
         if (price < 0) {
             throw new InvalidPriceException(price);
         }

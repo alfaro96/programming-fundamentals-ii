@@ -1,0 +1,135 @@
+The goal of this exercise is to write two classes that work together: \texttt{Point}, which represents a point of the plane with its Cartesian coordinates, and \texttt{Vector}, which represents a directed segment from one point to another. The \texttt{Vector} class uses the \texttt{Point} class and its methods.
+
+The coordinates are \texttt{double} values, which carry rounding errors: \texttt{0.1 + 0.2} is not exactly \texttt{0.3}. That is why two coordinates are considered equal when they differ by less than a very small amount, such as \texttt{1e-9}. Keep it in a constant of the \texttt{Point} class, declared \texttt{static final}, and compare with \texttt{Math.abs(a - b) \textless{} EPSILON} instead of \texttt{a == b}.
+
+\subsection{\texttt{Point}}
+
+Write a \texttt{Point} class with the following requirements:
+
+\begin{itemize}
+
+    \item \textbf{Attributes}:
+
+        \begin{itemize}
+
+            \item \texttt{double x}: the \(X\) coordinate of the point.
+
+            \item \texttt{double y}: the \(Y\) coordinate of the point.
+
+        \end{itemize}
+
+    \item \textbf{Methods}:
+
+        \begin{itemize}
+
+            \item \textbf{Constructors}:
+
+                \begin{itemize}
+
+                    \item A default constructor, which creates the point \((0, 0)\).
+
+                    \item A constructor that receives the \(X\) and \(Y\) coordinates.
+
+                \end{itemize}
+
+            \item \texttt{distance()}: given another point, returns the Euclidean distance between both: \(\sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2}\). \texttt{Math.sqrt} computes a square root.
+
+            \item \texttt{isCollinearTo()}: given two more points, returns whether the three lie on the same line. They do when the triangle they form has no area, that is, when \((x_2 - x_1)(y_3 - y_1) - (y_2 - y_1)(x_3 - x_1)\) is \(0\).
+
+            \item \texttt{middlePoint()}: given another point, returns a \textbf{new} \texttt{Point} halfway between both.
+
+            \item \texttt{describe()}: returns the point as a \texttt{String} in the form \texttt{"(x, y)"}, such as \texttt{"(1.0, 2.5)"}.
+
+            \item \texttt{isEqualTo()}: given another point, checks whether both are the same point, that is, whether both coordinates are equal.
+
+        \end{itemize}
+
+\end{itemize}
+
+\subsection{\texttt{Vector}}
+
+Write a \texttt{Vector} class with the following requirements:
+
+\begin{itemize}
+
+    \item \textbf{Attributes}:
+
+        \begin{itemize}
+
+            \item \texttt{Point originPoint}: the point where the vector starts.
+
+            \item \texttt{Point endPoint}: the point where the vector ends.
+
+        \end{itemize}
+
+    \item \textbf{Methods}:
+
+        \begin{itemize}
+
+            \item \textbf{Constructor}: receives the origin point and the end point. There is no default constructor.
+
+            \item \texttt{add()}: given another vector, returns a \textbf{new} \texttt{Vector} whose origin is the sum of both origins, coordinate by coordinate, and whose end is the sum of both ends.
+
+            \item \texttt{subtract()}: given another vector, returns a \textbf{new} \texttt{Vector} in the same way, subtracting the origin and the end of the second vector from those of the first.
+
+            \item \texttt{scalarProduct()}: given a number, returns a \textbf{new} \texttt{Vector} whose points have every coordinate multiplied by that number.
+
+            \item \texttt{centroid()}: given two other vectors, returns a \textbf{new} \texttt{Point} at the centroid, or barycenter, of the triangle formed by the origin points of the three vectors. Its coordinates are the averages of theirs.
+
+            \item \texttt{describe()}: returns the vector as a \texttt{String} in the form \texttt{"(x, y) -\textgreater{} (m, n)"}, such as \texttt{"(0.0, 0.0) -\textgreater{} (1.0, 2.0)"}.
+
+            \item \texttt{isEqualTo()}: given another vector, checks whether both are the same vector, that is, whether they have the same origin point and the same end point.
+
+        \end{itemize}
+
+\end{itemize}
+
+None of the operations changes the points or vectors it works with.
+
+\subsection{Recommendations}
+
+\begin{itemize}
+
+    \item \textbf{Incremental implementation}: write and test each method on its own before moving on to the next one, making sure each part works before building the rest of the class.
+
+\end{itemize}
+
+\subsection{Evaluation and testing}
+
+To complete the exercise, write a \texttt{Main} class with a \texttt{main} method that performs the following tests:
+
+\begin{enumerate}
+
+    \item \texttt{Point} \textbf{testing}:
+
+        \begin{itemize}
+
+            \item Create four points and print them.
+
+            \item Compute and print distances, whether three points are collinear and the middle point of some pairs.
+
+            \item Check whether some pairs of points are equal.
+
+        \end{itemize}
+
+    \item \texttt{Vector} \textbf{testing}:
+
+        \begin{itemize}
+
+            \item Create five vectors and print them.
+
+            \item Compute and print the addition and subtraction of some pairs, and the product of a vector by a number.
+
+            \item Compute the centroid of a group of three vectors and check whether some pairs of vectors are equal.
+
+        \end{itemize}
+
+    \item \textbf{Clean code and documentation}:
+
+        \begin{itemize}
+
+            \item Make sure the code is clean and legible, with explanatory comments where necessary.
+
+        \end{itemize}
+
+\end{enumerate}

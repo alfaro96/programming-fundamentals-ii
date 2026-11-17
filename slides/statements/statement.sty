@@ -1,0 +1,97 @@
+% Style of the exercise and assignment statements: an A4 page in LaTeX's own text font (Latin Modern), with the
+% slides' code font (codefont.tex) and palette (palette.tex), plain and quiet, for the text that /latex writes from
+% each task.md in ../code/
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{statement}[2026/11/17 Programming Fundamentals II statements]
+
+\RequirePackage{fontspec}
+\RequirePackage{xcolor}
+\RequirePackage{amsmath}
+\RequirePackage{csquotes}
+\RequirePackage{enumitem}
+\RequirePackage{titlesec}
+\RequirePackage{fancyhdr}
+\RequirePackage{lastpage}
+\RequirePackage[most]{tcolorbox}
+\RequirePackage{hyperref}
+
+% % % % % % % % % % Page % % % % % % % % % %
+\RequirePackage{geometry}
+\newcommand\pf@marginside{25mm}
+\newcommand\pf@margintop{22mm}
+\newcommand\pf@marginbottom{28mm} % room for the page number
+\newcommand\pf@footskip{12mm} % from the text to the page number
+\geometry{a4paper, hmargin=\pf@marginside, top=\pf@margintop, bottom=\pf@marginbottom, footskip=\pf@footskip}
+
+% % % % % % % % % % Palette % % % % % % % % % %
+\input{palette}
+\input{codefont} % the text keeps fontspec's default, Latin Modern
+\providecommand\institute[1]{} % commands.tex sets the slides' degree, which a statement does not show
+\input{commands} % \coursename
+
+% % % % % % % % % % Sizes % % % % % % % % % %
+\newcommand\pf@bodysize{10.5pt}
+\newcommand\pf@bodyleading{15pt}
+\newcommand\pf@codescale{MatchLowercase} % JetBrains Mono as tall as the small letters of Latin Modern
+\newcommand\pf@headingleading{1.3} % line height of the title block and the headings, a factor of their size
+\newcommand\pf@coursesize{10pt}
+\newcommand\pf@titlesize{20pt}
+\newcommand\pf@subtitlesize{13pt}
+\newcommand\pf@sectionsize{13pt}
+\newcommand\pf@subsectionsize{11pt}
+\newcommand\pf@titlegap{3pt} % between the lines of the title block
+\newcommand\pf@titleafter{18pt} % from the title block to the text
+\newcommand\pf@paragraphgap{6pt}
+\newcommand\pf@itemgap{3pt}
+\newcommand\pf@buttonpad{2pt} % around a button's label
+\newcommand\pf@buttonradius{2pt}
+\newcommand\pf@hairline{0.5pt}
+
+% % % % % % % % % % Text % % % % % % % % % %
+\AtBeginDocument{\fontsize{\pf@bodysize}{\pf@bodyleading}\selectfont\color{colorText}}
+\AtBeginDocument{\raggedright} % code names do not break: a ragged edge keeps them inside the margin
+\setlength\parindent{0pt}
+\setlength\parskip{\pf@paragraphgap}
+\hypersetup{hidelinks}
+\def\UrlFont{\ttfamily\addfontfeatures{Scale=\pf@codescale}} % links in the code font, at its size
+\let\pf@url\url
+\renewcommand\url[1]{\textcolor{colorAccentTwo}{\pf@url{#1}}} % links in the color of links on the slides
+
+% Code in running text: the code font, in the heading blue of the slides
+\renewcommand\texttt[1]{{\ttfamily\addfontfeatures{Scale=\pf@codescale}\color{colorHeading}#1}}
+% Key words, as \key on the slides: bold, in the heading blue
+\let\pf@textbf\textbf
+\renewcommand\textbf[1]{\pf@textbf{\color{colorHeading}#1}}
+% What the student clicks or types into the IDE: its label in a light box, like a button
+\newtcbox{\uibutton}{on line, arc=\pf@buttonradius, boxrule=\pf@hairline, boxsep=0pt,
+  left=\pf@buttonpad, right=\pf@buttonpad, top=\pf@buttonpad, bottom=\pf@buttonpad,
+  colback=colorCodeInline, colframe=colorCodeEdge, before upper={\ttfamily\addfontfeatures{Scale=\pf@codescale}}}
+
+% Lists: the marker in the accent, as on the slides
+\setlist{itemsep=\pf@itemgap, topsep=\pf@paragraphgap, parsep=0pt}
+\setlist[itemize]{label=\textcolor{colorAccent}{\textbullet}}
+\setlist[enumerate]{label=\textcolor{colorAccent}{\arabic*.}}
+
+% % % % % % % % % % Headings % % % % % % % % % %
+\titleformat{\section}{\fontsize{\pf@sectionsize}{\pf@headingleading\dimexpr\pf@sectionsize}\selectfont\bfseries\color{colorHeading}}{}{0pt}{}
+\titleformat{\subsection}{\fontsize{\pf@subsectionsize}{\pf@headingleading\dimexpr\pf@subsectionsize}\selectfont\bfseries\color{colorHeading}}{}{0pt}{}
+\titlespacing*{\section}{0pt}{2\pf@paragraphgap}{\pf@paragraphgap}
+\titlespacing*{\subsection}{0pt}{1.5\pf@paragraphgap}{0pt}
+
+% \statementtitle{Title}[Subtitle]: the course and the unit over the title, in gray, and the subtitle, if any,
+% under it; the unit comes from \statementunit and \statementunitname, set by scripts/statements.sh
+\NewDocumentCommand\statementtitle{ m o }{%
+  {\fontsize{\pf@coursesize}{\pf@headingleading\dimexpr\pf@coursesize}\selectfont\bfseries\color{colorMuted}%
+    \coursename\quad\textbullet\quad Unit \statementunit: \statementunitname\par}%
+  \vspace{\pf@titlegap}%
+  {\fontsize{\pf@titlesize}{\pf@headingleading\dimexpr\pf@titlesize}\selectfont\bfseries\color{colorHeading}#1\par}%
+  \IfValueT{#2}{\vspace{\pf@titlegap}%
+    {\fontsize{\pf@subtitlesize}{\pf@headingleading\dimexpr\pf@subtitlesize}\selectfont\bfseries\color{colorMuted}#2\par}}%
+  \vspace{\pf@titleafter}}
+
+% % % % % % % % % % Footer % % % % % % % % % %
+% The page and how many there are, bottom right, in gray, as the slide number
+\fancypagestyle{statement}{\fancyhf{}\renewcommand\headrulewidth{0pt}%
+  \fancyfoot[R]{\fontsize{\pf@coursesize}{\pf@coursesize}\selectfont\bfseries\color{colorMuted}%
+    \thepage\ / \pageref*{LastPage}}}
+\pagestyle{statement}

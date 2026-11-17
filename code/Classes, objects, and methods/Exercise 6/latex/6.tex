@@ -1,0 +1,83 @@
+The goal of this exercise is to write a \texttt{Library} class that represents a library holding several \texttt{Book} objects. It uses the \texttt{Book} class of Exercise 3, which is provided.
+
+\subsection{Implementation}
+
+Write a \texttt{Library} class with the following requirements:
+
+\begin{itemize}
+
+    \item \textbf{Attributes}:
+
+        \begin{itemize}
+
+            \item \texttt{String name}: the name of the library.
+
+            \item \texttt{Book[] books}: the books of the library. The array is filled from its first position, so the empty positions, all at the end, hold \texttt{null}.
+
+            \item \texttt{int currentBookIndex}: the position of the book currently selected. It starts at -1, which means that no book is selected.
+
+        \end{itemize}
+
+    \item \textbf{Methods}:
+
+        \begin{itemize}
+
+            \item \textbf{Constructor}: receives the name of the library and the number of books it has room for at first. The library starts without books.
+
+            \item \texttt{addBook()}: adds a book in the first empty position of the array. If the array is full, it first has to be replaced by one twice as long: since an array cannot change its size, create a new, longer array and copy the books into it, in the same positions.
+
+            \item \texttt{getCurrentBook()}: returns the book currently selected, or \texttt{null} if none is.
+
+            \item \texttt{nextBook()}: selects the next book and returns it. If there are no more books, it returns \texttt{null} and the selection does not change.
+
+            \item \texttt{previousBook()}: selects the previous book and returns it. If there is no book before the current one, or no book is selected, it returns \texttt{null} and the selection does not change.
+
+            \item \texttt{describe()}: returns a \texttt{String} with the data of the library, including its name and its number of books, but not the data of the books themselves.
+
+        \end{itemize}
+
+\end{itemize}
+
+\subsection{Recommendations}
+
+\begin{itemize}
+
+    \item \textbf{Incremental implementation}: write and test each method on its own before moving on to the next one, making sure each part works before building the rest of the class.
+
+\end{itemize}
+
+\subsection{Evaluation and testing}
+
+To complete the exercise, write a \texttt{Main} class with a \texttt{main} method that performs the following tests:
+
+\begin{enumerate}
+
+    \item \textbf{Class functionality}:
+
+        \begin{itemize}
+
+            \item Write the \texttt{Library} class with all the attributes, constructors and methods described.
+
+        \end{itemize}
+
+    \item \textbf{Testing in the} \texttt{main} \textbf{method}:
+
+        \begin{itemize}
+
+            \item Create a library and several books.
+
+            \item Add the books to the library, with a starting size small enough for the array to have to double.
+
+            \item Go through the library with the navigation methods, in both directions, and check that reaching either end is handled properly.
+
+        \end{itemize}
+
+    \item \textbf{Clean code and documentation}:
+
+        \begin{itemize}
+
+            \item Make sure the code is clean and legible, with explanatory comments where necessary.
+
+        \end{itemize}
+
+\end{enumerate}

@@ -1,0 +1,39 @@
+Start from your solution to Exercise 5 of Unit 3: Inheritance, the \texttt{housing} package with \texttt{Housing}, \texttt{SingleFamily}, \texttt{Chalet}, \texttt{CountryHouse}, \texttt{Apartment} and \texttt{RealEstate}, and make its constructors reject invalid values with exceptions.
+
+\begin{itemize}
+
+    \item Create a package called \texttt{exceptions} with two unchecked exceptions, both extending \texttt{RuntimeException}, since a negative value is a mistake in the code that calls the constructor:
+
+        \begin{itemize}
+
+            \item \texttt{InvalidPriceException}, with a constructor that receives the invalid price (\texttt{double}) and builds a message that includes it.
+
+            \item \texttt{InvalidSquareMetersException}, with a constructor that receives the name of the attribute (\texttt{String}) and its invalid value (\texttt{double}), and builds a message that includes both.
+
+        \end{itemize}
+
+    \item Throw them from the constructors, which do not have to declare them with \texttt{throws}:
+
+        \begin{itemize}
+
+            \item \texttt{Housing} throws an \texttt{InvalidPriceException} if the price is negative, so every constructor of its subclasses may throw it too.
+
+            \item \texttt{SingleFamily} throws an \texttt{InvalidSquareMetersException} if \texttt{basementSize} is negative, \texttt{Chalet} if \texttt{gardenSize} is negative, and \texttt{CountryHouse} if \texttt{plotSize} is negative.
+
+            \item A value of 0 is valid.
+
+        \end{itemize}
+
+\end{itemize}
+
+Update the \texttt{Main} class so that it:
+
+\begin{itemize}
+
+    \item Creates the same three housing objects as in Unit 3 and adds them to the \texttt{RealEstate}, with no \texttt{try}/\texttt{catch}, since their values are valid.
+
+    \item Displays the same summary as in Unit 3.
+
+    \item Tries to create an \texttt{Apartment} with a negative price and a \texttt{Chalet} with a negative garden size, and prints the message of each exception instead of stopping. Each attempt goes in its own \texttt{try}/\texttt{catch} just to see its message: a correct program checks the values before calling the constructor.
+
+\end{itemize}

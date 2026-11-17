@@ -1,0 +1,103 @@
+In mathematics, a monomial is a constant multiplied by a variable raised to a power:
+
+\[
+    m \cdot X^{p}
+\]
+
+where:
+
+\begin{itemize}
+
+    \item \(m\) (\textbf{coefficient}) is a constant value.
+
+    \item \(X\) (\textbf{variable}) is a variable value.
+
+    \item \(p\) (\textbf{exponent}) is the power the variable is raised to.
+
+\end{itemize}
+
+Examples of monomials are \(2X^{5}\) and \(X^{-3}\). The goal of this exercise is to write a \texttt{Monomial} class in Java that represents this kind of data and performs the usual operations with it.
+
+\subsection{Implementation}
+
+Write a \texttt{Monomial} class with the following requirements:
+
+\begin{itemize}
+
+    \item \textbf{Attributes}:
+
+        \begin{itemize}
+
+            \item \texttt{double coefficient}: the coefficient of the monomial.
+
+            \item \texttt{int exponent}: the power the variable is raised to.
+
+            \item The variable is always \(X\), so it is not stored.
+
+        \end{itemize}
+
+    \item \textbf{Methods}:
+
+        \begin{itemize}
+
+            \item \textbf{Constructor}: creates a monomial from a coefficient and an exponent.
+
+            \item \texttt{describe()}: returns a \texttt{String} with the written form of the monomial, made by joining the coefficient, \texttt{X\textasciicircum{}} and the exponent with \texttt{+}. For example, the monomial with coefficient \texttt{2} and exponent \texttt{3} is described as \texttt{"2.0X\textasciicircum{}3"} (a \texttt{double} is always written with a decimal point).
+
+            \item \texttt{addition()}: given another \texttt{Monomial}, \textbf{returns a new monomial} with the sum of both. Two monomials only add up to a single monomial when they have the same exponent: the coefficients are added and the exponent stays the same. If the exponents differ, the method returns \texttt{null}.
+
+            \item \texttt{scalarProduct()}: given a number, \textbf{returns a new monomial} with the product of the monomial by that number.
+
+            \item \texttt{product()}: given another \texttt{Monomial}, \textbf{returns a new monomial} with the product of both: the coefficients are multiplied and the exponents are added.
+
+            \item \texttt{evaluate()}: given a number, returns the value of the monomial when \(X\) takes that value. \texttt{Math.pow(a, b)} computes \(a^{b}\).
+
+        \end{itemize}
+
+\end{itemize}
+
+None of the operations changes the monomials it works with: each one creates a new monomial with \texttt{new} and returns it.
+
+\subsection{Recommendations}
+
+\begin{itemize}
+
+    \item \textbf{Incremental implementation}: write and test each method on its own before moving on to the next one, making sure each part works before building the rest of the class.
+
+    \item \texttt{this}: write \texttt{this.} before every attribute, such as \texttt{this.coefficient}, even where no parameter has the same name, as in the slides. It makes clear which values belong to the monomial itself and which to \texttt{other}.
+
+\end{itemize}
+
+\subsection{Evaluation}
+
+The \texttt{Main} class provided creates several monomials and prints the result of each operation next to the value it should have. To complete the exercise:
+
+\begin{enumerate}
+
+    \item \textbf{Class functionality}:
+
+        \begin{itemize}
+
+            \item Check that the constructor stores both values.
+
+            \item Check the text returned by \texttt{describe()}.
+
+        \end{itemize}
+
+    \item \textbf{Monomial operations}:
+
+        \begin{itemize}
+
+            \item Check that additions and products give the right coefficient and exponent, and that the original monomials do not change.
+
+        \end{itemize}
+
+    \item \textbf{Clean code and documentation}:
+
+        \begin{itemize}
+
+            \item Make sure the code is clean and legible, with explanatory comments where necessary.
+
+        \end{itemize}
+
+\end{enumerate}

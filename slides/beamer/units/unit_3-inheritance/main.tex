@@ -1,0 +1,1768 @@
+% Unit 3: Inheritance. Build from this folder: latexmk -xelatex main.tex
+% scripts/beamer.sh builds both PDFs: it adds handout to \deckoptions for print
+\providecommand\deckoptions{aspectratio=169}
+\documentclass[\deckoptions]{beamer}
+\makeatletter\def\input@path{{../../}}\makeatother % packages, style, commands and cover, in beamer/
+\input{packages}
+\usepackage{style}
+\input{commands}
+
+\title{Unit 3: Inheritance}
+\subtitle{Classes built on other classes}
+
+\begin{document}
+
+\input{cover}
+\note{They write classes with attributes, constructors and methods, use static and final, and overload (unit 2). This unit is about classes that share a part: how to write that part once, in a class the others build on, and how to treat objects of different classes alike. The example of the whole unit is a smart home app that controls the devices of a house from the phone: a lamp, a thermostat and a speaker.}
+
+% % % % % % % % % % Inheritance % % % % % % % % % %
+\section{Inheritance}
+
+\begin{frame}{Three smart devices}{What do they have in common, and what not?}
+  \begin{phones}[large]
+    \devicephone[icon=light, kind=Light, name=Living room lamp, power=On, label=Brightness, value=80\%, bar=80,
+      set=Set brightness]
+    \devicephone[icon=thermostat, kind=Thermostat, name=Hallway thermostat, power=On, label=Target temperature,
+      value=21.5\,°C, set=Set temperature]
+    \devicephone[icon=speaker, kind=Speaker, name=Kitchen speaker, power=Off, label=Volume, value=30\%, bar=30,
+      set=Set volume]
+  \end{phones}
+  \note{The example of the unit: a home app that controls the devices of a house, each one with its own screen. Don't say \enquote{inheritance} yet. Ask first what the three screens have in common: a name, whether the device is on or off, and the two buttons to turn it on and off. Then what is different: the lamp has a brightness, the thermostat a target temperature and the speaker a volume, each with its own button to set it. In unit 2 the three accounts were one template with different values; here part of the screen is the same for every device and part depends on the kind of device. The answer comes on the next slide.}
+\end{frame}
+
+% The phone alone on entry; the shared data and operations, then each kind's own, each marked with its note
+\begin{frame}{What they share}{And what each kind of device adds}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.36\textwidth}
+      \begin{phones}
+        \devicephone[template, data mark=1, data mark on=2-, operations mark=2, operations mark on=3-,
+          own data mark=3, own data mark on=4-, own operation mark=4, own operation mark on=5-]
+      \end{phones}
+    \end{column}
+    \begin{column}{0.58\textwidth}
+      \begin{codenotes}[1]
+        \codenote<2->[state]{Shared data}{A name and a status, whether it is on: every device has them, each with its
+          own values.}
+        \codenote<3->[behavior]{Shared operations}{Turn on and turn off: they work the same on any device.}
+        \codenote<4->[state]{Its own data}{Brightness, temperature or volume: each kind has its own.}
+        \codenote<5->[behavior]{Its own operation}{The button that sets it: each kind adds its own.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<6->{Every device has a \key{shared part}, and each kind adds \key{its own}.}
+  \note{The answer to the previous slide. Take away what changes and what is left is the part every device shares. On entry, the screen every device would have. Step 1, the data, marked 1: a name and a status, whether it is on, each device with its own values, as the accounts in unit 2. Step 2, the operations, marked 2: turning a device on or off works the same whatever the device is. Step 3, the first dashed box, marked 3, in the tone of data: what each kind fills in its own way, a brightness for the lamp, a temperature for the thermostat, a volume for the speaker; dashed because each kind fills it differently. Step 4, the second, marked 4, in the tone of operations, under the shared buttons: the button that sets it. Step 5, the takeaway. Then ask them how they would write the classes with what they know from unit 2; the next slide is their answer.}
+\end{frame}
+
+% Both classes plain on entry, to ask what they notice; then the shared lines and its own, each marked with its note
+\begin{frame}[fragile]{Two classes, by hand}{With what we already know}
+  \begin{columns}[T, onlytextwidth]
+    \begin{column}{0.49\textwidth}
+      \blocktitle{\code{Light.java}}
+\begin{codeblock}[steps={|2-3,6-12|4,14-16|}, packed, marks={2-3+6-12/2, 4+14-16/3}]{java}
+class Light {
+    String name;
+    boolean on;
+    int brightness;
+
+    void turnOn() {
+        this.on = true;
+    }
+
+    void turnOff() {
+        this.on = false;
+    }
+
+    void setBrightness(int brightness) {
+        this.brightness = brightness;
+    }
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.49\textwidth}
+      \blocktitle{\code{Thermostat.java}}
+\begin{codeblock}[steps={|2-3,6-12|4,14-16|}, packed, marks={2-3+6-12/2, 4+14-16/3}]{java}
+class Thermostat {
+    String name;
+    boolean on;
+    double temperature;
+
+    void turnOn() {
+        this.on = true;
+    }
+
+    void turnOff() {
+        this.on = false;
+    }
+
+    void setTemperature(double temperature) {
+        this.temperature = temperature;
+    }
+}
+\end{codeblock}
+    \end{column}
+  \end{columns}
+  \notesgap
+  \begin{codenotes}[2]
+    \codenote<2->{The shared part}{Word for word the same in both: two attributes and two methods.}
+    \codenote<3->{Its own part}{What each class adds: one attribute and the method that sets it.}
+  \end{codenotes}
+  \takeaway<4->{Every class repeats the \key{shared part}: a change to it has to be made in \key{every copy}.}
+  \note{Their answer, for two of the three devices (the speaker would be a third class, with volume and setVolume). On entry, both whole: ask them what they notice. Step 1, note 1, the shared lines: two attributes and two methods, word for word the same in both. Step 2, note 2, what each one adds: one attribute and one method. Step 3, the takeaway, the cost: if turning a device on had to record the time it happened, the change would go in three classes, and in every class added later; a copy that is forgotten behaves differently from the rest without anyone noticing. And nothing in the code says that the three are devices: for Java they are three unrelated classes, so there is no way to keep them in one array, something the app will need. How to write that part once is the question of the next slide.}
+\end{frame}
+
+% A question to the class, on its own, before the idea that answers it
+\begin{frame}
+  \question{How could the shared part be written once, for every kind of device?}
+  \note{The previous slide turned into a question before inheritance answers it. Let them think: in unit 2 a class was the template of its objects; here the three classes would need a template of their own, one with the part they share. Some may propose a class Device with the name and on, and a Device attribute inside Light; good, it would work, but a lamp would not be a device, it would have one. Do not name inheritance yet: the next slide does.}
+\end{frame}
+
+% The superclass alone on entry; its subclasses under it at step 2, with their card; the name for it, then the takeaway
+\begin{frame}{Superclass and subclasses}{The shared part, written once}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.6\textwidth}
+      \centering
+      \begin{classdiagram}
+        \classbox{device}{1}{}{Device}{name: String, on: boolean}{turnOn(): void, turnOff(): void}
+        \classbox<2->{light}{0}{device}{Light}{brightness: int}{setBrightness(int): void}
+        \classbox<2->{thermostat}{1}{device}{Thermostat}{temperature: double}{setTemperature(double): void}
+        \classbox<2->{speaker}{2}{device}{Speaker}{volume: int}{setVolume(int): void}
+        \classmark{above}{device}{1}
+        \classmark<2->{below}{light}{2}\classmark<2->{below}{thermostat}{2}\classmark<2->{below}{speaker}{2}
+        \inheritmark<3->{light}{3}\inheritmark<3->{thermostat}{3}\inheritmark<3->{speaker}{3}
+      \end{classdiagram}
+    \end{column}
+    \begin{column}{0.37\textwidth}
+      \begin{codenotes}[1]
+        \codenote{Superclass}{The shared part, in a class of its own: what all its subclasses
+          \textbf{\state{have}} and \textbf{\behavior{do}}.}
+        \codenote<2->{Subclasses}{Each one with only what it adds to its superclass.}
+        \codenote<3->{Inheritance}{The arrow: a subclass gets every attribute and method of its superclass without
+          writing them again.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<4->{The shared part goes in a \key{superclass}; each \key{subclass} inherits it and adds its own.}
+  \note{The fix for the copies. On entry, Device: the part every device shares, two attributes and two methods, written once. Step 1, the three kinds of device under it, each box with only what it adds: a lamp is a device with a brightness. Step 2, the name for it: Light inherits everything Device has, so a Light object has a name, an on and a brightness, and can be turned on, off and set to a brightness. The drawing is a class diagram, in UML, the usual way to draw classes, as IntelliJ draws them too: the name, then the attributes with their types, then the methods with the types of their parameters and what they return; the arrow with the hollow head means \enquote{inherits from}, and it points from the subclass to the superclass. Other names they will meet: parent and child class, base and derived class. Step 3, the takeaway; how it is written in Java comes next.}
+\end{frame}
+
+% The superclass alone on entry, marked whole; the subclass at step 2 with its own part marked, then extends, each
+% with its note
+\begin{frame}[fragile]{\code{extends}}{A class built on another}
+  \begin{columns}[T, onlytextwidth]
+    \begin{column}{0.49\textwidth}
+      \blocktitle{\code{Device.java}}
+\begin{codeblock}[steps={1-12|none|none|}, compact, marks={1-12/1}]{java}
+class Device {
+    String name;
+    boolean on;
+
+    void turnOn() {
+        this.on = true;
+    }
+
+    void turnOff() {
+        this.on = false;
+    }
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.49\textwidth}
+      \begin{uncoverenv}<2->
+        \blocktitle{\code{Light.java}}
+\begin{codeblock}[steps={|2-6|1|}, compact, marks={2-6/2, 1/3}, marks from=2]{java}
+class Light extends Device {
+    int brightness;
+
+    void setBrightness(int brightness) {
+        this.brightness = brightness;
+    }
+}
+\end{codeblock}
+      \end{uncoverenv}
+    \end{column}
+  \end{columns}
+  \notesgap
+  \begin{codenotes}[3]
+    \codenote{The superclass}{A class like any other: nothing in it says it will have subclasses.}
+    \codenote<2->{The subclass}{Only what it adds to its superclass.}
+    \codenote<3->{\code{extends}}{After the subclass's name, its superclass: the subclass gets everything that
+      class has.}
+  \end{codenotes}
+  \takeaway<4->{\key{\code{extends}} goes only in the \key{subclass}: the \key{superclass} does not change.}
+  \note{The diagram of the previous slide, written in Java, each class in its own file, as in unit 2. On entry, note 1, Device alone: the shared part, a class like the ones they wrote in unit 2; nothing in it says that other classes will build on it. Step 1, Light, with note 2 on its body: only what it adds, the brightness and its method; turnOn and turnOff are not written in it. Ask them how Java knows that a Light is also a device, with a name, an on and those two methods. Step 2, note 3, the answer, the word extends after the name of Light: Light extends Device, so everything Device has, its attributes and its methods, belongs to Light too, without writing it again. Step 3, the takeaway: extends is written only in the subclass, and Device stays as it was; a Light is a Device, plus its own attributes and methods.}
+\end{frame}
+
+% Code and notes step together; the wrong way round is added, crossed out, with its note; the takeaway on plain code
+\begin{frame}[fragile]{Using a subclass}{Inherited members, as if they were its own}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.52\textwidth}
+      \blocktitle{\code{Main.java}}
+\begin{codeblock}[steps={4-5|6|9|}, compact, marks={4-5/1, 6/2, 9/3/error}, add={7/3, 8/3, 9/3}, strike={9/3}]{java}
+class Main {
+    public static void main(String[] args) {
+        Light lamp = new Light();
+        lamp.name = "Living room lamp";
+        lamp.turnOn();
+        lamp.setBrightness(80);
+
+        Device device = new Device();
+        device.setBrightness(80);
+    }
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.44\textwidth}
+      \begin{codenotes}[1]
+        \codenote{Inherited}{The superclass's attributes and methods, used with the dot like any other.}
+        \codenote<2->{Its own}{The ones written in the subclass.}
+        \codenote<3->[error]{Not the other way round}{A superclass object has nothing its subclasses add: using it
+          does not compile.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<4->{A subclass object uses what it \key{inherits} as its own; a superclass object has \key{nothing}
+    of its subclasses.}
+  \note{One lamp, created and used with the classes of the previous slide, in a class of its own, Main.java, in the same folder as the others; none of them has a constructor yet, so new Light() uses the default one. On entry, note 1, the inherited lines: name and turnOn are not written in Light, but a Light has them, and the code cannot tell the difference. Step 1, note 2, its own method, setBrightness, written in Light. Step 2, note 3, in red, two new lines: a Device object, which is fine, and the call on it, crossed out, which fails: inheritance goes downwards only. A Device knows nothing about its subclasses, so a Device object has no setBrightness: cannot find symbol. Step 3, the takeaway.}
+\end{frame}
+
+% Both classes, each step marking a line of Light's constructor with its note, and Device's with the first; the
+% takeaway on plain code
+\begin{frame}[fragile]{\code{super(...)}}{Calling the superclass's constructor}
+  \begin{columns}[T, onlytextwidth]
+    \begin{column}{0.49\textwidth}
+      \blocktitle{\code{Device.java}}
+\begin{codeblock}[steps={5-7|none|none|}, compact, marks={5-7/1}]{java}
+class Device {
+    String name;
+    boolean on;
+
+    Device(String name) {
+        this.name = name;
+    }
+
+    // turnOn and turnOff, as before
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.49\textwidth}
+      \blocktitle{\code{Light.java}}
+\begin{codeblock}[steps={5|6|5|}, compact, marks={5/1, 6/2, 5/3}]{java}
+class Light extends Device {
+    int brightness;
+
+    Light(String name) {
+        super(name);
+        this.brightness = 100;
+    }
+
+    // setBrightness, as before
+}
+\end{codeblock}
+    \end{column}
+  \end{columns}
+  \notesgap
+  \begin{codenotes}[3]
+    \codenote{\code{super(...)}}{Calls the superclass's constructor with these arguments: the inherited
+      attributes get their values there.}
+    \codenote<2->{Then its own}{The constructor goes on with the attributes the subclass adds.}
+    \codenote<3->{First}{As \code{this(...)} in the previous unit, it goes first: the inherited part is built
+      before the rest.}
+  \end{codenotes}
+  \takeaway<4->{A subclass constructor first calls \key{\code{super(...)}}, then gives \key{its own} attributes
+    their values.}
+  \note{Both classes get a constructor, as the previous unit taught: Device's gives the name, and Light's gives the name and a brightness of 100, the lamp at full brightness when it is installed. On entry, note 1, on both: super(name), the first line of Light's constructor, calls Device's constructor with the name, so Device sets its own attribute, and Light does not need to know how. A new Light with its name runs Device's constructor first, then the rest of Light's. There is no separate Device object inside: new builds a single object, with name, on and brightness, and super(name) gives a value to the inherited part of that same object. Step 1, note 2, the rest: Light only deals with what it adds, the brightness. Step 2, note 3: like this(...) in the previous unit, super(...) goes first, because the inherited part is built before anything else uses the object; a constructor starts with this(...) or with super(...), not both. Step 3, the takeaway. Thermostat's constructor does the same with a name and a temperature, and Speaker's with a name and a volume of 50.}
+\end{frame}
+
+% Both classes plain on entry, for the question; the error at step 2, to think about it; then Light's constructor
+% and Device's, each with its note; the takeaway on plain code
+\begin{frame}[fragile]{Without \code{super(...)}}{Does it compile?}
+  \begin{columns}[T, onlytextwidth]
+    \begin{column}{0.49\textwidth}
+      \blocktitle{\code{Device.java}}
+\begin{codeblock}[steps={||none|5-7|}, dense, marks={5-7/4/error/2}]{java}
+class Device {
+    String name;
+    boolean on;
+
+    Device(String name) {
+        this.name = name;
+    }
+
+    // turnOn and turnOff, as before
+}
+\end{codeblock}
+      \notesgap
+      \begin{codenotes}[1]
+        \codenote<3->[error]{No \code{super(...)}}{So Java calls \code{super()}, with no arguments, before
+          the first line.}
+        \codenote<4->[error]{No constructor to call}{\code{Device} has none without arguments: writing one
+          removed the default one.}
+      \end{codenotes}
+    \end{column}
+    \begin{column}{0.49\textwidth}
+      \blocktitle{\code{Light.java}}
+\begin{codeblock}[steps={||4-7|none|}, dense, marks={4-7/3/error/1}]{java}
+class Light extends Device {
+    int brightness;
+
+    Light(String name) {
+        this.name = name;
+        this.brightness = 100;
+    }
+
+    // setBrightness, as before
+}
+\end{codeblock}
+      \blockgap
+      \begin{uncoverenv}<2->
+\begin{consoleerror}[dense]
+Light.java:4: error: constructor Device in class Device
+    cannot be applied to given types;
+  required: String
+  found:    no arguments
+\end{consoleerror}
+      \end{uncoverenv}
+    \end{column}
+  \end{columns}
+  \takeaway<5->{Without \code{super(...)}, Java calls \key{\code{super()}}: the superclass needs a constructor
+    with \key{no arguments}.}
+  \note{The same classes, with Light's constructor giving the name itself, as a class of unit 2 would, instead of calling super(name). On entry, the two classes: every line looks right, and Light can use name, which it inherits. Ask them whether it compiles, and let them argue before going on. Step 1, the compiler's answer, shortened and broken in two to fit (it also points at the line with a caret): let them read it and guess what it means before explaining. It reports line 4, the header of Light's constructor, because the call that fails is not written anywhere; and it complains about Device's constructor, which Light never calls. Step 2, note 1: every constructor runs one of its superclass before its own lines, so that the inherited part gets built first; Light's does not say which one, so Java calls the one with no arguments, written super(). Step 3, note 2: Device has none, because writing Device(String name) removed the default one, as in the previous unit. Found: no arguments; required: a String. Step 4, the takeaway; the fix is the previous slide, super(name).}
+\end{frame}
+
+% Every declaration is there from the start; each row's answers fill in at once, after asking the class
+\begin{frame}{Is it a...?}{When a class should extend another}
+  \begin{datatable}{l M M Y}
+    \tablehead{Class} & \tablehead{Compiles?} & \tablehead{Is a?} & \tablehead{Why} \\
+    \grouprule
+    \code{class Light extends Device} & \uncover<2->{\markok} & \uncover<2->{\markok} &
+      \uncover<2->{A light is a device} \\
+    \tablerule
+    \code{class Speaker extends Device} & \uncover<3->{\markok} & \uncover<3->{\markok} &
+      \uncover<3->{A speaker is a device} \\
+    \tablerule
+    \code{class Device extends Light} & \uncover<4->{\markerror} & \uncover<4->{\markcaution} &
+      \uncover<4->{Backwards, and a loop: \code{Light} already extends \code{Device}} \\
+    \tablerule
+    \code{class Room extends Device} & \uncover<5->{\markok} & \uncover<5->{\markcaution} &
+      \uncover<5->{A room has devices; it is not one} \\
+    \tablerule
+    \code{class Thermostat extends Light} & \uncover<6->{\markok} & \uncover<6->{\markcaution} &
+      \uncover<6->{Only to reuse \code{name} and \code{on}} \\
+    \grouprule
+  \end{datatable}
+  \takeaway<7->{Extend a class only when the subclass \key{is a} kind of it, never just to \key{reuse code}.}
+  \note{All the declarations are on screen: ask about each one before filling in its row, reading it aloud as \enquote{a ... is a ...}. Every one of them but the third compiles, each as the header of the class it would be, instead of the one in the project, and with the constructor it needs: Java does not judge the design, so the question is the second column, in orange when it fails. Steps 1 and 2, Light and Speaker: a light is a device, a speaker is a device. Step 3, Device extends Light reads backwards: every device would have a brightness; and here it does not even compile, in red, because Light already extends Device, and a class cannot end up as its own superclass: cyclic inheritance. Step 4, Room extends Device: a room has a name and could be turned off, but it is not a device, it contains devices; that is an attribute, an array of Device in the class Room, not inheritance. Step 5, Thermostat extends Light is the tempting one: it would get name, on, turnOn and turnOff for free, and a brightness it does not have; the shared part belongs in Device. Step 6, the takeaway, the \enquote{is a} test.}
+\end{frame}
+
+% The tree they know on entry; a new level at step 2, with its card; the limit in orange, then the takeaway
+\begin{frame}{Hierarchies}{One superclass, several levels}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.6\textwidth}
+      \centering
+      \begin{classdiagram}
+        \classbox{device}{1}{}{Device}{}{}
+        \classbox{light}{0}{device}{Light}{brightness: int}{}
+        \classbox{thermostat}{1}{device}{Thermostat}{temperature: double}{}
+        \classbox{speaker}{2}{device}{Speaker}{volume: int}{}
+        \classbox<2->{color}{0}{light}{ColorLight}{color: String}{}
+        \inheritmark{light}{1}\inheritmark{thermostat}{1}\inheritmark{speaker}{1}
+        \classmark<2->{below}{color}{2}
+        \inheritmark<3->[warn]{color}{3}
+      \end{classdiagram}
+    \end{column}
+    \begin{column}{0.37\textwidth}
+      \begin{codenotes}[1]
+        \codenote{Many subclasses}{A class can be extended by as many classes as needed.}
+        \codenote<2->{Several levels}{A subclass can be extended too: its subclasses inherit from it and from every
+          class above it.}
+        \codenote<3->[warn]{One superclass}{A class extends one class only, never two.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<4->{Each class has \key{one superclass} and any number of \key{subclasses}: together, a
+    \key{hierarchy}.}
+  \note{The rules of the tree, with only the attributes in the boxes. On entry, what they know: one superclass, three subclasses, and there could be more. Step 1, a new kind of lamp, one that can also change color: ColorLight extends Light and only adds a color. It is a Light, so it has a brightness, and a Device, so it has a name and an on; its constructor calls Light's with super(...), which calls Device's. Step 2, in orange, a limit rather than an error: Java allows one superclass per class, single inheritance, so the tree never has a class with two parents. Ask them about a lamp with a built-in speaker: it is a Light and it is a Speaker, but it can only extend one of them. Some languages, such as C++, allow several, at the cost of conflicts when both parents have the same method; Java solves the need differently, with interfaces, at the end of the unit. Step 3, the takeaway.}
+\end{frame}
+
+% % % % % % % % % % Access control % % % % % % % % % %
+\section{Access control}
+
+% The lamp as it is on entry; the screen after the line in main, with its note; then the setter nobody has to use,
+% pressed, with its own; then the takeaway
+\begin{frame}{Brightness: 250\%}{Nothing stops it}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.36\textwidth}
+      \begin{phones}
+        \devicephone[icon=light, kind=Light, name=Living room lamp, power=On, label=Brightness,
+          value={\alt<2->{\marked<2| handout:0>{250\%}}{80\%}}, bar=80, bar to=100, bar on=2, set=Set brightness, tap on=3,
+          own data mark=1, own data mark on=2-, own data tone=warn,
+          own operation mark=2, own operation mark on=3-, own operation tone=info]
+      \end{phones}
+    \end{column}
+    \begin{column}{0.58\textwidth}
+      \begin{codenotes}[1]
+        \codenote<2->[warn]{From any class}{In \code{main}, \code{lamp.brightness = 250;} compiles, and the lamp
+          shows it.}
+        \codenote<3->{Nothing checks it}{\code{setBrightness} could check the value, but nothing forces anyone to
+          call it.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<4->{Any class can change an attribute \key{directly}, and \key{no one} checks the value.}
+  \note{The problem unit 2 left open, when ana.balance could be set to -500. On entry, the lamp at 80\%, as it works so far. Step 1, note 1, in orange, a line someone writes in main, and the screen after it: 250\%, a brightness that cannot exist, and the bar can only show it full. It compiled and ran without a word, because brightness is a plain attribute and any class can write it. Step 2, note 2, with the Set brightness button pressed: a setter that checks the value is easy to write, but useless as long as the attribute can be reached without it. Step 3, the takeaway; how to forbid the direct access is the question of the next slide.}
+\end{frame}
+
+% A question to the class, on its own, before the idea that answers it
+\begin{frame}
+  \question{How can a class make sure nobody gives its attributes a value they cannot have?}
+  \note{The previous slide turned into a question before private answers it. Let them think: checking the value is the setter's job, so what is missing is a way to close every other door, so that the setter is the only way in. Some may remember that unit 2's final stopped changes altogether; here the attribute must change, only under the class's rules. Do not name private yet: the next slide does.}
+\end{frame}
+
+% Code and notes step together; the error in main under the code, from the start; the takeaway on plain code
+\begin{frame}[fragile]{Private attributes}{Only the class itself can use them}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.52\textwidth}
+\begin{codeblock}[steps={2|1,4,9|10-12|}, compact, marks={2/1, 1+4+9/2, 10-12/3}]{java}
+public class Light extends Device {
+    private int brightness;
+
+    public Light(String name) {
+        super(name);
+        this.brightness = 100;
+    }
+
+    public void setBrightness(int brightness) {
+        if (brightness >= 0 && brightness <= 100) {
+            this.brightness = brightness;
+        }
+    }
+}
+\end{codeblock}
+      \blockgap
+\begin{consoleerror}[compact]
+Main.java:5: error: brightness has private access in Light
+\end{consoleerror}
+    \end{column}
+    \begin{column}{0.44\textwidth}
+      \begin{codenotes}[1]
+        \codenote{\code{private}}{Only the code of its own class can use it: from any other class, it does not
+          compile.}
+        \codenote<2->{\code{public}}{Any class can use it; it goes on the class, its constructors and its methods.}
+        \codenote<3->{The class decides}{The only way in is through its methods, which can check the value.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<4->{\key{Encapsulation}: attributes \key{\code{private}}, and the class decides through its
+    \key{methods} what can be done with them.}
+  \note{The fix. On entry, note 1, private before the attribute: it can only be used from inside the class Light. The line in main is now an error, under the code: brightness has private access in Light. Step 1, note 2, the other end: public, which means anyone; main has always been public. A public class has to be in a file with its name, Light.java, which is what they already do. Step 2, note 3, the only way left to change the brightness is setBrightness, which only accepts values from 0 to 100; with 250 it does nothing (reporting the mistake comes with exceptions, in unit 4). Step 3, the takeaway: hiding the data behind methods is called encapsulation. From here on, the course writes every attribute private and the classes, constructors and methods public, unless there is a reason not to.}
+\end{frame}
+
+% Both blocks and the notes step together: the getters, the setter, the read-only name; the takeaway on plain code
+\begin{frame}[fragile]{Getters and setters}{Reading and changing through methods}
+  \begin{columns}[T, onlytextwidth]
+    \begin{column}{0.49\textwidth}
+      \blocktitle{\code{Light.java}}
+\begin{codeblock}[steps={4-6|8-12|none|}, dense, marks={4-6/1, 8-12/2}]{java}
+public class Light extends Device {
+    private int brightness;
+
+    public int getBrightness() {
+        return this.brightness;
+    }
+
+    public void setBrightness(int brightness) {
+        if (brightness >= 0 && brightness <= 100) {
+            this.brightness = brightness;
+        }
+    }
+
+    // constructor, as before
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.49\textwidth}
+      \blocktitle{\code{Device.java}}
+\begin{codeblock}[steps={9-11|none|5-7|}, dense, marks={9-11/1, 5-7/3/info/3}]{java}
+public class Device {
+    private String name;
+    private boolean on;
+
+    public String getName() {
+        return this.name;
+    }
+
+    public boolean isOn() {
+        return this.on;
+    }
+
+    // constructor, turnOn and turnOff, as before
+}
+\end{codeblock}
+    \end{column}
+  \end{columns}
+  \notesgap
+  \begin{codenotes}[3]
+    \codenote{Getter}{\code{get} and its name, \code{is} for a \code{boolean}.}
+    \codenote<2->{Setter}{\code{set} and its name: changes it, after checking it.}
+    \codenote<3->{Only what is needed}{A getter with no setter: read-only from outside.}
+  \end{codenotes}
+  \takeaway<4->{A \key{getter} to read, a \key{setter} to change, and only \key{where needed}: without a setter,
+    it is read-only.}
+  \note{The usual pair of methods for a private attribute; Device follows the rule too, its name and on are private, and it gets getters as well. On entry, note 1, the getters: getBrightness, which returns the value without changing it, and the app calls it to draw the screen; for a boolean the name starts with is, as Device's isOn. Step 1, note 2, the setter, the one from the previous slide. The names follow a convention that IntelliJ and many libraries rely on: get, set or is, and the attribute's name with a capital. Step 2, note 3, Device's getName: an attribute does not need both. Device has getName and no setName, so the name of a device is set by its constructor and can only be read afterwards; a setter is written only when changing the value from outside makes sense. Step 3, the takeaway.}
+\end{frame}
+
+% Both classes at once, to read in silence; the takeaway after
+\begin{frame}[fragile]{The other two devices}{The same pattern as \code{Light}}
+  \begin{columns}[T, onlytextwidth]
+    \begin{column}{0.49\textwidth}
+      \blocktitle{\code{Thermostat.java}}
+\begin{codeblock}[dense]{java}
+public class Thermostat extends Device {
+    private double temperature;
+
+    public Thermostat(String name, double temperature) {
+        super(name);
+        this.temperature = temperature;
+    }
+
+    public double getTemperature() {
+        return this.temperature;
+    }
+
+    public void setTemperature(double temperature) {
+        if (temperature >= 5 && temperature <= 30) {
+            this.temperature = temperature;
+        }
+    }
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.49\textwidth}
+      \blocktitle{\code{Speaker.java}}
+\begin{codeblock}[dense]{java}
+public class Speaker extends Device {
+    private int volume;
+
+    public Speaker(String name) {
+        super(name);
+        this.volume = 50;
+    }
+
+    public int getVolume() {
+        return this.volume;
+    }
+
+    public void setVolume(int volume) {
+        if (volume >= 0 && volume <= 100) {
+            this.volume = volume;
+        }
+    }
+}
+\end{codeblock}
+    \end{column}
+  \end{columns}
+  \takeaway<2->{Each kind of device: its own \key{private} attribute, a constructor that calls
+    \key{\code{super(...)}}, a \key{getter} and a \key{setter} that checks.}
+  \note{The other two kinds of device, written the way Light now is, so that the three classes are complete from here on. Ask them to read them in silence and spot what changes from Light: only the attribute, its range and the constructor. The thermostat takes its starting temperature in the constructor, and only accepts targets from 5 to 30 °C; the speaker starts at volume 50 and accepts 0 to 100, like the brightness. Neither has anything that Light did not already show. The constructor stores the starting temperature it is given without checking it, for now: what a constructor does with a wrong value is a matter for exceptions, in the next unit. Step 1, the takeaway.}
+\end{frame}
+
+% The first version alone on entry, to ask; the second plain at step 2; then the line that differs, first the one that
+% fails and then the one that works, each with its note
+\begin{frame}[fragile]{Private to subclasses too}{\code{on} is private in \code{Device}}
+  \begin{columns}[T, onlytextwidth]
+    \begin{column}{0.49\textwidth}
+      \blocktitle{Through the attribute}
+\begin{codeblock}[steps={||7||}, diff, dense, marks={7/3/error}, strike={7/3}]{java}
+public class Light extends Device {
+    private int brightness;
+
+    public void setBrightness(int brightness) {
+        if (brightness >= 0 && brightness <= 100) {
+            this.brightness = brightness;
+            this.on = true;
+        }
+    }
+
+    // constructor and getter, as before
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.49\textwidth}
+      \begin{uncoverenv}<2->
+        \blocktitle{Through a method}
+\begin{codeblock}[steps={|||7|}, diff, dense, marks={7/4/info/2}]{java}
+public class Light extends Device {
+    private int brightness;
+
+    public void setBrightness(int brightness) {
+        if (brightness >= 0 && brightness <= 100) {
+            this.brightness = brightness;
+            this.turnOn();
+        }
+    }
+
+    // constructor and getter, as before
+}
+\end{codeblock}
+      \end{uncoverenv}
+    \end{column}
+  \end{columns}
+  \notesgap
+  \begin{codenotes}[2]
+    \codenote<3->[error]{Private in the superclass}{The subclass's objects have the attribute, but the subclass's
+      code cannot name it.}
+    \codenote<4->{Through its methods}{The subclass uses the superclass's public methods, as any other class
+      would.}
+  \end{codenotes}
+  \takeaway<5->{A subclass inherits its superclass's \key{private} attributes, but reaches them only through its
+    \key{methods}.}
+  \note{Device follows the rule too: name and on are private. Setting a brightness should also turn the lamp on. On entry, the obvious way: ask them whether it compiles. Step 1, the version through a method, plain: ask what changed. Step 2, note 1, the line that fails, crossed out on the left: this.on = true does not compile, on has private access in Device. The attribute is in the object, a Light has an on, as Using a subclass showed, but private means the code of Device only, and Light is another class. Step 3, note 2, the same line on the right, the fix: Device already offers turnOn, so Light asks Device to do it; if Device ever changes how it turns on, Light does not notice. Step 4, the takeaway. It is an example of how a subclass reaches a private attribute: the course does not keep that line, and Light's setBrightness stays as in Getters and setters.}
+\end{frame}
+
+% Code and notes step together; the takeaway on plain code
+\begin{frame}[fragile]{\code{protected}}{Open to subclasses, closed to the rest}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.48\textwidth}
+\begin{codeblock}[steps={3|3|2|}, compact, marks={3/1, 3/2/warn, 2/3}]{java}
+public class Device {
+    private String name;
+    protected boolean on;
+
+    // the rest of the class, as before
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{codenotes}[1]
+        \codenote{\code{protected}}{Its subclasses can use it, as well as its own class.}
+        \codenote<2->[warn]{With care}{Any subclass, written by anyone, can then change it without the
+          superclass's rules.}
+        \codenote<3->{Usually \code{private}}{And methods for what the subclasses need.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<4->{\key{\code{protected}} opens a member to the \key{subclasses}; \key{\code{private}} with methods
+    is usually the better choice.}
+  \note{The other way out, so they recognize it. On entry, note 1, protected: the attribute is open to the subclasses of Device, so this.on = true compiles in Light. Step 1, note 2, the catch, in orange: it works, but any subclass, including ones written later by someone else, can now put on in a state Device does not expect, and Device can no longer change that attribute without breaking them. Step 2, note 3: in this course, attributes stay private, and protected is kept for methods meant only for subclasses. Step 3, the takeaway. protected also opens the member to the classes of the same package, which is what comes next.}
+\end{frame}
+
+% The folders on entry, to ask; the three files at step 2 with their package lines; then the import, and the
+% superclass of the same package with none; the takeaway on plain code
+\begin{frame}[fragile]{Packages}{Classes grouped in folders}
+  \begin{columns}[T, onlytextwidth]
+    \begin{column}{0.3\textwidth}
+      \blocktitle{Project}
+      \begin{explorer}
+        \explorerrow{0}{folder}{src}
+        \explorerrow{1}{folder}{home}
+        \explorerrow{2}{folder}{devices}
+        \explorerrow{3}{java}{Device.java}
+        \explorerrow{3}{java}{Light.java}
+        \explorerrow{2}{folder}{app}
+        \explorerrow{3}{java}{Main.java}
+      \end{explorer}
+    \end{column}
+    \begin{column}{0.67\textwidth}
+      \begin{uncoverenv}<2->
+        \begin{columns}[T, onlytextwidth]
+          \begin{column}{0.47\linewidth}
+            \blocktitle{\code{home/devices/Device.java}}
+\begin{codeblock}[steps={|1|none|none|}, packed, marks={1/2}]{java}
+package home.devices;
+
+public class Device {
+    // the rest of the class, as before
+}
+\end{codeblock}
+          \end{column}
+          \begin{column}{0.5\linewidth}
+            \blocktitle{\code{home/devices/Light.java}}
+\begin{codeblock}[steps={|1|none|3|}, packed, marks={1/2, 3/4/info/3}]{java}
+package home.devices;
+
+public class Light extends Device {
+    // the rest of the class, as before
+}
+\end{codeblock}
+          \end{column}
+        \end{columns}
+        \blockgap
+        \blocktitle{\code{home/app/Main.java}}
+\begin{codeblock}[steps={|1|3|none|}, packed, marks={1/2, 3/3/info/2}]{java}
+package home.app;
+
+import home.devices.Light;
+
+public class Main {
+    // main, as before
+}
+\end{codeblock}
+      \end{uncoverenv}
+    \end{column}
+  \end{columns}
+  \notesgap
+  \begin{codenotes}[3]
+    \codenote<2->{\code{package}}{The first line of each file: the folder it is in, with dots.}
+    \codenote<3->{\code{import}}{Lets a class use one from another package by its short name.}
+    \codenote<4->{Same package}{No \code{import}: \code{Light} uses \code{Device} as it is.}
+  \end{codenotes}
+  \takeaway<5->{A \key{package} groups related classes; \key{\code{import}} brings in a class from another one.}
+  \note{A real app has hundreds of classes, so they go in folders, called packages. On entry, the folders, as IntelliJ or any editor shows them: the device classes in home/devices, the app's in home/app. Ask them how Java knows which folder a class is in. Step 1, the three files, note 1 on their first lines: the package line says which folder the class is in, with dots instead of slashes; Light's full name is home.devices.Light. Step 2, note 2, Main is in another package, so it imports Light to use it by its short name; without the import it would have to write home.devices.Light every time. A class from another package can only be used if it is public. Step 3, note 3, Light extends Device without importing it: they are in the same package. With no package line a class goes in the default package, which is where all their classes have been so far. Java's own classes come in packages too: String is java.lang.String, and java.lang is imported on its own. Step 4, the takeaway.}
+\end{frame}
+
+% Each row: the modifier first, to ask the class; then its four answers at once
+\begin{frame}{Four access levels}{For attributes, constructors and methods}
+  \begin{datatable}{l C C C C}
+    \tablehead{Modifier} & \tablehead{Same class} & \tablehead{Same package} & \tablehead{Subclass elsewhere} &
+      \tablehead{Any class} \\
+    \grouprule
+    \code{public} & \uncover<2->{\markok} & \uncover<2->{\markok} & \uncover<2->{\markok} & \uncover<2->{\markok} \\
+    \tablerule
+    \code{protected} & \uncover<3->{\markok} & \uncover<3->{\markok} & \uncover<3->{\markok} &
+      \uncover<3->{\markerror} \\
+    \tablerule
+    None & \uncover<4->{\markok} & \uncover<4->{\markok} & \uncover<4->{\markerror} & \uncover<4->{\markerror} \\
+    \tablerule
+    \code{private} & \uncover<5->{\markok} & \uncover<5->{\markerror} & \uncover<5->{\markerror} &
+      \uncover<5->{\markerror} \\
+    \grouprule
+  \end{datatable}
+  \takeaway<6->{Attributes \key{\code{private}}, the rest \key{\code{public}}: open only what has a \key{reason} to
+    be open.}
+  \note{The four levels in one table, from the most open to the most closed. Each row starts with the modifier alone: ask the class where it can be used before filling it in. Step 1, public, everywhere. Step 2, protected, its own package and the subclasses in other packages. Step 3, no modifier at all, new to them, so say it rather than ask: what every class and attribute had in unit 2: its own package only, called package access; it worked so far because every class was in the same, default, package. Step 4, private, its own class only. The four go on attributes, constructors and methods alike, such as a private method that only helps the class's own code; a class itself takes only public or nothing. Step 5, the rule the course follows from now on.}
+\end{frame}
+
+% % % % % % % % % % Overriding % % % % % % % % % %
+\section{Overriding}
+
+% The tiles as they are on entry, to ask; the same call on every tile, then each one's own answer on the tiles,
+% each with its note; the takeaway
+\begin{frame}{One status per tile}{What should each tile say?}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.36\textwidth}
+      \begin{phones}
+        \homephone{%
+          \hometile[light]{Living room lamp}{\alt<3->{\marked<3| handout:0>{On, 100\%}}{On}}\tilemark<2->{1}\tilemark<3->{2}%
+          \hometile[thermostat]{Hallway thermostat}{\alt<3->{\marked<3| handout:0>{On, 21.5\,°C}}{On}}\tilemark<2->{1}\tilemark<3->{2}%
+          \hometile[speaker]{Kitchen speaker}{Off}\tilemark<2->{1}}
+      \end{phones}
+    \end{column}
+    \begin{column}{0.58\textwidth}
+      \begin{codenotes}[1]
+        \codenote<2->{The same call}{Every device answers \code{status}: the part every device shares, on or off.}
+        \codenote<3->{Its own answer}{Then what each kind adds: the lamp its brightness, the thermostat its
+          temperature.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<4->{Each kind of device should answer the \key{same call}, \code{status}, in \key{its own way}.}
+  \note{The app's home screen: one tile per device, with a line under the name that comes from a method of Device, status; for now it can only say On or Off, because that is all Device knows. On entry, the tiles as they are: ask what the app would rather show. Step 1, note 1, on every tile: every device answers the same call, status, and the answer starts with what every device has, on or off. Step 2, note 2, on the tiles that change, as they should be: the lamp adds its brightness and the thermostat its temperature; the speaker has nothing to add. A statusOfLight in Light and another in Thermostat would force the app to know the kind of every tile; it has to be the same call, giving each kind's own answer. Step 3, the takeaway; how is the question of the next slide.}
+\end{frame}
+
+% A question to the class, on its own, before the idea that answers it
+\begin{frame}
+  \question{How can a subclass answer an inherited method in its own way?}
+  \note{The previous slide turned into a question before overriding answers it. Let them think: Light inherits status from Device, and needs a different body for it, without a different name. Some may propose writing a status in Light too; good, that is the answer, and the next slide shows the rules that make it work. Do not name overriding yet: the next slide does.}
+\end{frame}
+
+% Device's method on entry; Light plain at step 2; the headers, super. and @Override, each with its note; the takeaway
+\begin{frame}[fragile]{Overriding a method}{The subclass writes its own version}
+  \begin{columns}[T, onlytextwidth]
+    \begin{column}{0.49\textwidth}
+      \blocktitle{\code{Device.java}}
+\begin{codeblock}[steps={||5|5-10|5|}, dense, marks={5/3, 5-10/4/info/2, 5/5/info/3}]{java}
+public class Device {
+    private String name;
+    private boolean on;
+
+    public String status() {
+        if (this.on) {
+            return "On";
+        }
+        return "Off";
+    }
+
+    // the rest of the class, as before
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.49\textwidth}
+      \begin{uncoverenv}<2->
+        \blocktitle{\code{Light.java}}
+\begin{codeblock}[steps={||5|6|4|}, dense, marks={5/3, 6/4, 4/5}]{java}
+public class Light extends Device {
+    private int brightness;
+
+    @Override
+    public String status() {
+        return super.status() + ", " + this.brightness + "%";
+    }
+
+    // constructor, getter and setter, as before
+}
+\end{codeblock}
+      \end{uncoverenv}
+    \end{column}
+  \end{columns}
+  \notesgap
+  \begin{codenotes}[3]
+    \codenote<3->{Overriding}{The same header as in the superclass: it replaces that method for its objects.}
+    \codenote<4->{\code{super.}}{Calls the superclass's version of a method, to add to it instead of writing it
+      again.}
+    \codenote<5->{\code{@Override}}{Checks that it really overrides a method of the superclass: a typo no longer
+      compiles.}
+  \end{codenotes}
+  \takeaway<6->{A subclass \key{overrides} an inherited method by writing it again with the \key{same header}.}
+  \note{On entry, Device's status, the one every device inherits: On or Off. Step 1, Light next to it, plain: ask what it has. Step 2, note 1, both headers marked: the same header, written as in Device. That is overriding, and from now on a Light answers status with its own version, not Device's. Step 3, note 2, what it does, the super.status() line, with Device's method marked again with the same disc: super followed by a dot reaches the superclass's version of a method, the one on the left, which says On or Off; Light only adds the comma and the brightness, so the shared part is still written once. Light cannot read on directly, it is private in Device; it could call isOn, but reusing status keeps the On and Off text written once. Step 4, note 3, the line above it, an annotation, with Device's signature marked again because that is what it checks against: it changes nothing in what the program does, it tells the compiler that this method is meant to replace one of the superclass. Without it, a typo such as Status or a wrong parameter compiles anyway, as a new method, and the tiles keep showing Device's version without any warning; with it, that mistake is a compile error. Overrides or not?, two slides on, shows those cases. Always write it. Only methods of objects are overridden: a static method belongs to its class, and a subclass that declares one with the same signature hides it, it does not override it. Step 5, the takeaway.}
+\end{frame}
+
+% Both classes at once, each marked with its note: the one that overrides and the one that does not; the takeaway
+% on plain code
+\begin{frame}[fragile]{\code{Thermostat} and \code{Speaker}}{One overrides \code{status}, the other does not}
+  \begin{columns}[T, onlytextwidth]
+    \begin{column}{0.49\textwidth}
+      \blocktitle{\code{Thermostat.java}}
+\begin{codeblock}[steps={4-7|none|}, dense, marks={4-7/1}]{java}
+public class Thermostat extends Device {
+    private double temperature;
+
+    @Override
+    public String status() {
+        return super.status() + ", " + this.temperature + " °C";
+    }
+
+    // constructor, getter and setter, as before
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.49\textwidth}
+      \blocktitle{\code{Speaker.java}}
+\begin{codeblock}[steps={none|1|}, dense, marks={1/2/info/2}]{java}
+public class Speaker extends Device {
+    private int volume;
+
+    // constructor, getter and setter, as before
+}
+\end{codeblock}
+    \end{column}
+  \end{columns}
+  \notesgap
+  \begin{codenotes}[2]
+    \codenote{Its own version}{As \code{Light}: what every device says, and its temperature.}
+    \codenote<2->{None of its own}{\code{Speaker} writes no \code{status}: it keeps \code{Device}'s.}
+  \end{codenotes}
+  \takeaway<3->{Each object runs \key{its class's version}; a class that does not override it runs the
+    \key{inherited} one.}
+  \note{What the other two classes have before running them. On entry, note 1, Thermostat overrides status as Light does, adding its temperature with super.status(). Step 1, note 2, Speaker has no status of its own: a speaker has nothing to add to on or off, so it simply inherits Device's. Ask what each tile of the home screen would show now: On, 100\% for the lamp, On, 21.5 °C for the thermostat, and only On or Off for the speaker, the one it inherits. Step 2, the takeaway: a call runs the version of the object's class, and if that class has none, the one it inherits.}
+\end{frame}
+
+% Every method is there from the start; each row's answers fill in at once, after asking the class
+\begin{frame}{Overrides or not?}{Each method, written in \code{Light}}
+  \begin{datatable}{l M M Y}
+    \tablehead{Method} & \tablehead{Compiles?} & \tablehead{Overrides?} & \tablehead{Why} \\
+    \grouprule
+    \code{public String status()} & \uncover<2->{\markok} & \uncover<2->{\markok} &
+      \uncover<2->{The same header as in \code{Device}} \\
+    \tablerule
+    \code{public String status(int digits)} & \uncover<3->{\markok} & \uncover<3->{\markcaution} &
+      \uncover<3->{Other parameters: an overload} \\
+    \tablerule
+    \code{public String Status()} & \uncover<4->{\markok} & \uncover<4->{\markcaution} &
+      \uncover<4->{Another name: a new method} \\
+    \tablerule
+    \code{public int status()} & \uncover<5->{\markerror} & \uncover<5->{\marknone} &
+      \uncover<5->{Not the same header: same name and parameters, another return type} \\
+    \tablerule
+    \code{String status()} & \uncover<6->{\markerror} & \uncover<6->{\marknone} &
+      \uncover<6->{Less access than in \code{Device}} \\
+    \grouprule
+  \end{datatable}
+  \takeaway<7->{Only the \key{same header} overrides: another name or other parameters compile as a \key{new
+    method}, and only \key{\code{@Override}} catches it.}
+  \note{Five attempts at overriding status in Light, each judged on its own, without @Override. Ask about each before filling in its row. Step 1, the real one. The rule behind the rows, more precise than \enquote{the same header}: the same signature, name and parameter types, and the same return type (or, for an object, a subclass of it); the access may be the same or more open, never more closed (a protected method can be overridden as public, not the other way round). In this course every method is public and returns the same type, so copying the header is enough. Step 2, it has a parameter, so it is another signature: Light now has two status methods, an overload as in unit 2, and Device's is still the one that runs for status(). Step 3, with a capital S, is a different name: it compiles, and the tiles keep showing Device's version, a bug that is hard to see. Step 4 keeps the signature but changes the return type: status() in Light cannot override status() in Device (the one exception: a method returning an object may return a subclass of it in the override, such as Light instead of Device). Step 5 drops public: an override cannot give less access than the method it replaces, because code that calls status on any device must still be able to. Step 6, the takeaway: the two orange rows are the dangerous ones, they compile and the tiles keep showing Device's version. Close with the @Override of Overriding a method: with it, those two would not compile either, method does not override or implement a method from a supertype.}
+\end{frame}
+
+% The class at the top on entry, with what it gives; its methods in every object, then why they are overridden
+\begin{frame}{\code{Object}}{The superclass of every class}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.6\textwidth}
+      \centering
+      \begin{classdiagram}
+        \classbox{object}{1}{}{Object}{}{toString(): String, equals(Object): boolean, getClass(): Class}
+        \classbox{device}{1}{object}{Device}{}{}
+        \classbox{light}{0}{device}{Light}{}{}
+        \classbox{thermostat}{1}{device}{Thermostat}{}{}
+        \classbox{speaker}{2}{device}{Speaker}{}{}
+        \inheritmark{device}{1}
+        \classmark<2->{below}{light}{2}\classmark<2->{below}{thermostat}{2}\classmark<2->{below}{speaker}{2}
+        \classmark<3->{above}{object}{3}
+      \end{classdiagram}
+    \end{column}
+    \begin{column}{0.37\textwidth}
+      \begin{codenotes}[1]
+        \codenote{Implicit}{A class with no \code{extends} extends \code{Object}.}
+        \codenote<2->{In every object}{Its methods are inherited by every class, through every level.}
+        \codenote<3->{Made to be overridden}{Most of its versions are very basic: classes override them to make sense
+          for their objects.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<4->{\key{\code{Object}} is at the top of every hierarchy: its methods are in \key{every object}.}
+  \note{Device seemed to be the top of the tree, but it is not. On entry, Object, a class that comes with Java, in java.lang: any class written without extends, Device included, extends Object, and String, which comes with Java, does too. So every class has a superclass except Object itself. Step 1, what that gives every object: a few methods, among them toString, which turns it into text, equals, which compares it with another object, and getClass, which says its class. Step 2: Object's versions are very basic; equals, for instance, compares references, as ==. String, not in the drawing, overrides it to compare the characters, which is why unit 2 said to compare strings with equals; Device overrides it later in the unit. getClass is the exception: no class can override it, it is final, as two slides on show, so it always tells the truth. Step 3, the takeaway.}
+\end{frame}
+
+% The inherited row whole on entry, to show; the overridden one by parts, its card, its code and its output, to ask
+% before each; the takeaway after both
+\begin{frame}[fragile]{\code{toString}}{How an object becomes text}
+  \begin{boxrow}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.3\textwidth}
+      \begin{card}{Inherited from \code{Object}}
+        The class name and a number: of little use.
+      \end{card}
+    \end{column}
+    \begin{column}{0.44\textwidth}
+\begin{codeblock}[dense]{java}
+System.out.println(lamp);
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.22\textwidth}
+\begin{console}[dense]
+Light@4e50df2e
+\end{console}
+    \end{column}
+  \end{columns}
+  \end{boxrow}
+  \boxrowgap
+  \begin{boxrow}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.3\textwidth}
+      \begin{card}<2->{Overridden}
+        The same \code{println}: the text the class decides.
+      \end{card}
+    \end{column}
+    \begin{column}{0.44\textwidth}
+      \begin{uncoverenv}<3->
+\begin{codeblock}[dense]{java}
+public class Device {
+    @Override
+    public String toString() {
+        return this.name + ": " + this.status();
+    }
+
+    // the rest of the class, as before
+}
+\end{codeblock}
+      \end{uncoverenv}
+    \end{column}
+    \begin{column}{0.22\textwidth}
+      \begin{uncoverenv}<4->
+\begin{console}[dense]
+Living room lamp: On, 100%
+\end{console}
+      \end{uncoverenv}
+    \end{column}
+  \end{columns}
+  \end{boxrow}
+  \takeaway<5->{\code{println} and \code{+} call \key{\code{toString}}: overriding it decides how an object is
+    \key{shown}.}
+  \note{The method of Object they will override most. On entry, printing the lamp itself, not its status, with what it prints, just to show it: Object's toString, the class name, an @ and a number in hexadecimal that changes from run to run. Coming from C, and after the 0x7ad4 of the memory diagrams in unit 2, they will take it for the object's address: it is not. It is the object's hash code, from Object's hashCode, written in hexadecimal; Java never shows addresses, and the garbage collector moves objects in memory while their hash code stays the same. println calls toString on any object it gets, and so does + when it joins an object to a String. Step 1, the card alone: toString can be overridden. Ask in which class they would do it, and why: in Device, once for every device, as every device has a name and a status. Step 2, the code, in Device: the name, a colon and the status. Ask what the same println prints now for the lamp. Step 3, it prints the name and Light's status: Device's toString calls this.status(), and for a lamp that is Light's version, even though the call is written in Device. That is the idea of the next section. Step 4, the takeaway.}
+\end{frame}
+
+% The three places stay; each row's example and meaning fill in at once, after asking the class
+\begin{frame}{\code{final}, three ways}{What it closes}
+  \begin{datatable}{l l Y}
+    \tablehead{On} & \tablehead{Example} & \tablehead{Means} \\
+    \grouprule
+    \tablelabel{An attribute} & \uncover<2->{\code{private final String name;}} &
+      \uncover<2->{Set once, never changed} \\
+    \tablerule
+    \tablelabel{A method} & \uncover<3->{\code{public final String getName()}} &
+      \uncover<3->{No subclass can override it} \\
+    \tablerule
+    \tablelabel{A class} & \uncover<4->{\code{public final class String}} & \uncover<4->{No class can extend it} \\
+    \grouprule
+  \end{datatable}
+  \takeaway<5->{\key{\code{final}} always means \key{no more changes}: to a value, to a method, or to a class.}
+  \note{final, which they met on attributes in unit 2, also goes on methods and classes. The three places are there from the start; for each, ask what it could mean there before filling in its row. Step 1, an attribute: as the IBAN of unit 2, the name of a device is given by its constructor and never changes, so Device can declare it final. Step 2, a method: Device makes getName final, so no subclass can change what a device's name is; trying it gives getName() in Light cannot override getName() in Device. Step 3, a class: nobody can extend it, and String is one, which is how Java guarantees that a String never changes: otherwise a subclass could behave differently, or change, and still be used anywhere a String is expected. Step 4, the takeaway.}
+\end{frame}
+
+% % % % % % % % % % Polymorphism % % % % % % % % % %
+\section{Polymorphism}
+
+% The arrays first, then the loops, each with its note; the takeaway on plain code
+\begin{frame}[fragile]{One array per kind}{Turning every device on}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.56\textwidth}
+\begin{codeblock}[steps={1-9|11-21|}, dense, marks={1-9/1, 11-21/2}]{java}
+Light[] lights = {
+        new Light("Living room lamp")
+};
+Thermostat[] thermostats = {
+        new Thermostat("Hallway thermostat", 21.5)
+};
+Speaker[] speakers = {
+        new Speaker("Kitchen speaker")
+};
+
+for (Light light : lights) {
+    light.turnOn();
+}
+
+for (Thermostat thermostat : thermostats) {
+    thermostat.turnOn();
+}
+
+for (Speaker speaker : speakers) {
+    speaker.turnOn();
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.4\textwidth}
+      \begin{codenotes}[1]
+        \codenote{An array per kind}{An array holds one type: a \code{Light[]} takes no \code{Thermostat}.}
+        \codenote<2->{The same loop, three times}{The same \code{turnOn} in each: only the type changes.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<3->{With an array per kind, every loop over all the devices is written \key{once per kind}.}
+  \note{The app has to turn every device on, as the All off button turns them all off. With what they know, an array holds values of one type, so the devices go in one array per kind. On entry, note 1, the three arrays, one device each to keep it short. Step 1, note 2, three loops, the same but for the type: the turnOn they call is even the same method, inherited from Device. Point out, without a note for it, that a fourth kind of device, a blind, would mean a fourth array and a fourth loop, here and in every other place that goes through all the devices, the All off button, the home screen, the energy report. Step 2, the takeaway; ask whether one array could hold them all, which the next slide asks on its own.}
+\end{frame}
+
+% A question to the class, on its own, before the idea that answers it
+\begin{frame}
+  \question{Could one array hold every kind of device?}
+  \note{The previous slide turned into a question. Let them think: what type would its elements have? Some will say Device, since every Light, Thermostat and Speaker is a Device; the next slide tries it.}
+\end{frame}
+
+% The println alone first, to ask what it prints; then its note and the output under the code, together
+\begin{frame}[fragile]{Every device in one array}{And each one answers its own way}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.56\textwidth}
+\begin{codeblock}[steps={1-5|7|8|9|9|}, compact, marks={1-5/1, 7/2, 8/3, 9/5}]{java}
+Device[] devices = {
+        new Light("Living room lamp"),
+        new Thermostat("Hallway thermostat", 21.5),
+        new Speaker("Kitchen speaker")
+};
+
+for (Device device : devices) {
+    device.turnOn();
+    System.out.println(device);
+}
+\end{codeblock}
+      \blockgap
+      \begin{uncoverenv}<5->
+\begin{console}[compact]
+Living room lamp: On, 100%
+Hallway thermostat: On, 21.5 °C
+Kitchen speaker: On
+\end{console}
+      \end{uncoverenv}
+    \end{column}
+    \begin{column}{0.4\textwidth}
+      \begin{codenotes}[1]
+        \codenote{Every kind together}{Each element is a \code{Device}, whatever its class.}
+        \codenote<2->{Without asking which}{The loop knows only that they are devices.}
+        \codenote<3->{The same for all}{\code{turnOn}, inherited from \code{Device}.}
+        \codenote<5->{Each its own}{\code{toString}, from \code{Device}, calls the \code{status} of each
+          object's class.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<6->{\key{Polymorphism}: one type for objects of \key{many classes}, and each call runs \key{its object's
+    version}.}
+  \note{The answer to the question: one array of Device, for every device of the app. On entry, note 1, an array of Device holding three objects of three classes: every element is a Device, since every Light, Thermostat and Speaker is one, so they all fit; how a Device element can hold a Light comes on the next slide. Step 1, note 2, a for-each over all of them, without knowing which is which. Step 2, note 3, turnOn, the same method for all, inherited from Device; the app's All off button is this same loop with turnOff. Step 3, printing each one, alone: ask what they think it prints. Step 4, note 4 and the output: println calls toString, the one Device wrote, the same for all; inside it, status, which each class overrides, so each line comes out in the words of its own class, from one line of code. The name for it is polymorphism, \enquote{many forms}: one call, a different behavior for each kind of object. Adding a fourth kind of device later means writing its class, and this loop works with it unchanged: the problem of One array per kind is gone. Step 5, the takeaway: a Device for objects of many classes, each answering with its own version.}
+\end{frame}
+
+% Each line with its note (and output), but the last, shown alone first to ask about it; line 3's output gives way
+% to line 4's error, so print shows only the error. The diagram sets the variable's type against the object's class,
+% each marked on the step it decides; the notes under both
+\begin{frame}[fragile]{A \code{Device} variable}{Of one class, holding an object of another}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.43\textwidth}
+\begin{codeblock}[steps={1|3|4|5|5|}, compact, marks={1/1, 3/2, 4/3, 5/5/error}, strike={5/5}]{java}
+Device device = new Light("Living room lamp");
+
+device.turnOn();
+System.out.println(device.status());
+device.setBrightness(50);
+\end{codeblock}
+      \blockgap
+      \begin{onlyenv}<3-4| handout:0>
+\begin{console}[compact]
+On, 100%
+\end{console}
+      \end{onlyenv}
+      \begin{onlyenv}<5->
+\begin{consoleerror}[compact]
+Main.java:5: error: cannot find symbol
+  symbol:   method setBrightness(int)
+  location: variable device of type Device
+\end{consoleerror}
+      \end{onlyenv}
+    \end{column}
+    \begin{column}{0.54\textwidth}
+      \begin{memory}[1]
+        \memobject{lamp}{1}{\marked<1,3>{Light}}{name/0x51c2, on/\alt<2->{\marked<2-3| handout:0>{true}}{false},
+          brightness/\marked<3| handout:0>{100}}
+        \memref[\marked<1,2,5>{Device}]{1}{device}{0x7ad4}{lamp}
+      \end{memory}
+    \end{column}
+  \end{columns}
+  \notesgap
+  \begin{codenotes}[4]
+    \codenote{Upcasting}{A \code{Device} variable, a \code{Light} object: no cast, and the object stays as it
+      is.}
+    \codenote<2->{The type's methods}{Those of \code{Device} compile: \code{turnOn}, \code{turnOff},
+      \code{status}, etc.}
+    \codenote<3->{The object's version}{\code{Light} has its own \code{status}, and Java picks it while the
+      program runs.}
+    \codenote<5->[error]{Not the subclass's own}{\code{setBrightness} is only in \code{Light}, and the compiler
+      only knows \code{Device}.}
+  \end{codenotes}
+  \takeaway<6->{The variable's \key{type} decides what \key{compiles}; the \key{object} decides which version
+    \key{runs}.}
+  \note{One element of the previous slide's array, up close: a variable of one class holding an object of another, one line at a time. On entry, the first line, with the diagram of what it builds, as in unit 2: in the stack, a variable whose type is Device; in the heap, an object whose class is Light, both highlighted: two different classes. It compiles, note 1: converting a reference to a superclass is called upcasting, up the tree, and it is automatic, as int to double, because every Light is a Device. The object is a whole Light, with the attributes it inherits, name and on, and its own, brightness; assigning the reference changes nothing in it. Step 1, note 2, Device highlighted: turnOn compiles, because Device has it, as it has turnOff, status, getName and isOn: whatever Device declares can be called on device; it prints nothing, but on becomes true in the object. Step 2, note 3, status, printed: Device has a status, so it compiles; Light overrides it with its own; when it runs, Java follows the arrow to the object, highlighted, a Light, and runs Light's version, which reads on and brightness, highlighted too: On, 100\%, not On. Brightness is not even in Device: only Light's version could print it. Step 3, setBrightness, alone: the object is a Light, and Light has that method, so ask whether it compiles. Step 4, note 4, crossed out, it does not: setBrightness is declared only in Light, and the compiler does not run the program, it only reads the type of the variable, highlighted, Device, which has no such method: cannot find symbol (the compiler's message, shortened). With that line, the whole program no longer compiles, so nothing runs: the output gives way to the error. Step 5, the takeaway, the two rules of the whole section: the left of the diagram decides what compiles, the right what runs.}
+\end{frame}
+
+% The chain of unit 1, now with classes: up, then down with a cast; the takeaway after
+\begin{frame}{Back to a \code{Light}}{Casting references}
+  \widening<2-><3->{Light, Device, Object}
+    {Upcasting: automatic}{Towards a superclass: always safe.}
+    {Downcasting: a cast}{Towards a subclass, with the type in parentheses: the object might not be of that class.}
+  \takeaway<4->{Upcasting is \key{automatic}; downcasting needs a \key{cast}, because the object might not be of that
+    class.}
+  \note{The way out of the error of the previous slide, with the chain from unit 1, now with classes: from the most specific to the most general. Step 1, upcasting, the arrows to the right: always safe, so automatic, as int to double. Step 2, downcasting, to the left: to call setBrightness on a lamp kept in a Device variable, the reference has to be turned back into a Light, with a cast, the type in parentheses, as with primitive types. Java asks for it because it might be wrong: device could refer to a thermostat. Step 3, the takeaway, the two directions. One difference with primitive types: (int) 19.99 builds a new value, 19; (Light) device builds nothing, the object stays exactly as it was, and only the type of the reference changes. How it looks in code and in memory comes next.}
+\end{frame}
+
+% Code and diagram step together, each line with its note, as in A Device variable: the type and the class on entry,
+% the new variable's type with the cast and the call, the changed value with the call; the takeaway on plain code
+\begin{frame}[fragile]{A cast to \code{Light}}{The same object, through a \code{Light} variable}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.43\textwidth}
+\begin{codeblock}[steps={1|3|4|}, compact, marks={1/1, 3/2, 4/3}]{java}
+Device device = new Light("Living room lamp");
+
+Light lamp = (Light) device;
+lamp.setBrightness(50);
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.54\textwidth}
+      \begin{memory}[3]
+        \memobject{obj}{1}{\marked<1>{Light}}{name/0x51c2, on/false,
+          brightness/\alt<3->{\marked<3| handout:0>{50}}{100}}
+        \memref*[\marked<1>{Device}]{1}{device}{0x7ad4}{obj}
+        \memref*<2->[\marked<2-3>{Light}]{3}{lamp}{0x7ad4}{obj}
+      \end{memory}
+    \end{column}
+  \end{columns}
+  \notesgap
+  \begin{codenotes}[3]
+    \codenote{A \code{Device} variable}{The lamp, as before: \code{setBrightness} does not compile through it.}
+    \codenote<2->{Downcasting}{\code{(Light)} turns the reference back into a \code{Light}: a second variable, the
+      same object.}
+    \codenote<3->{Now it compiles}{\code{lamp} is of type \code{Light}, which has \code{setBrightness}.}
+  \end{codenotes}
+  \takeaway<4->{A \key{downcast} gives the same object a \key{subclass type}, and with it that class's
+    \key{methods}.}
+  \note{The fix for the error of A Device variable, in code and in memory. On entry, note 1, the lamp in a Device variable, as before, with the variable's type, Device, and the object's class, Light, highlighted: device.setBrightness(50) would not compile. Step 1, note 2, a cast to Light, the type in parentheses: it creates no object; it copies the reference, 0x7ad4, into a variable of type Light, highlighted. Two variables, two types, one object, as with two Account variables in unit 2. Step 2, note 3, through lamp, setBrightness compiles, because the type of lamp, still highlighted, is Light, and it changes the brightness of that one object, highlighted, which device sees too. Step 3, the takeaway. The cast is safe here because we know the object is a Light; in the array of every device, we do not.}
+\end{frame}
+
+% Each line with its note: the loop, the call, which compiles as before; then the cast, with the error under the code
+\begin{frame}[fragile]{The wrong cast}{Dimming every light with a cast}
+  \begin{columns}[T, onlytextwidth]
+    \begin{column}{0.56\textwidth}
+\begin{codeblock}[steps={1|3|2|}, compact, marks={1/1, 3/2, 2/3/error}]{java}
+for (Device device : devices) {
+    Light lamp = (Light) device;
+    lamp.setBrightness(30);
+}
+\end{codeblock}
+      \blockgap
+      \begin{uncoverenv}<3->
+\begin{consoleerror}[compact]
+Exception in thread "main" java.lang.ClassCastException:
+  class Thermostat cannot be cast to class Light
+\end{consoleerror}
+      \end{uncoverenv}
+    \end{column}
+    \begin{column}{0.4\textwidth}
+      \begin{codenotes}[1]
+        \codenote{Every device}{The array from before: the lamp, the thermostat and the speaker.}
+        \codenote<2->{It compiles}{As on the previous slide: \code{lamp} is a \code{Light}, and the compiler only sees
+          types.}
+        \codenote<3->[error]{It fails when it runs}{The lamp goes through; the thermostat is not a \code{Light}, and
+          Java stops on the cast.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<4->{A wrong downcast \key{compiles}, and stops the program with a \key{\code{ClassCastException}} when it
+    runs.}
+  \note{The same cast, now for every device: a button that dims every light. On entry, note 1, the loop over the array of Every device in one array: a lamp, a thermostat and a speaker. Step 1, note 2, the call: it compiles, as on the previous slide, and so does the cast, since a Device could be a Light and the compiler only sees types; ask what happens when it runs. Step 2, note 3, in red, on the cast: the first device, the lamp, is dimmed; the second is a thermostat, and when the cast runs, Java checks the real object, finds a Thermostat, and stops the program with a ClassCastException on the cast. The message is shortened: Java prints it on one line, followed by where it happened. Exceptions get their own unit, the next one. Step 3, the takeaway: the loop has no way yet to know which devices are lights.}
+\end{frame}
+
+% A question to the class, on its own, before the idea that answers it
+\begin{frame}
+  \question{How can the loop tell which devices are lights?}
+  \note{The previous slide turned into a question: the cast is fine for a lamp and fatal for anything else, so the loop has to ask each object what it is before casting it. Let them think about what that question would look like.}
+\end{frame}
+
+% The first version, new, explained from entry: the check, then the cast; the second plain at step 3, to ask what
+% changed, then its line marked
+\begin{frame}[fragile]{\code{instanceof}}{Dimming every light, and nothing else}
+  \begin{columns}[T, onlytextwidth]
+    \begin{column}{0.49\textwidth}
+      \blocktitle{Check, then cast}
+\begin{codeblock}[steps={2|3|||}, diff, compact, marks={2/1, 3/2}]{java}
+for (Device device : devices) {
+    if (device instanceof Light) {
+        Light lamp = (Light) device;
+        lamp.setBrightness(30);
+    }
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.49\textwidth}
+      \begin{uncoverenv}<3->
+        \blocktitle{Check and cast at once}
+\begin{codeblock}[steps={|||2|}, diff, compact, marks={2/4/info/3}]{java}
+for (Device device : devices) {
+    if (device instanceof Light lamp) {
+        lamp.setBrightness(30);
+    }
+}
+\end{codeblock}
+      \end{uncoverenv}
+    \end{column}
+  \end{columns}
+  \notesgap
+  \begin{codenotes}[3]
+    \codenote{\code{instanceof}}{\code{true} if the object is of that class or of a subclass; \code{false} for
+      \code{null}.}
+    \codenote<2->{Then the cast}{If it is, the cast cannot fail: a new variable holds the reference, as that
+      class.}
+    \codenote<4->{At once}{With a variable's name after the class, \code{instanceof} checks and declares it,
+      already cast.}
+  \end{codenotes}
+  \takeaway<5->{Check with \key{\code{instanceof}} before a \key{downcast}; with a variable's name, it does both
+    \key{at once}.}
+  \note{A button that dims every light in the house to 30\% and leaves the other devices alone. On entry, the answer to the question, the classic way, the one that shows what happens underneath, explained at once, as instanceof is new. Note 1, the check: device instanceof Light asks the object, while the program runs, whether it is a Light; a ColorLight would also say yes, since it is a Light too, and null always says no. Step 1, note 2, the cast, only inside the if: it can no longer fail, and lamp holds the same reference as a Light, so setBrightness compiles. Step 2, the form Java has had since version 16, plain: ask what changed. Step 3, note 3, a variable's name after the class joins both lines, the check and the cast, into one; lamp only exists inside the if. Either is fine; the second leaves less room for mistakes. A word of advice: a chain of instanceof for every kind of device is usually a sign that the method should be overridden instead. Step 4, the takeaway.}
+\end{frame}
+
+% Every object is there from the start; each row's answers fill in at once, after asking the class
+\begin{frame}{\code{getClass}}{Exactly that class, not a subclass}
+  \begin{datatable}{l c c Y}
+    \tablehead{The object} & \tablehead{\code{instanceof Light}} & \tablehead{\code{getClass() == Light.class}} &
+      \tablehead{Why} \\
+    \grouprule
+    \code{new Light(...)} & \uncover<2->{\markok} & \uncover<2->{\markok} & \uncover<2->{Exactly that class} \\
+    \tablerule
+    \code{new ColorLight(...)} & \uncover<3->{\markok} & \uncover<3->{\markcaution} &
+      \uncover<3->{A subclass: a \code{Light}, but not only} \\
+    \tablerule
+    \code{new Thermostat(...)} & \uncover<4->{\markno} & \uncover<4->{\markno} &
+      \uncover<4->{Another branch of the hierarchy} \\
+    \grouprule
+  \end{datatable}
+  \takeaway<5->{\key{\code{instanceof}} accepts the class and its \key{subclasses}; \key{\code{getClass}} gives
+    the object's \key{exact class}.}
+  \note{The other way to ask an object its class. getClass, inherited from Object, returns the class the object was created with, whatever the type of the variable; Light.class is the class Light written as a value, so the two can be compared with ==. Each row is an object, whatever variable holds it, asked both questions. Ask about each row before filling it in. Step 1, a Light: yes to both. Step 2, a ColorLight, from Hierarchies: it is a Light, so instanceof says yes, but its class is ColorLight, not Light. Step 3, a Thermostat: no to both. Two objects of the same class: a.getClass() == b.getClass(). To print it, device.getClass().getSimpleName() gives the name, ColorLight. getClass is final in Object: no class can override it, so the answer is always true. On null it throws a NullPointerException, unlike instanceof. Which to use: instanceof when any kind of Light will do, which is almost always; getClass when it has to be that class and no other, as equals needs, two slides on. Step 4, the takeaway.}
+\end{frame}
+
+% Each println alone first, to ask, then its line of output and its note; the takeaway on plain code
+\begin{frame}[fragile]{Two equal lamps?}{Same class, same name}
+  \begin{columns}[T, onlytextwidth]
+    \begin{column}{0.56\textwidth}
+\begin{codeblock}[steps={1-2|4|4|5|5|}, compact, marks={1-2/1, 4/3, 5/5}]{java}
+Device first = new Light("Living room lamp");
+Device second = new Light("Living room lamp");
+
+System.out.println(first == second);
+System.out.println(first.equals(second));
+\end{codeblock}
+      \blockgap
+      \begin{uncoverenv}<3->
+\begin{console}[compact, lines={1|1}, steps from=3]
+false
+false
+\end{console}
+      \end{uncoverenv}
+    \end{column}
+    \begin{column}{0.4\textwidth}
+      \begin{codenotes}[1]
+        \codenote{Two lamps}{Created apart, with the same name.}
+        \codenote<3->{\code{==}}{Two objects, two references: \code{false}.}
+        \codenote<5->{\code{equals}}{\code{Device} does not override it: \code{Object}'s compares references too.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<6->{\code{Object}'s \key{\code{equals}} compares \key{references}, as \code{==}: a class decides what makes
+    two of its objects equal by \key{overriding} it.}
+  \note{The app must not add the same device twice, so it needs to know when two devices are the same: the same kind and the same name. On entry, note 1, two lamps created apart, with the same name. Step 1, ==, alone: remind them what == compares and ask what it prints. Step 2, note 2, false, as in unit 2: two objects, two references. Step 3, equals, the method strings use: ask what they think it does here. Step 4, note 3, false too: Device does not override equals, so the one that runs is Object's, which only compares references, exactly as ==. String overrides it to compare characters, which is why it worked with strings. Step 5, the takeaway; the override comes next.}
+\end{frame}
+
+% Code and notes step together: the parameter, then each check in its order; the takeaway on plain code
+\begin{frame}[fragile]{Overriding \code{equals}}{When two objects are equal}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.56\textwidth}
+\begin{codeblock}[steps={3|4-6|7-9|10-11|}, compact, marks={3/1, 4-6/2, 7-9/3, 10-11/4}]{java}
+public class Device {
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || this.getClass() != obj.getClass()) {
+            return false;
+        }
+        Device other = (Device) obj;
+        return this.name.equals(other.name);
+    }
+
+    // the rest of the class, as before
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.4\textwidth}
+      \begin{codenotes}[1]
+        \codenote{An \code{Object} parameter}{The same header as in \code{Object}: anything can be compared with
+          it.}
+        \codenote<2->{The same object}{The same reference: always equal.}
+        \codenote<3->{The same class}{\code{null} or another class: never equal. After this check, the cast cannot
+          fail.}
+        \codenote<4->{Its attributes}{Compares those that decide when two objects are equal, with \code{equals} for
+          the objects among them.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<5->{\key{\code{equals}}: the \key{same object}, then the \key{same class}, then the \key{attributes} that
+    decide it.}
+  \note{The standard way to write equals, here in Device, once for every device; the checks go in this order in every class. On entry, note 1, the header: the parameter is an Object, not a Device, because that is Object's signature; equals(Device other) would be an overload, and @Override would reject it. Step 1, note 2, the first check: the same reference means the same object, so it is equal to itself, true, with nothing else to compare. Step 2, note 3, the second: null, or an object of another class, can never be equal, false. getClass and not instanceof Device, so a lamp is never equal to a speaker or to a color lamp with the same name. Step 3, note 4, what is left is an object of the same class: the cast cannot fail, and the attributes that decide it are compared, here the name, a String, with equals. other.name compiles although name is private: private means the code of Device, for any Device object, not only this one. With it, first.equals(second) prints true, while first == second still prints false. One more rule, for later courses: a class that overrides equals must override hashCode too, which some collections rely on; IntelliJ generates both (Code, Generate). Step 4, the takeaway.}
+\end{frame}
+
+% Each row shows its question first; both answers fill in at once, after asking the class
+\begin{frame}{Overloading or overriding?}{Who picks the version, and when}
+  \begin{datatable}{l Y Y}
+    & \tablehead{Overloading} & \tablehead{Overriding} \\
+    \grouprule
+    \tablelabel{Where} & \uncover<2->{In the same class or a subclass} & \uncover<2->{In a subclass} \\
+    \tablerule
+    \uncover<3->{\tablelabel{Header}} & \uncover<4->{Another signature, whatever it returns} &
+      \uncover<4->{The same one} \\
+    \tablerule
+    \uncover<5->{\tablelabel{Who picks}} & \uncover<6->{The compiler, from the variables' types} &
+      \uncover<6->{Java, from the object's class} \\
+    \tablerule
+    \uncover<7->{\tablelabel{When}} & \uncover<8->{When compiling} & \uncover<8->{When running} \\
+    \grouprule
+  \end{datatable}
+  \takeaway<9->{Overloading follows the \key{variables' types}, at \key{compile time}; overriding, the \key{object}, at
+    \key{run time}: \key{dynamic binding}.}
+  \note{To close the section, two words that sound alike, side by side; each row shows its question first: ask for both answers before filling them in. Overloading, unit 2: several methods with the same name and different parameters, deposit(double) and deposit(double, String). Overriding, this unit: a subclass writes again a method of its superclass with the same header, that is, the same signature and the same return type, or, for an object, a subclass of it, as seen in Overrides or not?; for an overload the return type does not count, as with deposit in unit 2. Who picks: for an overload, the compiler, looking at the types of the variables passed as arguments (or of the values, for a literal); for an override, the Java virtual machine, looking at the object while the program runs, which is why device.status() could give Light's answer. It is the rule of A Device variable again: the type decides what compiles, and the object which version runs. Where the two meet, the type wins for overloads: with show(Device) and show(Light) in a class, show(device), for the device of that slide, runs show(Device), although the object is a Light, because the compiler only knows the variable's type; to get show(Light), the reference has to be cast to Light, as in A cast to Light. That runtime choice is called dynamic binding, and the compile-time one static binding; some books call them dynamic and static polymorphism. Step 8, the takeaway.}
+\end{frame}
+
+\begin{frame}{Exercises}{What you can solve so far}
+  \begin{datatable}{l Y}
+    \tablehead{Exercise} & \tablehead{What it practices} \\
+    \grouprule
+    \href{https://github.com/alfaro96/programming-fundamentals-ii/tree/main/code/Inheritance/Exercise\%201}{Exercise 1} &
+      Employees: three subclasses that override the methods of a superclass, kept in one array of the
+      superclass \\
+    \tablerule
+    \href{https://github.com/alfaro96/programming-fundamentals-ii/tree/main/code/Inheritance/Exercise\%202}{Exercise 2} &
+      Antiques: \code{protected} attributes, \code{toString} and \code{instanceof}, in a matrix ordered by century \\
+    \grouprule
+  \end{datatable}
+  \note{The exercises of the course that can be solved with what has been seen up to here: inheritance, access control, overriding and polymorphism. They are in the JetBrains Academy course, in the Inheritance lesson; each title opens it on GitHub. The rest of the unit's exercises need abstract classes, in the next section.}
+\end{frame}
+
+% % % % % % % % % % Abstract classes and interfaces % % % % % % % % % %
+\section{Abstract classes and interfaces}
+
+% The three devices answer on entry, row by row; the device of no kind last; the takeaway after
+\begin{frame}{A device of no kind}{What would \code{new Device("Thing")} be?}
+  \begin{datatable}{l Y Y}
+    \tablehead{The object} & \tablehead{What you set} & \tablehead{Power it uses} \\
+    \grouprule
+    \code{new Light(...)} & \uncover<2->{Brightness} & \uncover<2->{0.1\,W per point of brightness} \\
+    \tablerule
+    \code{new Thermostat(...)} & \uncover<3->{Target temperature} & \uncover<3->{3\,W while on} \\
+    \tablerule
+    \code{new Speaker(...)} & \uncover<4->{Volume} & \uncover<4->{0.05\,W per point of volume} \\
+    \tablerule
+    \code{new Device("Thing")} & \uncover<5->{\markcaution} & \uncover<5->{\markcaution} \\
+    \grouprule
+  \end{datatable}
+  \takeaway<6->{What each subclass fills in, the superclass alone \key{cannot}: an object of it \key{makes no
+    sense}, yet \code{new} compiles.}
+  \note{Two questions every device in the app has to answer: what its screen lets you set, and how much power it uses, so the app can show what the house is using. Fill in each row after asking. Step 1, a light: its brightness, and 0.1 W per point of it, a 10 W bulb. Step 2, a thermostat: the target temperature, and 3 W while it is on. Step 3, a speaker: its volume, and 0.05 W per point. Before the last row, ask them: and a Device of no kind? Step 4, in orange, there is no answer to either question: nothing to set, and no way to know what it uses. Nothing in the house is just a device, as nothing on a farm is just an animal: Device is the name for what the three kinds share. If someone asks whether it could be a general device, one that only turns on and off: ask what it would be in the house. A smart plug, say; but then it has its own power use and answers both questions, so it is a kind of its own, class Plug extends Device, and Device itself still answers nothing. Step 5, the takeaway: and yet new Device(\enquote{Thing}) compiles. What this does to the code comes next.}
+\end{frame}
+
+% Both blocks and the notes step together, each line with its note; the takeaway on plain code
+\begin{frame}[fragile]{No honest answer}{How much power does it use?}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.52\textwidth}
+      \blocktitle{\code{Device.java}}
+\begin{codeblock}[steps={2-4|3|2|}, compact, marks={2-4/1, 3/2/warn, 2/3/warn}]{java}
+public class Device {
+    public double watts() {
+        return 0.0;
+    }
+
+    // the rest of the class, as before
+}
+\end{codeblock}
+      \blockgap
+      \blocktitle{In \code{main}}
+\begin{codeblock}[steps={none|2|none|}, compact, marks={2/2/warn/2}]{java}
+Device thing = new Device("Thing");
+System.out.println(thing.watts());
+\end{codeblock}
+      \blockgap
+      \begin{uncoverenv}<2->
+\begin{console}[compact]
+0.0
+\end{console}
+      \end{uncoverenv}
+    \end{column}
+    \begin{column}{0.44\textwidth}
+      \begin{codenotes}[1]
+        \codenote{A method for every subclass}{Declared in the superclass, so it can be called on any of them.}
+        \codenote<2->[warn]{No honest answer}{In the superclass it has no possible body: any value it returns is
+          false.}
+        \codenote<3->[warn]{Silent if forgotten}{A subclass that does not override it inherits that false value,
+          with no error.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<4->{Some methods every subclass needs have \key{no possible body} in the superclass: whatever they return
+    is \key{false}.}
+  \note{The power column of the previous slide, in code. On entry, note 1, the method: every device needs a watts, and Device has to declare it, so that device.watts() compiles in a loop over the array; each subclass overrides it with its own rule. Step 1, note 2, the println on a device of no kind, and its 0.0, with Device's body marked: a device of no kind has no true answer, so whatever it returns is a lie. Step 2, note 3: worse, a new subclass that forgets to override it will report 0 W without any error. Step 3, the takeaway: Device should create no objects, and watts should have no body there; how to say both in Java is the question of the next slide.}
+\end{frame}
+
+% A question to the class, on its own, before the idea that answers it
+\begin{frame}
+  \question{How can a class say it creates no objects, and leave a method for its subclasses to write?}
+  \note{The previous slide turned into a question before abstract answers it. Let them think: two things are missing, a way to forbid new Device(...), and a way to declare watts with no body, so that every subclass has to write it. Some may propose a private constructor; good thinking, but then the subclasses could not call it with super(...). Do not name abstract yet: the next slide does.}
+\end{frame}
+
+% Code and notes step together; the takeaway on plain code
+\begin{frame}[fragile]{Abstract classes}{Only there to be extended}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.52\textwidth}
+\begin{codeblock}[steps={1|9|2-7|}, compact, marks={1/1, 9/2, 2-7/3}]{java}
+public abstract class Device {
+    private String name;
+    private boolean on;
+
+    public Device(String name) {
+        this.name = name;
+    }
+
+    public abstract double watts();
+
+    // the rest of the class, as before
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.44\textwidth}
+      \begin{codenotes}[1]
+        \codenote{\code{abstract class}}{No objects of its own: \code{new} with it does not compile.}
+        \codenote<2->{\code{abstract} method}{A header and a \code{;}, no body: it says what every subclass does, not
+          how.}
+        \codenote<3->{Still a class}{Attributes, a constructor for \code{super(...)}, and methods with a body.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<4->{An \key{abstract class} creates no objects; its \key{abstract methods} are left to its subclasses.}
+  \note{The fix for both problems. On entry, note 1, abstract before class: new Device(\enquote{Thing}) no longer compiles, Device is abstract; cannot be instantiated. Device variables and arrays are still fine, Device[] devices included, and so is everything in the previous section: only new Device(...) is forbidden. Step 1, note 2, an abstract method: no braces, just a semicolon; every device has a watts that can be called, and each subclass says how much. A class with an abstract method has to be abstract itself. Step 2, note 3, the rest is unchanged: an abstract class can have attributes, constructors, which its subclasses call with super(...), and normal methods, all inherited as before. Step 3, the takeaway.}
+\end{frame}
+
+% Code and notes step together; the takeaway on plain code
+\begin{frame}[fragile]{Implementing \code{watts}}{Every subclass must write it}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.52\textwidth}
+\begin{codeblock}[steps={2-8|1|}, compact, marks={2-8/1, 1/2/error}]{java}
+public class Light extends Device {
+    @Override
+    public double watts() {
+        if (this.isOn()) {
+            return 0.1 * this.brightness;
+        }
+        return 0.0;
+    }
+
+    // the rest of the class, as before
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.44\textwidth}
+      \begin{codenotes}[1]
+        \codenote{The contract}{Every subclass writes the abstract method, each its own way.}
+        \codenote<2->[error]{Or it does not compile}{A subclass that leaves out an abstract method is an error,
+          unless it is abstract itself.}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<3->{An \key{abstract method} is a promise the compiler \key{checks}: every concrete subclass writes it.}
+  \note{On entry, note 1, Light's watts: a 10 W bulb, so 0.1 W per point of brightness, and nothing when it is off; it is overriding as before, with @Override. Thermostat and Speaker have their own, on the next slide. Step 1, note 2, in red, what happens if Light leaves it out: Light is not abstract and does not override abstract method watts() in Device. The abstract method is a promise every concrete device has to keep, checked by the compiler, unlike the 0.0 of No honest answer. The one way out: a subclass that is abstract itself may leave the method to the classes below it. Step 2, the takeaway.}
+\end{frame}
+
+% Both classes at once, the same contract kept twice; no takeaway: it applies the previous slide's idea to the
+% other two classes
+\begin{frame}[fragile]{The other \code{watts}}{Each device, its own rule}
+  \begin{columns}[T, onlytextwidth]
+    \begin{column}{0.49\textwidth}
+      \blocktitle{\code{Thermostat.java}}
+\begin{codeblock}[compact]{java}
+public class Thermostat extends Device {
+    @Override
+    public double watts() {
+        if (this.isOn()) {
+            return 3.0;
+        }
+        return 0.0;
+    }
+
+    // the rest of the class, as before
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.49\textwidth}
+      \blocktitle{\code{Speaker.java}}
+\begin{codeblock}[compact]{java}
+public class Speaker extends Device {
+    @Override
+    public double watts() {
+        if (this.isOn()) {
+            return 0.05 * this.volume;
+        }
+        return 0.0;
+    }
+
+    // the rest of the class, as before
+}
+\end{codeblock}
+    \end{column}
+  \end{columns}
+  \note{The other two devices keep the contract too, each with its own rule: the thermostat uses 3 W whenever it is on, and the speaker 0.05 W per point of volume, 2.5 W at its starting 50. With the lamp at 100\%, 10 W, the three on add up to 15.5 W, which the app adds up with a for-each over the array, total += device.watts().}
+\end{frame}
+
+% The tree, with the slider's two kinds marked; each attempt then marked in blue first, to ask what goes wrong,
+% and its problem in its tone on the next step, its disc and note turning to that tone; print shows the last tree, with every disc
+\begin{frame}{Not every device has a level}{Brightness and volume, yes; temperature, no}
+  \begin{columns}[T, onlytextwidth]
+    \begin{column}{0.6\textwidth}
+      \centering
+      \begin{onlyenv}<1| handout:0>
+      \begin{classdiagram}
+        \classbox{device}{1}{}{Device}{}{}
+        \classbox{light}{0}{device}{Light}{}{setLevel(int): void}
+        \classbox{thermostat}{1}{device}{Thermostat}{}{}
+        \classbox{speaker}{2}{device}{Speaker}{}{setLevel(int): void}
+        \classmark{below}{light}{1}\classmark{below}{speaker}{1}
+      \end{classdiagram}
+      \end{onlyenv}
+      \begin{onlyenv}<2-3| handout:0>
+      \begin{classdiagram}
+        \classbox{device}{1}{}{Device}{}{setLevel(int): void}
+        \classbox{light}{0}{device}{Light}{}{}
+        \classbox{thermostat}{1}{device}{Thermostat}{}{}
+        \classbox{speaker}{2}{device}{Speaker}{}{}
+        \classmark{below}{light}{1}\classmark{below}{speaker}{1}
+        \classmark<2| handout:0>{above}{device}{2}
+        \classmark<3->[error]{above}{device}{2}\classmark<3->[error]{below}{thermostat}{2}
+      \end{classdiagram}
+      \end{onlyenv}
+      \begin{onlyenv}<4| handout:0>
+      \begin{classdiagram}
+        \classbox{device}{0.5}{}{Device}{}{}
+        \classbox{adjustable}{0}{device}{AdjustableDevice}{}{setLevel(int): void}
+        \classbox{thermostat}{1}{device}{Thermostat}{}{}
+        \classbox{speaker}{-0.5}{adjustable}{Speaker}{}{}
+        \classbox{light}{0.5}{adjustable}{Light}{}{}
+        \inheritmark*{light}{3}
+      \end{classdiagram}
+      \end{onlyenv}
+      \begin{onlyenv}<5->
+      \begin{classdiagram}
+        \classbox{device}{0.5}{}{Device}{}{}
+        \classbox{adjustable}{0}{device}{AdjustableDevice}{}{setLevel(int): void}
+        \classbox{scheduled}{1}{device}{ScheduledDevice}{}{setSchedule(String): void}
+        \classbox{speaker}{-0.5}{adjustable}{Speaker}{}{}
+        \classbox{light}{0.5}{adjustable}{Light}{}{}
+        \classbox{thermostat}{1.5}{scheduled}{Thermostat}{}{}
+        \inheritmark*[warn]{light}{3}
+        \classwrong{light}{scheduled}{3}
+        \classmark<0| handout:1>{below}{light}{1}\classmark<0| handout:1>{below}{speaker}{1}\classmark<0| handout:1>[error]{above}{device}{2}
+      \end{classdiagram}
+      \end{onlyenv}
+    \end{column}
+    \begin{column}{0.37\textwidth}
+      \begin{codenotes}[1]
+        \codenote{The level slider}{One slider, 0 to 100, for lights and speakers: \code{setLevel(int level)}.}
+        \alt<3->{\codenote[error]{Abstract, in \code{Device}}{\code{Thermostat} would have to write it too, with no
+          level.}}{\codenote<2->{Abstract, in \code{Device}}{}}
+        \alt<5->{\codenote[warn]{A superclass in between}{Fine, until lights also run on a schedule: a class has
+          only one superclass.}}{\codenote<4->{A superclass in between}{}}
+      \end{codenotes}
+    \end{column}
+  \end{columns}
+  \takeaway<6->{Some abilities cut across the hierarchy: they do not fit in \key{one superclass}.}
+  \note{A new feature for the app: one slider that sets the level of anything that has one, the brightness of a light or the volume of the speaker. Where does setLevel go? On entry, note 1, the tree they know, with setLevel in the two classes that need it, Light and Speaker: ask them where it should be declared, so that the slider can call it on any device. Step 1, note 2, in blue, setLevel moved up to Device, abstract, as watts, so the slider can call it on any device: ask them what the problem is. Step 2, the answer, in red: every subclass must write it, so the thermostat must write one too, and anything it does is nonsense; an abstract method forces a behavior on every subclass, even those it makes no sense for. Step 3, note 3, in blue on Light's arrow, a new abstract class in between, AdjustableDevice, extended by Light and Speaker, while Thermostat extends Device as before: ask whether this one works. Step 4, in orange: for now it does, but the next ability, devices that run on a schedule, the lights and the thermostat, needs a ScheduledDevice too, and Light would have to extend both: the dashed line, which extends does not allow. Step 5, the takeaway; the way out is the question of the next slide.}
+\end{frame}
+
+% A question to the class, on its own, before the idea that answers it
+\begin{frame}
+  \question{How can lights and speakers share an ability that thermostats do not have?}
+  \note{The previous slide turned into a question before interfaces answer it. Let them think: the ability, having a level, is not part of what a device is, so it cannot be a superclass; it is something a class can do, whatever it extends. They will need a contract outside the tree, which a class can sign up to alongside its superclass. Do not name interfaces yet: the next slide does.}
+\end{frame}
+
+% The interface on entry, a line and its note at a time; then the class that implements it, its header and its method,
+% each with its note; the takeaway on plain code
+\begin{frame}[fragile]{Interfaces}{What a class can do}
+  \begin{columns}[T, onlytextwidth]
+    \begin{column}{0.4\textwidth}
+      \blocktitle{\code{Adjustable.java}}
+\begin{codeblock}[steps={1|2|||}, compact, marks={1/1, 2/2}]{java}
+public interface Adjustable {
+    void setLevel(int level);
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.58\textwidth}
+      \begin{uncoverenv}<3->
+        \blocktitle{\code{Light.java}}
+\begin{codeblock}[steps={||1|2-5|}, compact, marks={1/3, 2-5/4}, marks from=3]{java}
+public class Light extends Device implements Adjustable {
+    @Override
+    public void setLevel(int level) {
+        this.setBrightness(level);
+    }
+
+    // the rest of the class, as before
+}
+\end{codeblock}
+      \end{uncoverenv}
+    \end{column}
+  \end{columns}
+  \notesgap
+  \begin{codenotes}[4]
+    \codenote{\code{interface}}{In place of \code{class}, in a file of its own.}
+    \codenote<2->{A header, no body}{\code{public} and \code{abstract} without saying so.}
+    \codenote<3->{\code{implements}}{The class promises every method of the interface; several go separated by
+      commas.}
+    \codenote<4->{Its method}{Written as any override, with \code{@Override}.}
+  \end{codenotes}
+  \takeaway<5->{An \key{interface} says what a class \key{can do}; a class \key{implements} it by writing its
+    methods.}
+  \note{On entry, note 1, the interface: like an abstract class with nothing but abstract methods, written with interface in place of class, in its own file, as a class. Interfaces are usually named with an adjective, what the class can be or do: Adjustable, and in Java itself Comparable or Runnable. Step 1, note 2, its method: a header and a semicolon, with no body, and it needs neither public nor abstract, since every method of an interface without a body is both. Step 2, note 3, Light implements it: it still extends Device, and now also promises a setLevel. A class extends one class only, but implements as many interfaces as it needs, separated by commas: the lamp with a level and a schedule, which did not compile with two superclasses, is fine with two interfaces, implements Adjustable, Schedulable. Step 3, note 4, the promise kept: setLevel, written as any override, with @Override, reusing setBrightness. Speaker implements it too, with setVolume, on the next slide; Thermostat does not, and nothing forces it to. If Light forgot setLevel: Light is not abstract and does not override abstract method setLevel(int) in Adjustable. Step 4, the takeaway.}
+\end{frame}
+
+% The other class on entry, main faded; then each part of main with its note, the two println with their output;
+% the takeaway on plain code
+\begin{frame}[fragile]{An interface as a type}{Lights and speakers, together}
+  \begin{columns}[T, onlytextwidth]
+    \begin{column}{0.48\textwidth}
+      \blocktitle{\code{Speaker.java}}
+\begin{codeblock}[steps={1||||}, packed, marks={1/1}]{java}
+public class Speaker extends Device implements Adjustable {
+    @Override
+    public void setLevel(int level) {
+        this.setVolume(level);
+    }
+
+    // the rest of the class, as before
+}
+\end{codeblock}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \blocktitle{In \code{main}}
+\begin{codeblock}[steps={none|3|5-7|9-10|}, packed, marks={3/2, 5-7/3, 9-10/4}, marks from=2]{java}
+Light lamp = new Light("Living room lamp");
+Speaker speaker = new Speaker("Kitchen speaker");
+Adjustable[] adjustables = {lamp, speaker};
+
+for (Adjustable adjustable : adjustables) {
+    adjustable.setLevel(30);
+}
+
+System.out.println(lamp.getBrightness());
+System.out.println(speaker.getVolume());
+\end{codeblock}
+      \blockgap
+      \begin{uncoverenv}<4->
+\begin{console}[dense]
+30
+30
+\end{console}
+      \end{uncoverenv}
+    \end{column}
+  \end{columns}
+  \notesgap
+  \begin{codenotes}[4]
+    \codenote{\code{Speaker} too}{It implements \code{Adjustable}, through its \code{setVolume}.}
+    \codenote<2->{An interface as a type}{Its array holds any object of a class that implements it.}
+    \codenote<3->{Each its own}{One call, and each object runs its own \code{setLevel}.}
+    \codenote<4->{Both at 30}{The brightness of one and the volume of the other.}
+  \end{codenotes}
+  \takeaway<5->{An interface is a \key{type}: its variables refer to objects of \key{any class} that implements it.}
+  \note{The slider at work. On entry, note 1, Speaker, which implements Adjustable too: its setLevel reuses setVolume, as Light's reuses setBrightness. Step 1, note 2, with a lamp and a speaker, an array of Adjustable: an interface creates no objects, but it is a type, so it has variables and arrays, which can hold any object of a class that implements it; upcasting works with interfaces as with superclasses. Step 2, note 3, one loop sets the level of both: each runs its own setLevel, polymorphism again. Step 3, note 4, the two println and their output, 30 and 30: the brightness of one and the volume of the other. instanceof works with interfaces too: device instanceof Adjustable adjustable picks, from an array of Device, the ones with a level. Step 4, the takeaway.}
+\end{frame}
+
+% Each row shows its question first; both answers fill in at once, after asking the class
+\begin{frame}{Abstract class or interface?}{What each one can hold}
+  \begin{datatable}{l Y Y}
+    & \tablehead{Abstract class} & \tablehead{Interface} \\
+    \grouprule
+    \tablelabel{Objects with \code{new}} & \uncover<2->{No} & \uncover<2->{No} \\
+    \tablerule
+    \uncover<3->{\tablelabel{Attributes}} & \uncover<4->{Any} & \uncover<4->{Only constants} \\
+    \tablerule
+    \uncover<5->{\tablelabel{Constructors}} & \uncover<6->{Yes, for \code{super(...)}} & \uncover<6->{No} \\
+    \tablerule
+    \uncover<7->{\tablelabel{Per class}} & \uncover<8->{One, with \code{extends}} &
+      \uncover<8->{Several, with \code{implements}} \\
+    \tablerule
+    \uncover<9->{\tablelabel{Says}} & \uncover<10->{What it \key{is}} & \uncover<10->{What it \key{can do}} \\
+    \grouprule
+  \end{datatable}
+  \takeaway<11->{An abstract class shares \key{a part} with its subclasses; an interface, only \key{a contract}.}
+  \note{The two side by side; each row shows its question first: ask for both answers before filling them in. Neither creates objects. An abstract class can hold anything a class can: attributes, constructors, methods with a body; Device shares its name, its on and their methods. An interface holds no state: any attribute written in it is a constant, public static final without saying so, and it has no constructors. Tell them in passing that since Java 8 an interface can also have methods with a body, default and static ones, and since Java 9 private ones; the interfaces of this course have none. If asked: a default method is inherited by every class that implements the interface unless it overrides it, so an interface can grow without breaking them; with no attributes, it can only work through the interface's other methods. Per class: one superclass, any number of interfaces. Last row, how to choose: Light is a Device, and can be adjusted. Step 10, the takeaway.}
+\end{frame}
+
+\begin{frame}{Exercises}{The rest of the unit}
+  \begin{datatable}{l Y}
+    \tablehead{Exercise} & \tablehead{What it practices} \\
+    \grouprule
+    \href{https://github.com/alfaro96/programming-fundamentals-ii/tree/main/code/Inheritance/Exercise\%203}{Exercise 3} &
+      Geometric figures: an abstract class, subclasses in packages of their own, and a container for them \\
+    \tablerule
+    \href{https://github.com/alfaro96/programming-fundamentals-ii/tree/main/code/Inheritance/Exercise\%204}{Exercise 4} &
+      Numbers: a hierarchy under an abstract \code{Real}, whose operations depend on the type of each number \\
+    \tablerule
+    \href{https://github.com/alfaro96/programming-fundamentals-ii/tree/main/code/Inheritance/Exercise\%205}{Exercise 5} &
+      Housing: an abstract tax that each kind of home calculates its own way, and an agency that keeps them \\
+    \grouprule
+  \end{datatable}
+  \note{The exercises that need the last section, abstract classes. They are in the JetBrains Academy course, in the Inheritance lesson; each title opens it on GitHub.}
+\end{frame}
+
+\begin{frame}{Unit summary}{What to take away from this unit}
+  \begin{recap}
+    \recapitem<2>{Inheritance}{A \key{subclass} \code{extends} a superclass, inherits all it has and does, and
+      starts its constructor with \key{\code{super(...)}}.}
+    \recapitem<3>{Access control}{\key{\code{public}}, \key{\code{protected}} for subclasses, \key{no modifier}
+      for the package and \key{\code{private}}; attributes private, reached through getters and setters.}
+    \recapitem<4>{Overriding}{A subclass writes an inherited method again with the \key{same header}, marked
+      \key{\code{@Override}}.}
+    \recapitem<5>{Polymorphism}{A superclass variable holds any subclass object: its \key{type} decides what
+      compiles, the \key{object} which version runs; a \key{cast}, checked with \code{instanceof}, reaches the rest.}
+    \recapitem<6>{Abstract classes and interfaces}{An \key{abstract class} is only there to be extended; an
+      \key{interface} is a contract any class can implement.}
+  \end{recap}
+  \note{The unit's contents once more, now with what each section left: all of them dimmed on entry, then one per step, in the order they were seen; ask the class to recall an example of each before showing its sentence: the three device screens and Device; the lamp at 250\% and setBrightness; the tiles and status; the All off button and the array of Device, and two equal lamps; watts and the level slider. The next unit deals with what was left aside more than once in this one: what a program does when something goes wrong, exceptions, such as the ClassCastException.}
+\end{frame}
+
+\end{document}

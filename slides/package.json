@@ -1,13 +1,10 @@
 {
   "name": "programming-fundamentals-ii-slides",
   "private": true,
-  "description": "Programming Fundamentals II slides, built with reveal.js",
+  "description": "Programming Fundamentals II slides, built with beamer",
   "scripts": {
-    "dev": "npx reveal-md content --theme theme/custom.css -w",
-    "build": "npx reveal-md content --theme theme/custom.css --static production/web && node scripts/index.mjs content production/web",
-    "pdf": "npm run pdf:class && npm run pdf:print",
-    "pdf:class": "sh scripts/pdf.sh class",
-    "pdf:print": "sh scripts/pdf.sh print",
-    "preview": "sh scripts/preview.sh"
+    "pdf": "sh scripts/beamer.sh && sh scripts/statements.sh",
+    "preview": "sh scripts/preview.sh",
+    "build": "node scripts/index.mjs production/web"
   }
 }

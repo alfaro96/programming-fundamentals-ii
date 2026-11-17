@@ -1,0 +1,81 @@
+Implement a package called \texttt{housing} containing the following class hierarchy and logic.
+
+\begin{itemize}
+
+    \item \texttt{Housing} abstract class with:
+
+        \begin{itemize}
+
+            \item An attribute \texttt{double price}.
+
+            \item A constructor that receives this attribute.
+
+            \item A getter for \texttt{price}.
+
+            \item An abstract method \texttt{double tax()}.
+
+            \item An abstract \texttt{toString()} method.
+
+        \end{itemize}
+
+    \item \texttt{SingleFamily} class that extends \texttt{Housing}, containing:
+
+        \begin{itemize}
+
+            \item An attribute \texttt{int numberOfFloors}.
+
+            \item An attribute \texttt{double basementSize}.
+
+            \item A single constructor that initializes all attributes, including inherited ones.
+
+            \item A method \texttt{double tax()}, where the tax is calculated as 20\% of the price.
+
+            \item A method \texttt{boolean paysMoreTaxThan(SingleFamily other)}, which returns \texttt{true} if this home pays more tax than \texttt{other}.
+
+            \item The \texttt{toString()} method.
+
+        \end{itemize}
+
+    \item \textbf{Additional classes} that inherit as follows (ensure each has a proper constructor to initialize all its attributes):
+
+        \begin{itemize}
+
+            \item \texttt{Chalet}, extending \texttt{SingleFamily}, with an additional attribute \texttt{double gardenSize}.
+
+            \item \texttt{CountryHouse}, extending \texttt{Housing}, with attributes \texttt{double plotSize} and \texttt{Chalet chalet}. The tax is the chalet's tax plus 0.5 euros per square meter of the plot.
+
+            \item \texttt{Apartment}, extending \texttt{Housing}, with an additional attribute \texttt{boolean terrace}. The tax is calculated as \texttt{price} multiplied by 1.5.
+
+        \end{itemize}
+
+    \item \texttt{RealEstate} class containing:
+
+        \begin{itemize}
+
+            \item A private array of \texttt{Housing} objects.
+
+            \item A constructor that initializes the array with \texttt{n} elements, where \texttt{n} is passed as a parameter (but no housing objects are added initially).
+
+            \item A \texttt{counter} attribute indicating the position in the array where the next housing object should be inserted.
+
+            \item A method \texttt{addHousing(Housing housing)} to add a new housing object.
+
+            \item A method \texttt{countNonChaletSingleFamily()} to count how many \texttt{SingleFamily} homes are not \texttt{Chalet}.
+
+            \item A method \texttt{getHighestTaxHousing()} to determine which housing object has the highest tax.
+
+        \end{itemize}
+
+\end{itemize}
+
+Create a \texttt{Main} class (outside the \texttt{housing} package) that performs the following:
+
+\begin{itemize}
+
+    \item Creates a \texttt{RealEstate} instance with three housing objects: a \texttt{Chalet}, a \texttt{SingleFamily} home, and a \texttt{CountryHouse} (use any necessary values).
+
+    \item Displays how many \texttt{SingleFamily} homes are not \texttt{Chalet}.
+
+    \item Displays the housing object with the highest tax (implement \texttt{toString()} for each housing type).
+
+\end{itemize}

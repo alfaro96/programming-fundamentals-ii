@@ -11,6 +11,10 @@
 # Generated exports (PDFs, web version and screenshots)
 slides/production/
 
+# A beamer unit built in its own folder, to check it (the published PDFs go to slides/production/)
+slides/beamer/units/*/main.*
+!slides/beamer/units/*/main.tex
+
 # Build and compiled class files
 code/**/*.class
 code/**/build/
@@ -22,9 +26,6 @@ code/**/*.iml
 
 # Javadoc generated from the code
 code/**/doc/
-
-# LaTeX of the assignments, generated from task.md with /latex
-code/**/latex/
 
 # Gradle build cache
 code/.gradle/

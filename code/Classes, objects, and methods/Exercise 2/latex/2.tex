@@ -1,0 +1,103 @@
+The goal of this exercise is to write a \texttt{Person} class in Java. Compared to the previous exercise, it leaves more to your interpretation of how each method works, uses an array of objects as an attribute and has to handle some error cases.
+
+\subsection{Implementation}
+
+Write a \texttt{Person} class with the following requirements:
+
+\begin{itemize}
+
+    \item \textbf{Attributes}:
+
+        \begin{itemize}
+
+            \item \texttt{String name}: the name of the person.
+
+            \item \texttt{int age}: the age of the person, in years.
+
+            \item \texttt{double height}: the height of the person, in meters.
+
+            \item \texttt{double weight}: the weight of the person, in kilograms.
+
+            \item \texttt{String address}: the address of the person.
+
+            \item \texttt{Person[] children}: the children of the person, who are people too. The array has a fixed size and is filled from its first position, so the empty positions, all at the end, hold \texttt{null}.
+
+        \end{itemize}
+
+    \item \textbf{Methods}:
+
+        \begin{itemize}
+
+            \item \textbf{Constructors}:
+
+                \begin{itemize}
+
+                    \item A constructor that receives \texttt{name}, \texttt{age}, \texttt{height}, \texttt{weight}, \texttt{address} and the number of children the person can have, which is the size of the array. No child has been added yet.
+
+                    \item A constructor that receives only \texttt{name}, \texttt{age}, \texttt{height}, \texttt{weight} and \texttt{address}, for a person without children. The array of children must be created anyway, with no positions, never left as \texttt{null}.
+
+                \end{itemize}
+
+            \item \texttt{addChild()}: given a \texttt{Person}, stores it in the first empty position of the array of children. The array never grows: if it is full, the method prints an error message and the child is not added.
+
+            \item \texttt{getOldestChild()} and \texttt{getYoungestChild()}: return the oldest or the youngest child, or \texttt{null} if the person has no children.
+
+            \item \texttt{describe()}: returns a \texttt{String} with all the data of the person, followed by the data of each child. Since children are \texttt{Person} objects too, the data of each one can be obtained by calling \texttt{describe()} on it.
+
+        \end{itemize}
+
+\end{itemize}
+
+\subsection{Recommendations}
+
+\begin{itemize}
+
+    \item \textbf{Incremental implementation}: write and test each method on its own before moving on to the next one, making sure each part works before building the rest of the class.
+
+    \item \textbf{Building the text}: \texttt{describe()} joins one piece of text per child, so a \texttt{StringBuilder} is a better fit than \texttt{+}.
+
+\end{itemize}
+
+\subsection{Evaluation and testing}
+
+To complete the exercise, write a \texttt{Main} class with a \texttt{main} method that performs the following tests:
+
+\begin{enumerate}
+
+    \item \textbf{Object creation}:
+
+        \begin{itemize}
+
+            \item Create two \texttt{Person} objects: \texttt{Person 1}, with room for two children, and \texttt{Person 2}, with room for three.
+
+            \item Create new \texttt{Person} objects and add them as children of each one with \texttt{addChild()}.
+
+            \item Create a third person, \texttt{Person 3}, with the constructor for a person without children.
+
+        \end{itemize}
+
+    \item \textbf{Functional verification}:
+
+        \begin{itemize}
+
+            \item Print the data of each person.
+
+            \item Change the age of \texttt{Person 1} and print its data again to check the change.
+
+            \item Go through the array of children of \texttt{Person 1} and print each one.
+
+            \item Print the youngest and the oldest child of \texttt{Person 2}.
+
+            \item Try to add a child to a person whose array is full, and check that the error message is printed.
+
+        \end{itemize}
+
+    \item \textbf{Clean code and documentation}:
+
+        \begin{itemize}
+
+            \item Make sure the code is clean and legible, with explanatory comments where necessary.
+
+        \end{itemize}
+
+\end{enumerate}

@@ -1,0 +1,29 @@
+% % % % % % % % % % Course % % % % % % % % % %
+% The only place these strings live: the cover and the contents slides read them
+\newcommand{\coursename}{Programming Fundamentals II}
+\author{Juan Carlos Alfaro Jiménez}
+\institute{Degree in Computer Science}
+\newcommand{\contentstitle}{Contents} % subtitle of every contents slide
+\date{}
+
+% % % % % % % % % % Inline macros % % % % % % % % % %
+% Code in running text, in the code font, in the color and at the size of the text around it
+\newcommand{\code}[1]{\inlinecode{#1}}
+
+% Key words of a sentence, in bold and the heading blue (a card's title is already styled)
+\newcommand{\key}[1]{\textbf{\textcolor{colorHeading}{#1}}}
+
+% A word about what an object holds (data) or does (operations), in the same colors as the cards
+\newcommand{\state}[1]{\textcolor{colorState}{#1}}
+\newcommand{\behavior}[1]{\textcolor{colorBehavior}{#1}}
+
+% Verdict marks: it works, it needs care, it does not compile or fails
+\newcommand{\markok}{\textcolor{colorAccentTwo}{\ding{51}}}
+\newcommand{\markwarn}{\textcolor{paletteOrange}{\textbf{!}}}
+\newcommand{\markerror}{\textcolor{paletteRed}{\ding{55}}}
+\newcommand{\markcaution}{\textcolor{paletteOrange}{\ding{55}}} % it compiles, but it is not right
+\newcommand{\marknone}{\textcolor{colorMuted}{\textbf{–}}} % the question does not apply
+\newcommand{\markno}{\textcolor{colorMuted}{\ding{55}}} % a plain no, neither wrong nor a warning: it does not run, or the answer is just no
+
+% Pending item (bold red text, delete before the lecture)
+\newcommand{\todo}[1]{\textcolor{red}{\textbf{[TODO: #1]}}}

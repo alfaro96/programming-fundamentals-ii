@@ -22,11 +22,9 @@ public class Tests {
 
   /**
    * Verifies that the taxes are still calculated as in Unit 3 when the values are valid.
-   *
-   * @throws Exception if a constructor rejects a valid value.
    */
   @Test
-  public void testTaxesWithValidValues() throws Exception {
+  public void testTaxesWithValidValues() {
     Chalet chalet = new Chalet(100000.0, 2, 50.0, 100.0);
     assertEquals("SingleFamily tax should be 20% of price", 20000.0,
         new SingleFamily(100000.0, 2, 50.0).tax(), DELTA);
@@ -53,11 +51,9 @@ public class Tests {
   /**
    * Verifies that {@link SingleFamily}, {@link Chalet} and {@link CountryHouse} reject a
    * negative price, through the constructor of {@code Housing}.
-   *
-   * @throws Exception if a constructor throws a different exception.
    */
   @Test
-  public void testSubclassesNegativePrice() throws Exception {
+  public void testSubclassesNegativePrice() {
     Chalet chalet = new Chalet(100000.0, 2, 50.0, 100.0);
     try {
       new SingleFamily(-1.0, 1, 20.0);
@@ -82,11 +78,9 @@ public class Tests {
   /**
    * Verifies that a negative basement throws an {@link InvalidSquareMetersException} whose
    * message names the attribute and includes its value.
-   *
-   * @throws Exception if the constructor throws a different exception.
    */
   @Test
-  public void testNegativeBasement() throws Exception {
+  public void testNegativeBasement() {
     try {
       new SingleFamily(100000.0, 1, -99.0);
       fail("A negative basement should throw an InvalidSquareMetersException");
@@ -99,11 +93,9 @@ public class Tests {
   /**
    * Verifies that a negative basement or garden in a {@link Chalet}, and a negative plot in a
    * {@link CountryHouse}, throw an {@link InvalidSquareMetersException}.
-   *
-   * @throws Exception if a constructor throws a different exception.
    */
   @Test
-  public void testNegativeSizes() throws Exception {
+  public void testNegativeSizes() {
     Chalet chalet = new Chalet(100000.0, 2, 50.0, 100.0);
     try {
       new Chalet(100000.0, 1, -5.0, 30.0);
@@ -127,11 +119,9 @@ public class Tests {
 
   /**
    * Verifies that a price and sizes of 0 are valid.
-   *
-   * @throws Exception if a constructor rejects a value of 0.
    */
   @Test
-  public void testZeroIsValid() throws Exception {
+  public void testZeroIsValid() {
     Chalet chalet = new Chalet(0.0, 1, 0.0, 0.0);
     assertEquals("A price of 0 should be kept", 0.0, chalet.getPrice(), DELTA);
     assertEquals("A plot of 0 should add nothing to the tax", 0.0,
@@ -140,11 +130,9 @@ public class Tests {
 
   /**
    * Verifies {@link SingleFamily#paysMoreTaxThan} and the methods of {@link RealEstate}.
-   *
-   * @throws Exception if a constructor rejects a valid value.
    */
   @Test
-  public void testRealEstate() throws Exception {
+  public void testRealEstate() {
     SingleFamily cheapHome = new SingleFamily(100000.0, 1, 20.0);
     SingleFamily expensiveHome = new SingleFamily(200000.0, 2, 40.0);
     Apartment apartment = new Apartment(100000.0, false);

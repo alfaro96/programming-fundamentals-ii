@@ -20,7 +20,7 @@ public class Apartment extends Housing {
      * @param terrace {@code true} if it has a terrace, {@code false} otherwise.
      * @throws InvalidPriceException if {@code price} is negative.
      */
-    public Apartment(double price, boolean terrace) throws InvalidPriceException {
+    public Apartment(double price, boolean terrace) {
         super(price);
         this.terrace = terrace;
     }

@@ -1,15 +1,14 @@
 ---
-description: Create a new unit file with its cover, contents and summary
+description: Create a new unit with its cover, sections and summary
 ---
 
 Create a new unit for Programming Fundamentals II.
 
-Argument (unit number and name, e.g. "3 Inheritance"):
+Argument (unit number and name, e.g. "6 Event-driven programming"):
 $ARGUMENTS
 
-1. Create `content/unit_N-short_name.md` following the naming convention in `CLAUDE.md`: `unit_`, single-digit number, hyphen, short `snake_case` name (e.g. `unit_3-inheritance.md`).
-2. Build it from the templates: the cover (`templates/title.md`, `## Unit N: Unit name` and a subtitle), the first contents slide (`templates/contents.md`) and, last, the summary (`templates/summary.md`). Leave the contents list and the summary cards for the sections the instructor gives; don't invent sections.
-3. If the unit will have images, create `content/assets/unit_N-short_name/` for them.
-4. Find its lesson in `../code/`: the folder named as the cover title without `Unit N:`. Say whether it exists, and if its name differs from the cover title, point it out instead of renaming anything yet.
-5. If the instructor also gave notes for the first slides, add them following the `/new-slide` flow.
-6. Confirm in one line: file created, cover heading, and the matching lesson in `../code/`.
+1. Create `beamer/units/unit_N-short_name/main.tex` following the naming convention in `CLAUDE.md`: `unit_`, single-digit number, hyphen, short `snake_case` name (e.g. `unit_6-event_driven_programming`).
+2. Start it with the head of unit 1, its `\title{Unit N: Unit name}`, a `\subtitle` and `\input{cover}`; then a `\section` for each section the instructor gives and, last, the summary frame (`\begin{frame}{Unit summary}{What to take away from this unit}` with `\begin{recap}`, one `\recapitem` per section). Don't invent sections.
+3. Find its lesson in `../code/`: the folder named as the cover title without `Unit N:`. Say whether it exists, and if its name differs from the cover title, point it out instead of renaming anything yet.
+4. If the instructor also gave notes for the first slides, add them following the `/new-slide` flow.
+5. Build it (`npm run pdf`) and confirm in one line: folder created, cover title, and the matching lesson in `../code/`.
