@@ -89,8 +89,8 @@ for (const base of (await readdir(units)).sort()) {
 ${sections.map((s, i) => `              <li><span>${i + 1}</span>${escape(s)}</li>`).join("\n")}
             </ol>
             <p class="site-unit-pdfs">
-              <a href="class/${base}.pdf">Class PDF</a>
-              <a href="print/${base}.pdf">Print PDF</a>
+              <a href="class/${base}.pdf">Class slides</a>
+              <a href="print/${base}.pdf">Print slides</a>
             </p>${exercises.length ? `
             <p class="site-unit-statements">
               <span>Exercises</span>
