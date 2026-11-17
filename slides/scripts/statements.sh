@@ -43,5 +43,7 @@ for main in beamer/units/*/main.tex; do
     )
   done
   # The assignments go on counting across units: the loop above runs in a subshell
-  for task in "$lesson"/*/latex/goals.tex; do [ -f "$task" ] && assignment=$((assignment + 1)); done
+  for task in "$lesson"/*/latex/goals.tex; do
+    if [ -f "$task" ]; then assignment=$((assignment + 1)); fi
+  done
 done
